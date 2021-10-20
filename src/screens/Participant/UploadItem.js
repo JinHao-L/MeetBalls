@@ -1,6 +1,6 @@
 import { Card, Col, Row, Form, Button } from 'react-bootstrap';
 import { useState } from 'react';
-import { isValidUrl } from '../../common/CommonFunctions';
+import { isValidUrl, openLinkInNewTab } from '../../common/CommonFunctions';
 import server from '../../services/server';
 import { defaultHeaders } from '../../utils/axiosConfig';
 import { toast } from 'react-toastify';
@@ -11,18 +11,47 @@ export default function UploadItem({ agendaItem, speakerId }) {
   const [isUpload, setIsUpload] = useState(false);
   const [materials, setMaterials] = useState(agendaItem.speakerMaterials || '');
   const [file, setFile] = useState(null);
+  const [isEditing, setEditing] = useState(
+    agendaItem.speakerMaterials === null || agendaItem.speakerMaterials === '',
+  );
 
   function EditButton() {
     return (
       <Row>
-        <Col>
-          <Button>Open File</Button>
+        <Col className="d-grid gap-2">
+          <Button onClick={() => openLinkInNewTab(materials)}>Open File</Button>
         </Col>
-        <Col>
-          <Button>Edit File</Button>
+        <Col className="d-grid gap-2">
+          <Button variant="secondary" onClick={() => remove()}>
+            Remove File
+          </Button>
         </Col>
       </Row>
     );
+  }
+
+  async function remove() {
+    try {
+      const data = {
+        name: agendaItem.name,
+        description: agendaItem.description,
+        startTime: null,
+        expectedDuration: agendaItem.duration,
+        actualDuration: null,
+        isCurrent: false,
+        speakerMaterials: null,
+        speakerId: speakerId,
+      };
+      await server.put(
+        `/agenda-item/${agendaItem.meetingId}/${agendaItem.position}`,
+        data,
+        defaultHeaders,
+      );
+    } catch (err) {
+      toast.error(extractError(err));
+      return;
+    }
+    setEditing(true);
   }
 
   async function submit() {
@@ -51,8 +80,23 @@ export default function UploadItem({ agendaItem, speakerId }) {
       return;
     }
     try {
-      await server.post('/agenda-item', agendaItem, defaultHeaders);
+      const data = {
+        name: agendaItem.name,
+        description: agendaItem.description,
+        startTime: null,
+        expectedDuration: agendaItem.duration,
+        actualDuration: null,
+        isCurrent: false,
+        speakerId: speakerId,
+        speakerMaterials: speakerMaterials,
+      };
+      await server.put(
+        `/agenda-item/${agendaItem.meetingId}/${agendaItem.position}`,
+        data,
+        defaultHeaders,
+      );
       agendaItem.speakerMaterials = speakerMaterials;
+      setEditing(false);
     } catch (err) {
       toast.error(extractError(err));
     }
@@ -70,8 +114,7 @@ export default function UploadItem({ agendaItem, speakerId }) {
         <Card.Body>
           <Card.Title>{agendaItem?.name}</Card.Title>
           <Card.Text>{agendaItem?.description}</Card.Text>
-          {agendaItem.speakerMaterials === null ||
-          agendaItem.speakerMaterials === '' ? (
+          {isEditing ? (
             <>
               <Form.Group as={Row}>
                 <Form.Label column>Materials (optional)</Form.Label>

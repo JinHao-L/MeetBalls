@@ -62,7 +62,13 @@ export default function ParticipantScreen() {
   function UploadItems() {
     const items = [];
     agendaItems.forEach((item) => {
-      items.push(<UploadItem agendaItem={item} />);
+      items.push(
+        <UploadItem
+          agendaItem={item}
+          speakerId={joinerId}
+          key={item?.position}
+        />,
+      );
     });
     return items;
   }
