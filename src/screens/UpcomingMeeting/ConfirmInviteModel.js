@@ -1,12 +1,77 @@
-import { Modal, Button, ListGroup, Card } from 'react-bootstrap';
+import { Modal, Button, ListGroup, Card, Form } from 'react-bootstrap';
+import { toast } from 'react-toastify';
+import { extractError } from '../../utils/extractError';
+import server from '../../services/server';
+import { defaultHeaders } from '../../utils/axiosConfig';
+
+const INVITE_SUCCESS = 'Invitations sent!';
+const INVITE_SOME_FAIL =
+  'Not all invitations sent! Check your invitation list.';
 
 export default function ConfirmInviteModel({
   showModal,
   setShowModal,
-  meetingName,
+  meeting,
+  setMeeting,
+  setInviteLoading,
   inviteList,
-  sendInvitation,
+  setInviteList,
 }) {
+  async function sendInvitation(participants) {
+    if (inviteList.length === 0) return;
+    try {
+      setInviteLoading(true);
+      console.log({ participants });
+      const inviteResponse = await server.post(
+        `/participant/send-multiple-invites`,
+        { participants },
+        defaultHeaders,
+      );
+      const inviteData = inviteResponse.data.data;
+      const successes = inviteData.filter((status) => status.success).length;
+
+      const res = await server.get(`/participant/${meeting.id}`);
+      setMeeting((prev) => ({ ...prev, participants: res.data }));
+
+      if (successes === participants.length) toast.success(INVITE_SUCCESS);
+      else toast.warn(INVITE_SOME_FAIL);
+    } catch (err) {
+      toast.error(extractError(err));
+    } finally {
+      setInviteLoading(false);
+    }
+  }
+
+  function ParticipantItem({ participant }) {
+    return (
+      <ListGroup.Item
+        className="Clickable"
+        onClick={() => {
+          if (!inviteList.some((p) => p === participant)) {
+            var newList = [];
+            newList = newList.concat(inviteList);
+            newList.push(participant);
+            setInviteList(newList);
+          } else if (inviteList.some((p) => p === participant)) {
+            var newList = [];
+            newList = newList.concat(inviteList);
+            const position = inviteList.indexOf(participant);
+            newList.splice(position, 1);
+            setInviteList(newList);
+          }
+        }}
+      >
+        <div className="Container__row--space-between">
+          {participant?.userEmail}
+          <Form.Check
+            checked={inviteList.some((p) => p === participant)}
+            readOnly
+          />
+        </div>
+      </ListGroup.Item>
+    );
+  }
+
   return (
     <Modal show={showModal} onHide={() => setShowModal(false)} centered>
       <Modal.Header>
@@ -15,16 +80,14 @@ export default function ConfirmInviteModel({
       <Modal.Body>
         <div>
           <p className="Text__paragraph">
-            Invitation to meeting - <b>{meetingName}</b> - will be sent to these
-            participants.
+            Invitation to meeting - <b>{meeting.name}</b> - will be sent to
+            these participants.
           </p>
           <Card className="Card__invite">
             <ListGroup variant="flush">
-              {inviteList.length > 0 ? (
-                inviteList.map((ppl, idx) => {
-                  return (
-                    <ListGroup.Item key={idx}>{ppl.userEmail}</ListGroup.Item>
-                  );
+              {meeting.participants.length > 0 ? (
+                meeting.participants.map((participant, id) => {
+                  return <ParticipantItem key={id} participant={participant} />;
                 })
               ) : (
                 <p
