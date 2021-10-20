@@ -13,11 +13,9 @@ export default function ForgotPasswordScreen() {
 
   function submit(event) {
     event.preventDefault();
-    console.log(`submitting to email: ${email}`);
     return server
       .post('/auth/forget-password', { email })
       .then((response) => {
-        console.log('email password reset success!');
         if (response.data.success) setSuccess(true);
       })
       .catch((error) => {

@@ -12,7 +12,5 @@ export const extractError = (error) => {
     } else {
       return error.message;
     }
-  } else {
-    console.log(error);
   }
 };

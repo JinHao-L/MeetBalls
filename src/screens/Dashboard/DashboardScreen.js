@@ -48,7 +48,6 @@ export default function DashboardScreen() {
         ...defaultHeaders,
       })
       .then((res) => {
-        console.log(res);
         const meetings = res.data;
         const upcoming = meetings.sort(sortMeetings);
         setUpcoming(upcoming);
@@ -66,14 +65,12 @@ export default function DashboardScreen() {
       else return 0;
     }
 
-    console.log('Retrieving past meetings');
     return server
       .get('/meeting', {
         params: { type: 'past' },
         ...defaultHeaders,
       })
       .then((res) => {
-        console.log(res);
         const pastMeetings = res.data.sort(sortMeetings);
         setHistory(pastMeetings);
       })
@@ -126,32 +123,13 @@ export default function DashboardScreen() {
 
   return (
     <>
-      <div style={{ position: 'relative' }}>
-        <Image
-          src={getBanner().default}
-          fluid
-          style={{
-            maxHeight: 300,
-            width: '100%',
-            objectFit: 'cover',
-            filter: 'brightness(70%)',
-          }}
-        />
-        <div
-          className="Container__center--vertical"
-          style={{
-            width: '100%',
-            position: 'absolute',
-            top: '50%',
-            left: '50%',
-            transform: 'translate(-50%, -50%)',
-            alignItems: 'center',
-          }}
-        >
+      <div className="Banner">
+        <Image src={getBanner().default} fluid className="Image__banner" />
+        <div className="Container__center--vertical Banner__content">
           <p className="Text__header" style={{ color: 'white' }}>
             Welcome Back!
           </p>
-          <p style={{ color: 'white', fontWeight: 400, fontSize: 20 }}>
+          <p className="Text__subsubheader" style={{ color: 'white' }}>
             You have {upcoming.length} upcoming meeting
             {upcoming.length > 1 ? 's' : null}.
           </p>

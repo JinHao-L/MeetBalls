@@ -29,8 +29,7 @@ export default function AttendanceList({ participants, date }) {
     return (
       <a
         href={exportToCsv(filteredParticipants)}
-        style={{ textDecoration: 'none' }}
-        className="d-grid gap-2"
+        className="d-grid gap-2 Text--no-decoration"
         download={fileName}
       >
         <div className="d-grid gap-2">
@@ -48,7 +47,7 @@ export default function AttendanceList({ participants, date }) {
       <div className="Buffer--20px" />
       <div>
         <div className="Container__row--space-between">
-          <p className="Text__subheader" style={{ marginBottom: 10 }}>
+          <p className="Text__subheader">
             Present: {numPresent}/{numTotal}
           </p>
           <CollapseToggle show={showPresent} setShow={setShowPresent} />
@@ -60,9 +59,10 @@ export default function AttendanceList({ participants, date }) {
       <div className="Buffer--20px" />
       <div>
         <div className="Container__row--space-between">
-          <p className="Text__subheader" style={{ marginBottom: 10 }}>
+          <p className="Text__subheader">
             Absent: {numAbsent}/{numTotal}
           </p>
+          <div className="Buffer--10px" />
           <CollapseToggle show={showAbsent} setShow={setShowAbsent} />
         </div>
         <Collapse in={showAbsent}>
@@ -125,17 +125,15 @@ function toCsvString(person) {
 function exportToCsv(participants) {
   if (!participants) return '#';
   const sortedList = participants.sort(sortByPresence);
-  console.log(sortedList);
   const csvString =
     'data:text/csv;charset=utf-8,' + sortedList.map(toCsvString).join('\n');
-  console.log(csvString);
   return encodeURI(csvString);
 }
 
 function CollapseToggle({ show, setShow }) {
   return (
-    <a className="Text__toggle" onClick={() => setShow(!show)}>
+    <div className="Text__hint Clickable" onClick={() => setShow(!show)}>
       {show ? 'Collapse' : 'Expand'}
-    </a>
+    </div>
   );
 }

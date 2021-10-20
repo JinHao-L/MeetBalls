@@ -1,0 +1,126 @@
+.Container__header {
+  position: fixed;
+  width: 100%;
+  top: 0px;
+  z-index: 100;
+  background-color: white;
+  box-shadow: 0px 0.2px gray;
+}
+
+.Container__footer {
+  padding-top: 20px;
+  padding-bottom: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.Container__content {
+  margin-top: 56px;
+}
+
+.Container__background-image {
+  min-height: calc(100vh - 56px);
+  background-color: #e4d6c2;
+}
+
+.Container__foreground {
+  background-color: white;
+  min-height: calc(100vh - 56px - 100px);
+  box-shadow: 0 8px 8px 0 rgba(0, 0, 0, 0.2);
+  border-radius: 5px;
+}
+
+.Container__row--space-between {
+  display: flex;
+  justify-content: space-between;
+  flex-direction: row;
+}
+
+.Container__row--center {
+  display: flex;
+  justify-content: center;
+  flex-direction: row;
+}
+
+.Container__center--vertical {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+}
+
+.Container__padding--vertical {
+  padding-top: 30px;
+  padding-bottom: 30px;
+}
+
+.Container__padding--vertical-medium {
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
+.Container__padding--vertical-small {
+  padding-top: 5px;
+  padding-bottom: 5px;
+}
+
+.Container__padding--horizontal {
+  padding-left: 20px;
+  padding-right: 20px;
+}
+
+.Container__login-screen {
+  padding-left: 40px;
+  padding-right: 40px;
+  height: calc(100vh - 56px);
+  justify-content: center;
+  display: flex;
+  flex-direction: column;
+}
+
+.Container__redirection-screen {
+  padding-left: 30px;
+  padding-right: 30px;
+  height: calc(100vh - 56px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  text-align: center;
+}
+
+.Card__statistics {
+  height: 250px;
+}
+
+.Card__dashboard {
+  height: 300px;
+}
+
+.Card__dashboard-content {
+  height: 210px;
+}
+
+.Card__invite {
+  min-height: 100px;
+  max-height: 200px;
+  margin: 0px 0px 10px 0px;
+  padding: 5px;
+  overflow: hidden;
+  overflow-y: scroll;
+}
+
+.Banner {
+  position: relative;
+}
+
+.Banner__content {
+  width: 100%;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  align-items: center;
+  text-align: center;
+}

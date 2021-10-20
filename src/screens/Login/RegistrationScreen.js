@@ -70,11 +70,9 @@ export default function RegistrationScreen() {
         password: password,
       })
       .then((res) => {
-        console.log('Registered user with ' + email);
         setResponse(res.data.message);
       })
       .catch((e) => {
-        console.log(e);
         setError(true);
         if (e.response) setResponse(e.response.data.message);
       })

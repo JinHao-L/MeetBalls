@@ -15,12 +15,8 @@ export const useSocket = (meetingId) => {
           meetingId,
         },
       });
-      newSocket.on('connect', function () {
-        console.log('Socket Connected');
-      });
-      newSocket.on('disconnect', function (reason) {
-        console.log('Socket disconnected because of ' + reason);
-      });
+      newSocket.on('connect', function () {});
+      newSocket.on('disconnect', function (_) { });
       setSocket(newSocket);
 
       return () => {

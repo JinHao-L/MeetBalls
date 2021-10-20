@@ -1,0 +1,35 @@
+.Toggle__card {
+  height: 60px;
+  width: 100%;
+  margin-left: 2px;
+  margin-right: 2px;
+  border-radius: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  cursor: pointer;
+}
+
+.Toggle__card:hover {
+  background-color: #f7f7f7;
+  color: #725546;
+}
+
+.Fab {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  height: 60px;
+  width: 60px;
+  background-color: #8f6b58;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.Fab:hover {
+  background-color: #725546;
+  cursor: pointer;
+}

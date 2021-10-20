@@ -61,7 +61,6 @@ export default function EditAgendaItem({
           toast.error(extractError(err) || 'Failed to upload file');
         } else {
           toast.error('Failed to upload file');
-          console.log(err);
         }
         return;
       }
@@ -71,7 +70,6 @@ export default function EditAgendaItem({
       !isValidUrl(materials) &&
       materials !== item.speakerMaterials
     ) {
-      console.log('Attempted to submit an invalid URL');
       toast.error('Attempted to submit an invalid URL');
       setMaterials('');
       return;
@@ -150,7 +148,7 @@ export default function EditAgendaItem({
     <Col className="Container__padding--vertical-small">
       <Card>
         <Card.Header>
-          <p className="Text__card-header">Editing Agenda Item</p>
+          <p className="Text__subsubheader">Editing Agenda Item</p>
         </Card.Header>
         <Card.Body>
           <Form.Group>
@@ -161,7 +159,7 @@ export default function EditAgendaItem({
             />
             <Form.Label column>Duration</Form.Label>
             <DropdownButton
-              variant="outline-primary  "
+              variant="outline-primary"
               title={getFormattedDuration(duration)}
             >
               <DurationItems />
@@ -174,7 +172,7 @@ export default function EditAgendaItem({
             />
             <Form.Label column>Speaker (optional)</Form.Label>
             <DropdownButton
-              variant="outline-primary  "
+              variant="outline-primary"
               placeholder="Add presenter"
               title={speaker?.userName || '(No speaker assigned)'}
             >

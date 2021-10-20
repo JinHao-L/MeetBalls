@@ -1,5 +1,10 @@
-import './App.css';
+import './css/Containers.css';
+import './css/Images.css';
+import './css/Toggles.css';
+import './css/Text.css';
+import './css/Others.css';
 import 'react-toastify/dist/ReactToastify.css';
+
 import React, { useEffect, useContext } from 'react';
 import {
   BrowserRouter as Router,
@@ -7,6 +12,7 @@ import {
   Route,
   Redirect,
 } from 'react-router-dom';
+import { toast, ToastContainer } from 'react-toastify';
 import UpcomingMeetingScreen from './screens/UpcomingMeeting/UpcomingMeetingScreen';
 import OngoingMeetingAdminScreen from './screens/OngoingMeetingAdmin/OngoingMeetingAdminScreen';
 import DashboardScreen from './screens/Dashboard/DashboardScreen';
@@ -19,24 +25,18 @@ import ZoomLoginScreen from './screens/Login/ZoomLoginScreen';
 import PrivacyPolicyScreen from './screens/LandingPage/PrivacyPolicyScreen';
 import ZoomRedirectPage from './screens/Login/ZoomRedirectPage';
 import TermsNConditionScreen from './screens/LandingPage/TermsNConditionScreen';
-import MeetingRedirectScreen from './screens/OngoingMeetingAdmin/MeetingRedirectScreen';
+import MeetingRedirectScreen from './screens/Participant/MeetingRedirectScreen';
+import ParticipantScreen from './screens/Participant/ParticipantScreen';
 import SupportPage from './screens/LandingPage/SupportPage';
-import { toast, ToastContainer } from 'react-toastify';
 import DocumentationScreen from './screens/LandingPage/DocumentationScreen';
 import ScrollToTop from './ScrollToTop';
 import server from './services/server';
-import { extractError } from './utils/extractError';
 
 export default function App() {
   const user = useContext(UserContext);
 
   useEffect(() => {
-    console.log(`User is logged in ? ${user ? 'yes' : 'no'}`);
-  }, []);
-
-  useEffect(() => {
     server.get().catch((err) => {
-      console.log(extractError(err));
       toast.error('Cannot connect to server');
     });
   }, []);
@@ -46,7 +46,6 @@ export default function App() {
    * @returns
    */
   function RouteIfLoggedIn({ path, children }) {
-    console.log(user ? 'user exists' : 'user not logged in');
     return <Route path={path}>{!user ? <Redirect to="/" /> : children}</Route>;
   }
 
@@ -79,23 +78,9 @@ export default function App() {
           <Route path="/login">
             <ZoomLoginScreen />
           </Route>
-          {/*
-          <Route path="/confirm-email">
-            <EmailConfirmationScreen />
+          <Route path="/participant/:id">
+            <ParticipantScreen />
           </Route>
-          <Route path="/login">
-            <LoginScreen />
-          </Route>
-          <Route path="/forgot-password">
-            <ForgotPasswordScreen />
-          </Route>
-          <Route path="/password-reset">
-            <ResetPasswordScreen />
-          </Route>
-          <Route path="/signup">
-            <RegistrationScreen />
-          </Route>
-          */}
           <RouteIfLoggedIn path="/home">
             <DashboardScreen />
           </RouteIfLoggedIn>
@@ -104,6 +89,9 @@ export default function App() {
           </RouteIfLoggedIn>
           <Route path="/meeting">
             <MeetingRedirectScreen />
+          </Route>
+          <Route path="/participant/:id">
+            <ParticipantScreen />
           </Route>
           <Route path="/ongoing/:id">
             <OngoingMeetingAdminScreen />

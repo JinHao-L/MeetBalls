@@ -7,6 +7,10 @@ export default function ZoomLoginScreen() {
     response_type: 'code',
     client_id: zoomClientId,
     redirect_uri: zoomRedirectUrl,
+    state:
+      process.env.REACT_APP_LOCAL_ENV === 'development'
+        ? process.env.REACT_APP_REDIRECT_SECRET
+        : '',
   });
 
   return (
@@ -15,40 +19,16 @@ export default function ZoomLoginScreen() {
         sm={12}
         md={12}
         lg={8}
-        style={{ paddingLeft: 0, paddingRight: 0 }}
         className="d-none d-lg-block"
+        style={{ paddingLeft: 0, paddingRight: 0 }}
       >
-        <Image
-          src={LoginImage}
-          style={{
-            height: 'calc(100vh - 56px)',
-            width: '100%',
-            objectFit: 'cover',
-          }}
-        />
+        <Image src={LoginImage} className="Image__login" />
       </Col>
-      <Col
-        sm={12}
-        md={12}
-        lg={4}
-        style={{
-          paddingLeft: 0,
-          paddingRight: 0,
-        }}
-      >
-        <div
-          className=" Container__padding--vertical"
-          style={{
-            paddingLeft: 40,
-            paddingRight: 40,
-            height: 'calc(100vh - 56px)',
-            justifyContent: 'center',
-            display: 'flex',
-            flexDirection: 'column',
-          }}
-        >
+      <Col sm={12} md={12} lg={4} style={{ paddingLeft: 0, paddingRight: 0 }}>
+        <div className=" Container__padding--vertical Container__login-screen">
           <p className="Text__header">Get the ball rolling</p>
           <p className="Text__subheader">with MeetBalls</p>
+          <div className="Buffer--10px" />
           <Button
             variant="zoom"
             style={{ width: 200 }}

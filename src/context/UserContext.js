@@ -23,9 +23,7 @@ const UserProvider = ({ children }) => {
         try {
           const user = await getUser();
           setUser(user.data);
-        } catch (err) {
-          console.log('Error getting user', err);
-        }
+        } catch (err) {}
       }
       setLoading(false);
     };
@@ -35,7 +33,6 @@ const UserProvider = ({ children }) => {
     const refFun = type === 'zoom' ? zoomRefresh : refresh;
     refFun().catch((_) => {
       setLoading(false);
-      console.log('No refresh token');
     });
 
     return () => {

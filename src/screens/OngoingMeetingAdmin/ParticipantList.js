@@ -16,7 +16,6 @@ export default function ParticipantList({
   shouldShowButton,
 }) {
   const participants = useMemo(() => {
-    console.log(meeting.participants);
     return meeting.participants;
   }, [meeting]);
   const ended = useMemo(

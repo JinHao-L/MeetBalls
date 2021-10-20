@@ -54,7 +54,7 @@ export default function Statistics({ meeting }) {
   return (
     <Row>
       <Col sm={12} md={6} lg={6} className="Container__padding--vertical-small">
-        <Card style={{ height: 250 }}>
+        <Card className="Card__statistics">
           <Card.Body>
             <Card.Title>Attendance</Card.Title>
             <Chart
@@ -74,16 +74,14 @@ export default function Statistics({ meeting }) {
         </Card>
       </Col>
       <Col sm={12} md={6} lg={6} className="Container__padding--vertical-small">
-        <Card style={{ height: 250 }}>
+        <Card className="Card__statistics">
           <Card.Body>
             <Card.Title>Total Duration</Card.Title>
             <div
+              className="Container__center--vertical"
               style={{
                 height: 190,
-                display: 'flex',
                 alignItems: 'center',
-                justifyContent: 'center',
-                flexDirection: 'column',
               }}
             >
               <p className="Text__header" style={{ color: '#725546' }}>
@@ -91,7 +89,7 @@ export default function Statistics({ meeting }) {
                   Math.floor(totalDuration[0] / 60000) * 60000,
                 )}
               </p>
-              <p style={{ color: '#999999', fontSize: 17 }}>
+              <p className="Text__hint">
                 {totalDuration[0] > totalDuration[1]
                   ? 'Exceeeded by ' +
                     getFormattedDuration(
@@ -111,7 +109,7 @@ export default function Statistics({ meeting }) {
         lg={12}
         className="Container__padding--vertical-small"
       >
-        <Card style={{ height: 250 }}>
+        <Card className="Card__statistics">
           <Card.Body>
             <Card.Title>Duration Comparison</Card.Title>
             <Chart

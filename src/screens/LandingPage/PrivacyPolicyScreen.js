@@ -5,26 +5,9 @@ import AppFooter from '../../components/AppFooter';
 export default function PrivacyPolicyScreen() {
   return (
     <>
-      <div style={{ position: 'relative' }}>
-        <Image
-          src={Banner}
-          style={{
-            height: 300,
-            width: '100%',
-            objectFit: 'cover',
-          }}
-        />
-        <div
-          className="Container__center--vertical"
-          style={{
-            width: '100%',
-            position: 'absolute',
-            top: '50%',
-            left: '50%',
-            transform: 'translate(-50%, -50%)',
-            alignItems: 'center',
-          }}
-        >
+      <div className="Banner">
+        <Image src={Banner} className="Image__banner" />
+        <div className="Container__center--vertical Banner__content">
           <p className="Text__header" style={{ color: 'white' }}>
             Privacy Policy
           </p>
@@ -35,12 +18,7 @@ export default function PrivacyPolicyScreen() {
         className="Container__padding--vertical Container__padding--horizontal"
         style={{ marginLeft: 0, marginRight: 0 }}
       >
-        <Col
-          sm={12}
-          md={12}
-          lg={{ span: 6, offset: 3 }}
-          style={{ paddingLeft: 0, paddingRight: 0 }}
-        >
+        <Col sm={12} md={12} lg={{ span: 6, offset: 3 }}>
           <p className="Text__subsubheader">Last updated: October 13, 2021</p>
           <p>
             This Privacy Policy describes Our policies and procedures on the
@@ -142,7 +120,7 @@ export default function PrivacyPolicyScreen() {
                 <strong>Website</strong> refers to MeetBalls, accessible from{' '}
                 <a
                   href="https://meetballsapp.com/"
-                  rel="external nofollow noopener"
+                  rel="external nofollow noreferrer"
                   target="_blank"
                 >
                   https://meetballsapp.com/
@@ -260,7 +238,7 @@ export default function PrivacyPolicyScreen() {
               objects?&quot; available at{' '}
               <a
                 href="https://helpx.adobe.com/flash-player/kb/disable-local-shared-objects-flash.html#main_Where_can_I_change_the_settings_for_disabling__or_deleting_local_shared_objects_"
-                rel="external nofollow noopener"
+                rel="external nofollow noreferrer"
                 target="_blank"
               >
                 https://helpx.adobe.com/flash-player/kb/disable-local-shared-objects-flash.html#main_Where_can_I_change_the_settings_for_disabling__or_deleting_local_shared_objects_
@@ -285,6 +263,7 @@ export default function PrivacyPolicyScreen() {
             <a
               href="https://www.termsfeed.com/privacy-policy-generator/#faq-8"
               target="_blank"
+              rel="noreferrer"
             >
               Cookies by TermsFeed Generator
             </a>

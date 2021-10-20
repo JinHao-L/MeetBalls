@@ -5,26 +5,9 @@ import AppFooter from '../../components/AppFooter';
 export default function SupportPage() {
   return (
     <>
-      <div style={{ position: 'relative' }}>
-        <Image
-          src={Banner}
-          style={{
-            height: 300,
-            width: '100%',
-            objectFit: 'cover',
-          }}
-        />
-        <div
-          className="Container__center--vertical"
-          style={{
-            width: '100%',
-            position: 'absolute',
-            top: '50%',
-            left: '50%',
-            transform: 'translate(-50%, -50%)',
-            alignItems: 'center',
-          }}
-        >
+      <div className="Banner">
+        <Image src={Banner} className="Image__banner" />
+        <div className="Container__center--vertical Banner__content">
           <p className="Text__header" style={{ color: 'white' }}>
             Support
           </p>
@@ -38,12 +21,7 @@ export default function SupportPage() {
           minHeight: 'calc(100vh - 56px - 121px - 300px)',
         }}
       >
-        <Col
-          sm={12}
-          md={12}
-          lg={{ span: 6, offset: 3 }}
-          style={{ paddingLeft: 0, paddingRight: 0 }}
-        >
+        <Col sm={12} md={12} lg={{ span: 6, offset: 3 }}>
           <div className="Buffer--20px" />
           <p className="Text__header">Got any questions?</p>
           <p className="Text__paragraph">
@@ -55,7 +33,7 @@ export default function SupportPage() {
             <b>
               <a
                 href="mailto:zoommeetballs@gmail.com"
-                style={{ textDecoration: 'none' }}
+                className="Text--no-decoration"
               >
                 zoommeetballs@gmail.com
               </a>

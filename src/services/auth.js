@@ -25,7 +25,6 @@ export const login = async (email, password) => {
     storeToken(data, 'local');
     return true;
   } catch (err) {
-    console.log(err.message);
     throw err;
   }
 };
@@ -46,7 +45,6 @@ export const refresh = async () => {
     storeToken(data, 'local');
     return true;
   } catch (err) {
-    console.log(err.message);
     throw err;
   }
 };
@@ -75,7 +73,6 @@ export const zoomRefresh = async () => {
     storeToken(data, 'zoom');
     return true;
   } catch (err) {
-    console.log(err.message);
     throw err;
   }
 };

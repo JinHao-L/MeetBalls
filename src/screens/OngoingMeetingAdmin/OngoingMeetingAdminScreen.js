@@ -55,30 +55,23 @@ export default function OngoingMeetingAdminScreen() {
   }, []);
 
   useEffect(() => {
-    if (socket) {
-      socket.on('meetingUpdated', function (data) {
-        console.log('meetingUpdated');
+    if (!socket) return;
+
+    socket.on('meetingUpdated', function (data) {
         const newMeeting = JSON.parse(data, agendaReviver);
         setMeeting((meeting) => updateMeeting({ ...meeting, ...newMeeting }));
-      });
-      socket.on('participantUpdated', function (data) {
-        console.log('participantUpdated');
-        const update = JSON.parse(data);
-        setMeeting((meeting) => ({
-          ...meeting,
-          participants: updateParticipants(meeting.participants, update),
-        }));
-      });
-      socket.on('agendaUpdated', function (_) {
-        console.log('agendaUpdated');
-        pullMeeting();
-      });
-      socket.on('userConnected', function (msg) {
-        console.log(msg);
-      });
-    } else {
-      socket && socket.removeAllListeners();
-    }
+    });
+    socket.on('participantUpdated', function (data) {
+      const update = JSON.parse(data);
+      setMeeting((meeting) => ({
+        ...meeting,
+        participants: updateParticipants(meeting.participants, update),
+      }));
+    });
+    socket.on('agendaUpdated', function (_) {
+      pullMeeting();
+    });
+    socket.on('userConnected', function (_) { });
   }, [socket]);
 
   function startZoom() {
@@ -96,7 +89,7 @@ export default function OngoingMeetingAdminScreen() {
       return p1.position - p2.position;
     });
     setShowError(meetingObj.agendaItems.length === 0);
-    syncMeeting(meetingObj, time);
+    syncMeeting(meetingObj);
     return meetingObj;
   };
 
@@ -122,9 +115,7 @@ export default function OngoingMeetingAdminScreen() {
       setMeetingStatus(2);
       setPosition(position + 1);
       initializeAgenda(time, agenda);
-    } catch (err) {
-      console.log(err);
-    }
+    } catch (err) {}
   }
 
   async function nextItem(time, agenda, id) {
@@ -134,8 +125,6 @@ export default function OngoingMeetingAdminScreen() {
       await apiCall(id);
       agenda[position].actualDuration = time - agenda[position].startTime;
       if (isLastItem) {
-        console.log('position: ' + position);
-        console.log(agenda[position]);
         setMeetingStatus(3);
         setShowFeedback(true);
       }
@@ -144,9 +133,7 @@ export default function OngoingMeetingAdminScreen() {
       if (newPosition < agenda.length) {
         agenda[newPosition].startTime = time;
       }
-    } catch (err) {
-      console.log(err);
-    }
+    } catch (err) {}
   }
 
   function syncMeeting(meeting) {
@@ -185,7 +172,6 @@ export default function OngoingMeetingAdminScreen() {
   }, [meetingStatus, hasLaunched, meeting]);
 
   const ReturnToEditPageButton = useCallback(() => {
-    // console.log(`User ID is ${user?.uuid}, host is ${meeting.hostId}`);
     if (user?.uuid !== meeting.hostId) return null;
 
     return (
@@ -202,22 +188,13 @@ export default function OngoingMeetingAdminScreen() {
 
   return (
     <div
+      className="Container__background-image"
       style={{
-        minHeight: 'calc(100vh - 56px)',
-        backgroundColor: '#E4D6C2',
         backgroundImage: `url(${BackgroundPattern})`,
       }}
     >
       <div className="Buffer--50px" />
-      <Container
-        className="Container__padding--vertical"
-        style={{
-          backgroundColor: 'white',
-          minHeight: 'calc(100vh - 56px - 100px)',
-          boxShadow: '0 8px 8px 0 rgba(0, 0, 0, 0.2)',
-          borderRadius: 5,
-        }}
-      >
+      <Container className="Container__padding--vertical Container__foreground">
         <div className="Buffer--50px" />
         <Row>
           <Col lg={1} md={12} sm={12} />
@@ -373,7 +350,6 @@ function updateDelay(agenda, time, position, play) {
     delay > 0 &&
     delay < 1000
   ) {
-    console.log('Play');
     play();
   }
   agenda[position].actualDuration += delay;

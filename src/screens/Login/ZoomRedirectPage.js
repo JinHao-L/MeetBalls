@@ -7,6 +7,7 @@ import { UserContext } from '../../context/UserContext';
 import { zoomLogin } from '../../services/auth';
 
 const CODE_PARAM_KEY = 'code';
+const STATE_PARAM_KEY = 'state';
 
 export default function ZoomRedirectPage() {
   const { search } = useLocation();
@@ -14,20 +15,19 @@ export default function ZoomRedirectPage() {
   const history = useHistory();
   const query = new URLSearchParams(search);
   const code = query.get(CODE_PARAM_KEY);
+  const fromDev =
+    process.env.REACT_APP_REDIRECT_SECRET &&
+    query.get(STATE_PARAM_KEY) === process.env.REACT_APP_REDIRECT_SECRET;
 
   useEffect(() => {
-    if (!code) {
+    if (!code || fromDev) {
+      console.log(code);
       history.push('/login');
       return;
     }
-    zoomLogin(code)
-      .then((result) => {
-        console.log(result);
-      })
-      .catch((err) => {
-        console.log(code);
-        history.push('/login');
-      });
+    zoomLogin(code).catch((err) => {
+      history.push('/login');
+    });
   }, []);
 
   useEffect(() => {

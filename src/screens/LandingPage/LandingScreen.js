@@ -29,24 +29,8 @@ export default function LandingScreen() {
             lg={6}
             style={{ paddingLeft: 0, paddingRight: 0 }}
           >
-            <Image
-              src={PatternImage}
-              style={{
-                position: 'absolute',
-                top: 200,
-                left: 0,
-                zIndex: -1,
-                maxWidth: 'min(600px, 100%)',
-                opacity: 0.3,
-              }}
-            />
-            <div
-              style={{
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-              }}
-            >
+            <Image src={PatternImage} className="Image__landing-pattern" />
+            <div className="Container__center--vertical">
               <div className="Buffer--100px" />
               <div className="Container__padding--horizontal">
                 <p className="Text__header">Get the Ball Rolling</p>
@@ -165,7 +149,7 @@ export default function LandingScreen() {
             </Row>
           </Container>
           <div className="Buffer--20px" />
-          <div className="Container__center--horizontal">
+          <div className="Container__row--center">
             <Button
               variant="secondary"
               onClick={() => history.push('/documentation')}

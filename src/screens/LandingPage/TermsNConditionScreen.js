@@ -5,26 +5,9 @@ import AppFooter from '../../components/AppFooter';
 export default function TermsNConditionScreen() {
   return (
     <>
-      <div style={{ position: 'relative' }}>
-        <Image
-          src={Banner}
-          style={{
-            height: 300,
-            width: '100%',
-            objectFit: 'cover',
-          }}
-        />
-        <div
-          className="Container__center--vertical"
-          style={{
-            width: '100%',
-            position: 'absolute',
-            top: '50%',
-            left: '50%',
-            transform: 'translate(-50%, -50%)',
-            alignItems: 'center',
-          }}
-        >
+      <div className="Banner">
+        <Image src={Banner} className="Image__banner" />
+        <div className="Container__center--vertical Banner__content">
           <p className="Text__header" style={{ color: 'white' }}>
             Terms {'&'} Conditions
           </p>
@@ -34,12 +17,7 @@ export default function TermsNConditionScreen() {
         className="Container__padding--vertical Container__padding--horizontal"
         style={{ marginLeft: 0, marginRight: 0 }}
       >
-        <Col
-          sm={12}
-          md={12}
-          lg={{ span: 6, offset: 3 }}
-          style={{ paddingLeft: 0, paddingRight: 0 }}
-        >
+        <Col sm={12} md={12} lg={{ span: 6, offset: 3 }}>
           <p className="Text__subsubheader">Last updated: October 13, 2021</p>
           <p>Welcome to MeetBalls!</p>
           <p>

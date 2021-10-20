@@ -14,8 +14,7 @@ import { useHistory, Redirect, useParams } from 'react-router';
 import server from '../../services/server';
 import { defaultHeaders } from '../../utils/axiosConfig';
 import ConfirmInviteModel from './ConfirmInviteModel';
-import { toast } from 'react-toastify';
-import { extractError } from '../../utils/extractError';
+
 import RedirectionScreen, {
   BAD_MEETING_PERMS_MSG,
   MEETING_NOT_FOUND_ERR,
@@ -23,19 +22,15 @@ import RedirectionScreen, {
 import { UserContext } from '../../context/UserContext';
 import BackgroundPattern from '../../assets/background_pattern2.jpg';
 
-const INVITE_SUCCESS = 'Invitations sent!';
-const INVITE_SOME_FAIL =
-  'Not all invitations sent! Check your invitation list.';
-
 export default function UpcomingMeetingScreen() {
   const [meeting, setMeeting] = useState(blankMeeting);
   const [restrictDescription, setRestrictDescription] = useState(true);
   const [currentTab, setCurrentTab] = useState('participants');
   const [showEditMeeting, setShowEditMeeting] = useState(false);
   const [showInviteModal, setShowInviteModal] = useState(false);
-  const [inviteList, setInviteList] = useState([]);
   const [inviteLoading, setInviteLoading] = useState(false);
   const [isReordering, setReordering] = useState(false);
+  const [inviteList, setInviteList] = useState([]);
 
   const [loading, setLoading] = useState(false);
   const [validId, setValidId] = useState(true);
@@ -76,29 +71,6 @@ export default function UpcomingMeetingScreen() {
 
   function startZoom() {
     history.replace('/ongoing/' + id);
-  }
-
-  async function sendInvitationToAll(participants) {
-    try {
-      setInviteLoading(true);
-      const inviteResponse = await server.post(
-        `/participant/send-multiple-invites`,
-        { participants },
-        defaultHeaders,
-      );
-      const inviteData = inviteResponse.data.data;
-      const successes = inviteData.filter((status) => status.success).length;
-
-      const res = await server.get(`/participant/${meeting.id}`);
-      setMeeting((prev) => ({ ...prev, participants: res.data }));
-
-      if (successes === participants.length) toast.success(INVITE_SUCCESS);
-      else toast.warn(INVITE_SOME_FAIL);
-    } catch (err) {
-      toast.error(extractError(err));
-    } finally {
-      setInviteLoading(false);
-    }
   }
 
   function Content() {
@@ -146,22 +118,13 @@ export default function UpcomingMeetingScreen() {
 
   return (
     <div
+      className="Container__background-image"
       style={{
-        minHeight: 'calc(100vh - 56px)',
-        backgroundColor: '#E4D6C2',
         backgroundImage: `url(${BackgroundPattern})`,
       }}
     >
       <div className="Buffer--50px" />
-      <Container
-        className="Container__padding--vertical"
-        style={{
-          backgroundColor: 'white',
-          minHeight: 'calc(100vh - 56px - 100px)',
-          boxShadow: '0 8px 8px 0 rgba(0, 0, 0, 0.2)',
-          borderRadius: 5,
-        }}
-      >
+      <Container className="Container__padding--vertical Container__foreground">
         <div className="Buffer--50px" />
 
         <Row>
@@ -181,7 +144,9 @@ export default function UpcomingMeetingScreen() {
               <Button
                 variant="outline-primary"
                 onClick={() => {
-                  setInviteList(meeting.participants.filter((x) => !x.invited));
+                  setInviteList(
+                    meeting?.participants?.filter((x) => !x.invited),
+                  );
                   setShowInviteModal(true);
                 }}
                 disabled={inviteLoading}
@@ -204,15 +169,17 @@ export default function UpcomingMeetingScreen() {
                 Edit / Delete Meeting
               </Button>
             </div>
+            <div className="Buffer--20px" />
             <div className="Container__row--space-between">
               <p className="Text__subsubheader">Description</p>
               <div
-                className="Text__toggle Clickable"
+                className="Text__hint Clickable"
                 onClick={() => setRestrictDescription(!restrictDescription)}
               >
                 {restrictDescription ? 'Show More' : 'Show Less'}
               </div>
             </div>
+            <div className="Buffer--10px" />
             <p
               className={
                 'Text__paragraph' +
@@ -255,9 +222,11 @@ export default function UpcomingMeetingScreen() {
       <ConfirmInviteModel
         showModal={showInviteModal}
         setShowModal={setShowInviteModal}
-        meetingName={meeting.name}
+        meeting={meeting}
+        setMeeting={setMeeting}
+        setInviteLoading={setInviteLoading}
         inviteList={inviteList}
-        sendInvitation={(participant) => sendInvitationToAll(participant)}
+        setInviteList={setInviteList}
       />
       <AddToggle />
     </div>

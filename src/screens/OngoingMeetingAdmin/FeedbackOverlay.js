@@ -64,6 +64,7 @@ export default function FeedbackOverlay({
         >
           <RatingStars />
         </div>
+        <div className="Buffer--20px" />
         <p className="Text__subsubheader">Share Your Experience</p>
         <p className="Text__hint">*optional</p>
         <Form.Control

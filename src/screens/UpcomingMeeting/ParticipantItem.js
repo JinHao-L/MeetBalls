@@ -47,6 +47,19 @@ export default function ParticipantItem({ setMeeting, meeting, position }) {
     }));
   }
 
+  function RemoveParticipantButton() {
+    if (participant?.role === 2) return null;
+    return (
+      <Col>
+        <div className="d-grid gap-2">
+          <Button variant="danger" onClick={removeParticipant}>
+            Remove
+          </Button>
+        </div>
+      </Col>
+    );
+  }
+
   if (editing) {
     // Editing
     return (
@@ -73,13 +86,7 @@ export default function ParticipantItem({ setMeeting, meeting, position }) {
             </Card.Title>
             <Card.Text>{participant?.userEmail}</Card.Text>
             <Row>
-              <Col>
-                <div className="d-grid gap-2">
-                  <Button variant="danger" onClick={removeParticipant}>
-                    Remove
-                  </Button>
-                </div>
-              </Col>
+              <RemoveParticipantButton />
               <Col>
                 <div className="d-grid gap-2">
                   <Button variant="primary" onClick={() => setEditing(true)}>

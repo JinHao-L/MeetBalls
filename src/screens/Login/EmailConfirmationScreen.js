@@ -82,13 +82,11 @@ export default function EmailConfirmationScreen() {
   const [failed, setFailed] = useState(false);
 
   useEffect(() => {
-    console.log(`Begin email confirmation! Token is ${token}`);
     return server
       .post('/auth/confirm', {
         token: token,
       })
       .then((res) => {
-        console.log('Email confirmation');
         setResponseMsg(res.data.message);
       })
       .catch((e) => {

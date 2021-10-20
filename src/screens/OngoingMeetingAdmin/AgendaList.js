@@ -52,12 +52,12 @@ function CurrentItem({ item, time }) {
   const currentDuration = time - item.startTime;
   const timeRemaining = item.actualDuration - currentDuration;
   const exceeded = currentDuration - item.expectedDuration;
-  var timeRemainingText =
+  let timeRemainingText =
     'Time Remaining: ' +
     getFormattedDuration(timeRemaining - (timeRemaining % 1000));
   if (exceeded > 0) {
-    timeRemainingText +=
-      ' ( Exceed ' + getFormattedDuration(exceeded - (exceeded % 60000)) + ')';
+    const exceededTime = getFormattedDuration(exceeded - (exceeded % 60000));
+    timeRemainingText += ` ( Exceeded by ${exceededTime})`;
   }
   return (
     <Col className="Container__padding--vertical-small">

@@ -8,7 +8,6 @@ import { Col, Nav, Row, Button, Container } from 'react-bootstrap';
 import {
   getDateInfo,
   getFormattedDate,
-  openLinkInNewTab,
 } from '../../common/CommonFunctions';
 import Statistics from './Statistics';
 import RedirectionScreen, {
@@ -46,10 +45,8 @@ export default function CompletedMeetingScreen() {
   const type = meeting.type;
   if (!loading) {
     if (type === 0) {
-      console.log('Meeting has not started yet');
       return <Redirect to={`/meeting/${id}`} />;
     } else if (type === 1 || type === 2) {
-      console.log('Meeting is ongoing');
       return <Redirect to={`/ongoing/${id}`} />;
     }
   }
@@ -74,7 +71,14 @@ export default function CompletedMeetingScreen() {
   }
 
   function emailParticipants() {
-    const recipients = meeting.participants.map((p) => p.userEmail).join(',');
+    const hosts = meeting.participants
+      .filter((p) => p.role === 2)
+      .map((p) => p.userEmail)
+      .join(',');
+    const bcc = meeting.participants
+      .filter((p) => p.role !== 2)
+      .map((p) => p.userEmail)
+      .join(',');
     const title = `Minutes to ${meeting.name}`;
     const body =
       'Dear all,\n\n' +
@@ -82,8 +86,8 @@ export default function CompletedMeetingScreen() {
       `to our meeting on ${getFormattedDate(meeting.startedAt)}.\n\n` +
       'Thank you.';
     const encodedBody = encodeURI(body);
-    const href = `mailto:${recipients}?subject=${title}&body=${encodedBody}`;
-    openLinkInNewTab(href);
+    const href = `mailto:${hosts}?subject=${title}&body=${encodedBody}&bcc=${bcc}`;
+    window.open(href);
   }
 
   const startTimeIso = meeting.startedAt;
@@ -94,21 +98,12 @@ export default function CompletedMeetingScreen() {
   return (
     <div
       style={{
-        minHeight: 'calc(100vh - 56px)',
-        backgroundColor: '#E4D6C2',
         backgroundImage: `url(${BackgroundPattern})`,
       }}
+      className="Container__background-image"
     >
       <div className="Buffer--50px" />
-      <Container
-        className="Container__padding--vertical"
-        style={{
-          backgroundColor: 'white',
-          minHeight: 'calc(100vh - 56px - 100px)',
-          boxShadow: '0 8px 8px 0 rgba(0, 0, 0, 0.2)',
-          borderRadius: 5,
-        }}
-      >
+      <Container className="Container__padding--vertical Container__foreground">
         <div className="Buffer--50px" />
         <Row>
           <Col lg={1} md={12} sm={12} />
@@ -131,15 +126,17 @@ export default function CompletedMeetingScreen() {
                 Make sure you have enabled mail links in your browser
               </p>
             </div>
+            <div className="Buffer--20px" />
             <div className="Container__row--space-between">
               <p className="Text__subsubheader">Description</p>
               <p
-                className="Text__toggle Clickable"
+                className="Text__hint Clickable"
                 onClick={() => setRestrictDescription(!restrictDescription)}
               >
                 {restrictDescription ? 'Show More' : 'Show Less'}
               </p>
             </div>
+            <div className="Buffer--10px" />
             <p
               className={
                 'Text__paragraph' +

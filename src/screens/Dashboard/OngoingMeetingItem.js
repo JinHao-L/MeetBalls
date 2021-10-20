@@ -7,7 +7,7 @@ export default function OngoingMeetingItem({ meeting }) {
 
   function Details() {
     return (
-      <div style={{ height: 210 }}>
+      <div className="Card__dashboard-content">
         <Card.Title className="Text__elipsized--1-line">
           {meeting.name}
         </Card.Title>
@@ -25,7 +25,7 @@ export default function OngoingMeetingItem({ meeting }) {
     return (
       <Row>
         <Col
-          className="Toggle-card"
+          className="Toggle__card"
           onClick={() => history.push('/ongoing/' + meeting.id)}
         >
           <Eye />
@@ -41,9 +41,9 @@ export default function OngoingMeetingItem({ meeting }) {
       lg={6}
       md={6}
       sm={12}
-      style={{ paddingTop: 10, paddingBottom: 10 }}
+      className="Container__padding--vertical-medium"
     >
-      <Card style={{ height: 300 }} bg="primary" text="white">
+      <Card className="Card__dashboard" bg="primary" text="white">
         <Card.Body>
           <Details />
           <div

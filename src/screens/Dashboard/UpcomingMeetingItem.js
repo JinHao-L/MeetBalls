@@ -21,12 +21,10 @@ export default function UpcomingMeetingItem({
   const [showConfirmDelete, setShowConfirmDelete] = useState(false);
 
   function editMeeting() {
-    console.log(`Editing meeting of ID = ${meeting.id}`);
     history.push(`/meeting/${meeting.id}`);
   }
 
   function startMeeting() {
-    console.log(`Starting meeting of ID = ${meeting.id}`);
     openLinkInNewTab(meeting.joinUrl);
     history.push(`/ongoing/${meeting.id}`);
   }
@@ -48,7 +46,7 @@ export default function UpcomingMeetingItem({
 
   function Details() {
     return (
-      <div style={{ height: 210 }}>
+      <div className="Card__dashboard-content">
         <Card.Title className="Text__elipsized--1-line">
           {meeting.name}
         </Card.Title>
@@ -67,11 +65,11 @@ export default function UpcomingMeetingItem({
   function Toggles() {
     return (
       <Row>
-        <Col onClick={startMeeting} className="Toggle-card">
+        <Col onClick={startMeeting} className="Toggle__card">
           <CameraVideo />
           Start
         </Col>
-        <Col onClick={editMeeting} className="Toggle-card">
+        <Col onClick={editMeeting} className="Toggle__card">
           <Pen />
           Edit
         </Col>
@@ -80,12 +78,15 @@ export default function UpcomingMeetingItem({
             setCloneMeeting(meeting);
             setShowOverlay(true);
           }}
-          className="Toggle-card"
+          className="Toggle__card"
         >
           <Front />
           Clone
         </Col>
-        <Col onClick={() => setShowConfirmDelete(true)} className="Toggle-card">
+        <Col
+          onClick={() => setShowConfirmDelete(true)}
+          className="Toggle__card"
+        >
           <Trash />
           Delete
         </Col>
@@ -99,9 +100,9 @@ export default function UpcomingMeetingItem({
       lg={6}
       md={6}
       sm={12}
-      style={{ paddingTop: 10, paddingBottom: 10 }}
+      className="Container__padding--vertical-medium"
     >
-      <Card style={{ height: 300 }}>
+      <Card className="Card__dashboard">
         {deleting ? (
           <FullLoadingIndicator />
         ) : (

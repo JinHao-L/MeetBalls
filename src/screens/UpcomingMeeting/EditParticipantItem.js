@@ -100,7 +100,7 @@ export default function EditParticipantItem({
       ) : (
         <Card>
           <Card.Header>
-            <p className="Text__card-header">Editing Participant</p>
+            <p className="Text__subsubheader">Editing Participant</p>
           </Card.Header>
           <Card.Body>
             <Form.Group>

@@ -8,29 +8,13 @@ export default function AppFooter() {
   return (
     <>
       <div className="Line--horizontal" />
-      <Container
-        style={{
-          paddingTop: 20,
-          paddingBottom: 20,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-        }}
-      >
+      <Container className="Container__footer">
         <Row>
-          <Col
-            sm={12}
-            md={12}
-            lg={12}
-            style={{
-              display: 'flex',
-              flexDirection: 'row',
-              justifyContent: 'center',
-            }}
-          >
+          <Col sm={12} md={12} lg={12} className="Container__row--center">
             <Facebook
               size={24}
-              style={{ color: '8F6B58', cursor: 'pointer' }}
+              className="Clickable"
+              style={{ color: '8F6B58' }}
               onClick={() => {
                 window.open('https://www.facebook.com/MeetBallsApp/');
               }}
@@ -38,7 +22,8 @@ export default function AppFooter() {
             <div className="Buffer--10px" />
             <Instagram
               size={24}
-              style={{ color: '8F6B58', cursor: 'pointer' }}
+              className="Clickable"
+              style={{ color: '8F6B58' }}
               onClick={() => {
                 window.open('https://www.instagram.com/meetballsapp/');
               }}
@@ -65,13 +50,8 @@ export default function AppFooter() {
             </Nav>
           </Col>
           <div className="Buffer--20px" />
-          <Col
-            style={{
-              textAlign: 'center',
-              fontSize: '14px',
-            }}
-          >
-            <p style={{ color: '#8F6B58' }}>
+          <Col>
+            <p style={{ color: '#8F6B58' }} className="Text__small">
               &copy; Copyright {new Date().getFullYear()}, MeetBalls
             </p>
           </Col>

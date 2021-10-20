@@ -1,0 +1,75 @@
+:root {
+  --text: #303030;
+}
+
+.Text__header {
+  font-size: 40px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.Text__subheader {
+  font-size: 20px;
+  font-weight: 500;
+  color: var(--text);
+}
+
+.Text__subsubheader {
+  font-size: 17px;
+  font-weight: 500;
+  margin-bottom: 0px;
+  color: var(--text);
+}
+
+.Text__paragraph {
+  font-size: 17px;
+  display: inline-block;
+  word-break: break-word;
+  white-space: pre-line;
+  color: var(--text);
+}
+
+.Text__hint {
+  color: #858585;
+  font-size: 15px;
+  margin: 0px;
+  text-decoration: none;
+  align-items: center;
+  justify-content: center;
+  height: auto;
+  display: flex;
+}
+
+.Text__small {
+  font-size: 14px;
+  text-align: center;
+}
+
+.Text__elipsized--1-line {
+  display: inline-block;
+  word-break: break-word;
+  overflow: hidden;
+  white-space: pre-line;
+  margin-left: 0px;
+  margin-right: 0px;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  text-overflow: ellipsis;
+  -webkit-line-clamp: 1;
+}
+
+.Text__elipsized--5-lines {
+  display: inline-block;
+  word-break: break-word;
+  overflow: hidden;
+  margin-left: 0px;
+  margin-right: 0px;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  text-overflow: ellipsis;
+  -webkit-line-clamp: 5;
+}
+
+.Text--no-decoration {
+  text-decoration: none;
+}

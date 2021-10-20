@@ -10,7 +10,6 @@ export const deleteParticipants = (meetingId, userEmail) => {
       },
     ],
   };
-  console.log(body);
   return server.delete(`participant`, {
     ...defaultHeaders,
     data: body,

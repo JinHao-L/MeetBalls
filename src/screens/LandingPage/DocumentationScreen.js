@@ -11,30 +11,10 @@ import AppFooter from '../../components/AppFooter';
 export default function DocumentationScreen() {
   return (
     <>
-      <div style={{ position: 'relative' }}>
-        <Image
-          src={Banner}
-          style={{
-            height: 300,
-            width: '100%',
-            objectFit: 'cover',
-          }}
-        />
-        <div
-          className="Container__center--vertical"
-          style={{
-            width: '100%',
-            position: 'absolute',
-            top: '50%',
-            left: '50%',
-            transform: 'translate(-50%, -50%)',
-            alignItems: 'center',
-          }}
-        >
-          <p
-            className="Text__header"
-            style={{ color: 'white', textAlign: 'center' }}
-          >
+      <div className="Banner">
+        <Image src={Banner} className="Image__banner" />
+        <div className="Container__center--vertical Banner__content">
+          <p className="Text__header" style={{ color: 'white' }}>
             Zoom Integration Documentation
           </p>
         </div>
@@ -43,12 +23,7 @@ export default function DocumentationScreen() {
         className="Container__padding--vertical Container__padding--horizontal"
         style={{ marginLeft: 0, marginRight: 0 }}
       >
-        <Col
-          sm={12}
-          md={12}
-          lg={{ span: 6, offset: 3 }}
-          style={{ paddingLeft: 0, paddingRight: 0 }}
-        >
+        <Col sm={12} md={12} lg={{ span: 6, offset: 3 }}>
           <p className="Text__subsubheader">Last updated: October 15, 2021</p>
 
           <p className="Text__paragraph">
@@ -67,7 +42,7 @@ export default function DocumentationScreen() {
             MeetBalls can be installed by simply logging in with your Zoom
             account.
           </p>
-          <ol className="Text__list">
+          <ol className="Text__paragraph">
             <li>
               Login to MeetBalls application using the app's{' '}
               <a
@@ -88,8 +63,9 @@ export default function DocumentationScreen() {
             src={DashboardImage}
             fluid
             alt={'Screen of MeetBalls Meeting Dashboard'}
+            className="Image__documentation"
           />
-          <ol className="Text__list">
+          <ol className="Text__paragraph">
             <li>Navigate to your Meeting Dashboard</li>
             <li>
               Click the <b>Add Meeeting Floating Action Button</b> at the bottom
@@ -122,10 +98,10 @@ export default function DocumentationScreen() {
           <Image
             src={AgendaListImage}
             fluid
-            style={{ padding: '10px 0px' }}
+            className="Image__documentation"
             alt={'View of Meeting Edit Screen'}
           />
-          <ol className="Text__list">
+          <ol className="Text__paragraph">
             <li>
               If you came from the previous step, you should be automatically
               redirected to the edit page
@@ -166,12 +142,18 @@ export default function DocumentationScreen() {
                   Add agenda items by clicking the <b>Floating Action Button</b>{' '}
                   at the bottom right of the screen
                 </li>
-                <Image
-                  src={AddAgendaImage}
-                  fluid
-                  style={{ padding: '10px 0px' }}
-                  alt={'Adding agenda view'}
-                />
+              </ol>
+            </li>
+          </ol>
+          <Image
+            src={AddAgendaImage}
+            fluid
+            className="Image__documentation"
+            alt={'Adding agenda view'}
+          />
+          <ol>
+            <li>
+              <ol>
                 <li>
                   Edit the agenda items by modifying the <b>name</b>,{' '}
                   <b>duration</b> and <b>descrition</b> of the item.
@@ -243,7 +225,7 @@ export default function DocumentationScreen() {
                     <Image
                       src={SampleEmailImage}
                       fluid
-                      style={{ padding: '10px 0px' }}
+                      className="Image__documentation"
                       alt={'Sample email invitation'}
                     />
                   </ol>
@@ -254,7 +236,7 @@ export default function DocumentationScreen() {
           <p className="Text__subheader" style={{ paddingTop: '20px' }}>
             Starting a meeting
           </p>
-          <ul className="Text__list">
+          <ul className="Text__paragraph">
             <li>
               To start a meeting click the <b>Start Meeting</b> button on the
               Edit Meeting page or the <b>Video icon</b> on the Meeting
@@ -265,12 +247,15 @@ export default function DocumentationScreen() {
               You will be auto redirected to the ongoing meeting screen where
               you can manage your meeting flow
             </li>
-            <Image
-              src={OngoingMeetingImage}
-              fluid
-              style={{ padding: '10px 0px' }}
-              alt={'Ongoing meeting view'}
-            />
+          </ul>
+
+          <Image
+            src={OngoingMeetingImage}
+            fluid
+            className="Image__documentation"
+            alt={'Ongoing meeting view'}
+          />
+          <ul>
             <li>
               You can move the agenda item by clicking on the <b>Next Item</b>{' '}
               or <b>Start Meeting</b> button
@@ -313,10 +298,10 @@ export default function DocumentationScreen() {
           <Image
             src={MeetingReportImage}
             fluid
-            style={{ padding: '10px 0px' }}
+            className="Image__documentation"
             alt={'Meeting report view'}
           />
-          <ul className="Text__list">
+          <ul className="Text__paragraph">
             <li>
               After the meeting has ended, you can view the report by clicking
               the <b>View Report</b> button in the same meeting view or by
@@ -345,7 +330,7 @@ export default function DocumentationScreen() {
           </ul>
 
           <p className="Text__header">Uninstallation</p>
-          <ol className="Text__list">
+          <ol className="Text__paragraph">
             <li>
               Login to your Zoom Account and navigate to the Zoom App
               Marketplace.

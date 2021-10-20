@@ -9,17 +9,6 @@ export const BAD_MEETING_PERMS_MSG =
   'You do not have authorization to view this page.';
 
 export default function RedirectionScreen({ message }) {
-  const containerStyle = {
-    paddingLeft: 30,
-    paddingRight: 30,
-    height: 'calc(100vh - 56px)',
-    justifyContent: 'center',
-    alignItems: 'center',
-    display: 'flex',
-    flexDirection: 'column',
-    textAlign: 'center',
-  };
-
   function image() {
     switch (message) {
       case ERROR_MSG:
@@ -32,7 +21,7 @@ export default function RedirectionScreen({ message }) {
   }
 
   return (
-    <Container style={containerStyle}>
+    <Container className="Container__redirection-screen">
       <Image src={image()} style={{ width: '100%', maxWidth: 600 }} />
       <p style={{ fontSize: 25, fontWeight: 400 }}>{message}</p>
     </Container>
