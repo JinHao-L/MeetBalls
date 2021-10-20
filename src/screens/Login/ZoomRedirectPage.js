@@ -15,7 +15,9 @@ export default function ZoomRedirectPage() {
   const history = useHistory();
   const query = new URLSearchParams(search);
   const code = query.get(CODE_PARAM_KEY);
-  const fromDev = process.env.NODE_ENV === 'staging' && query.get(STATE_PARAM_KEY) === 'dev';
+  const fromDev =
+    process.env.REACT_APP_REDIRECT_SECRET &&
+    query.get(STATE_PARAM_KEY) === process.env.REACT_APP_REDIRECT_SECRET;
 
   useEffect(() => {
     if (!code || fromDev) {
