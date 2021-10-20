@@ -1,11 +1,11 @@
 import { Card, Col, Row, Form, Button } from 'react-bootstrap';
 import { useState } from 'react';
-import { isValidUrl, openLinkInNewTab } from '../../common/CommonFunctions';
+import { isValidUrl } from '../../common/CommonFunctions';
 import server from '../../services/server';
 import { defaultHeaders } from '../../utils/axiosConfig';
 import { toast } from 'react-toastify';
 import { extractError } from '../../utils/extractError';
-import { uploadFile } from '../../services/files';
+import { openFile, uploadFile } from '../../services/files';
 
 export default function UploadItem({ agendaItem, speakerId }) {
   const [isUpload, setIsUpload] = useState(false);
@@ -19,7 +19,19 @@ export default function UploadItem({ agendaItem, speakerId }) {
     return (
       <Row>
         <Col className="d-grid gap-2">
-          <Button onClick={() => openLinkInNewTab(materials)}>Open File</Button>
+          <Button
+            onClick={() =>
+              openFile(
+                materials,
+                agendaItem.meetingId,
+                speakerId,
+              ).catch((_err) => {
+                toast.error('File not found');
+              })
+            }
+          >
+            Open File
+          </Button>
         </Col>
         <Col className="d-grid gap-2">
           <Button variant="secondary" onClick={() => remove()}>
