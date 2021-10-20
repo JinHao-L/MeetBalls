@@ -6,13 +6,13 @@ import { Redirect, useLocation, useParams } from 'react-router';
 import BackgroundPattern from '../../assets/background_pattern2.jpg';
 import server from '../../services/server';
 import { defaultHeaders } from '../../utils/axiosConfig';
-import { UserContext } from '../../context/UserContext';
 import UploadItem from './UploadItem';
 import RedirectionScreen, {
   MEETING_NOT_FOUND_ERR,
 } from '../../components/RedirectionScreen';
 
 const JOINER_KEY = 'joiner';
+const NAME_KEY = 'name';
 
 export default function ParticipantScreen() {
   const { id } = useParams();
@@ -21,11 +21,11 @@ export default function ParticipantScreen() {
   const [loading, setLoading] = useState(false);
   const [restrictDescription, setRestrictDescription] = useState(true);
   const [agendaItems, setAgendaItems] = useState([]);
-  const user = useContext(UserContext);
 
   const { search } = useLocation();
   const params = new URLSearchParams(search);
-  const joinerId = params.get(JOINER_KEY); // do whatever you want dawg
+  const joinerId = params.get(JOINER_KEY);
+  const name = params.get(NAME_KEY);
 
   useEffect(() => {
     if (!joinerId) {
@@ -33,11 +33,9 @@ export default function ParticipantScreen() {
       setLoading(false);
       return;
     }
-
     return pullMeeting()
       .then(() => {
         setValidId(true);
-        obtainRelevantAgendaItems();
       })
       .catch((_) => setValidId(false))
       .finally(() => setLoading(false));
@@ -48,13 +46,13 @@ export default function ParticipantScreen() {
     if (response.status !== 200) return;
     const result = response.data;
     setMeeting(result);
+    obtainRelevantAgendaItems(result);
   }
 
-  async function obtainRelevantAgendaItems() {
+  async function obtainRelevantAgendaItems(loadedMeeting) {
     const items = [];
-    meeting.agendaItems.forEach((item) => {
-      console.log(item.speaker?.id + ' | ' + user?.uuid);
-      if (item.speaker !== null && item.speaker?.id === user?.uuid) {
+    loadedMeeting?.agendaItems?.forEach((item) => {
+      if (item.speaker !== null && item.speaker?.id === joinerId) {
         items.push(item);
       }
     });
@@ -71,7 +69,7 @@ export default function ParticipantScreen() {
 
   if (!loading && !validId)
     return <RedirectionScreen message={MEETING_NOT_FOUND_ERR} />;
-  if (user?.uuid === meeting?.hostId) {
+  if (joinerId === meeting?.hostId) {
     return <Redirect to={'/meeting/' + id} />;
   }
 
@@ -88,23 +86,16 @@ export default function ParticipantScreen() {
         <Row>
           <Col lg={1} md={12} sm={12} />
           <Col
-            lg={4}
+            lg={10}
             md={12}
             sm={12}
             style={{ paddingLeft: 30, paddingRight: 30 }}
           >
-            <p className="Text__header">Hi {user?.name}!</p>
+            <p className="Text__header">Hi {name}!</p>
             <p className="Text__subheader">
               You have a meeting <b>{meeting?.name}</b> scheduled on{' '}
               {getFormattedDateTime(meeting?.startedAt)}.
             </p>
-          </Col>
-          <Col
-            lg={6}
-            md={12}
-            sm={12}
-            style={{ paddingLeft: 30, paddingRight: 30 }}
-          >
             <div className="Container__row--space-between">
               <p className="Text__subsubheader">Description</p>
               <div

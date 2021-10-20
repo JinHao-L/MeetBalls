@@ -4,9 +4,6 @@ import { useHistory } from 'react-router';
 import { Eye, Front } from 'react-bootstrap-icons';
 import { useContext } from 'react';
 import { UserContext } from '../../context/UserContext';
-import RedirectionScreen, {
-  BAD_MEETING_PERMS_MSG,
-} from '../../components/RedirectionScreen';
 
 export default function CompletedMeetingItem({
   meeting,
