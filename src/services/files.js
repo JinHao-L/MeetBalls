@@ -14,7 +14,7 @@ const uploadToS3 = async (signedUrl, file) => {
   if (signedUrl) {
     return fetch(signedUrl, {
       headers: {
-        'Content-Type': 'image/png',
+        'Content-Type': file.type,
       },
       method: 'PUT',
       body: file,
