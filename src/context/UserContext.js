@@ -8,7 +8,6 @@ const UserContext = createContext(null);
 
 const UserProvider = ({ children }) => {
   const [user, setUser] = useState(null);
-  const [joiner, setJoiner] = useState(null);
   const [loading, setLoading] = useState(true);
 
   // init connection with background and maintain synced data

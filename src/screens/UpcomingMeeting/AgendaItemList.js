@@ -65,7 +65,7 @@ export default function AgendaItemList({
   return (
     <DragDropContext
       onDragEnd={(result) =>
-        onDragEnd(result, meeting, setMeeting, isReordering)
+        onDragEnd(result, meeting, setMeeting)
       }
     >
       <Droppable droppableId="Agenda">
@@ -83,11 +83,11 @@ export default function AgendaItemList({
 function onDragEnd(result, meeting, setMeeting) {
   const { destination, source } = result;
   if (destination === null) return;
-  if (
-    destination.droppableId === source.droppableId &&
-    destination.index === source.index
-  )
-    return;
+
+  const idMatch = destination.droppableId === source.droppableId;
+  const idxMatch = destination.index === source.index;
+  if (idMatch && idxMatch) return;
+
   const newMeeting = Object.assign({}, meeting);
   const newAgenda = newMeeting.agendaItems;
   const item = newAgenda.splice(source.index, 1);

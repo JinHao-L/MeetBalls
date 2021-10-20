@@ -55,25 +55,23 @@ export default function OngoingMeetingAdminScreen() {
   }, []);
 
   useEffect(() => {
-    if (socket) {
-      socket.on('meetingUpdated', function (data) {
+    if (!socket) return;
+
+    socket.on('meetingUpdated', function (data) {
         const newMeeting = JSON.parse(data, agendaReviver);
         setMeeting((meeting) => updateMeeting({ ...meeting, ...newMeeting }));
-      });
-      socket.on('participantUpdated', function (data) {
-        const update = JSON.parse(data);
-        setMeeting((meeting) => ({
-          ...meeting,
-          participants: updateParticipants(meeting.participants, update),
-        }));
-      });
-      socket.on('agendaUpdated', function (_) {
-        pullMeeting();
-      });
-      socket.on('userConnected', function (msg) {});
-    } else {
-      socket && socket.removeAllListeners();
-    }
+    });
+    socket.on('participantUpdated', function (data) {
+      const update = JSON.parse(data);
+      setMeeting((meeting) => ({
+        ...meeting,
+        participants: updateParticipants(meeting.participants, update),
+      }));
+    });
+    socket.on('agendaUpdated', function (_) {
+      pullMeeting();
+    });
+    socket.on('userConnected', function (_) { });
   }, [socket]);
 
   function startZoom() {
@@ -91,7 +89,7 @@ export default function OngoingMeetingAdminScreen() {
       return p1.position - p2.position;
     });
     setShowError(meetingObj.agendaItems.length === 0);
-    syncMeeting(meetingObj, time);
+    syncMeeting(meetingObj);
     return meetingObj;
   };
 
