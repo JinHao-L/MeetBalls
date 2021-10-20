@@ -36,13 +36,14 @@ server.interceptors.response.use(
           if (res.status === 201) {
             const tokenObj = res.data;
             setAuthToken(tokenObj.access_token || null, type);
+            localStorage.setItem(refreshTokenKey, tokenObj.refresh_token);
             return server(originalRequest);
           }
         })
         .catch((err) => {
           if (err?.response?.status === 401) {
-            localStorage.setItem(refreshTokenKey, null);
             setAuthToken(null);
+            localStorage.removeItem(refreshTokenKey);
             toast.error('Not logged in');
             return Promise.reject();
           }
