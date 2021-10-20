@@ -2,7 +2,8 @@ import { useState, useEffect, useContext } from 'react';
 import { getFormattedDateTime } from '../../common/CommonFunctions';
 import { blankMeeting } from '../../common/ObjectTemplates';
 import { Container, Row, Col } from 'react-bootstrap';
-import { Redirect, useLocation, useParams } from 'react-router';
+import { Redirect, useLocation, useParams, useHistory } from 'react-router';
+import { useSocket } from '../../hooks/useSocket';
 import BackgroundPattern from '../../assets/background_pattern2.jpg';
 import server from '../../services/server';
 import { defaultHeaders } from '../../utils/axiosConfig';
@@ -16,6 +17,7 @@ const NAME_KEY = 'name';
 
 export default function ParticipantScreen() {
   const { id } = useParams();
+  const { socket } = useSocket(id);
   const [meeting, setMeeting] = useState(blankMeeting);
   const [validId, setValidId] = useState(true);
   const [loading, setLoading] = useState(false);
@@ -26,6 +28,7 @@ export default function ParticipantScreen() {
   const params = new URLSearchParams(search);
   const joinerId = params.get(JOINER_KEY);
   const name = params.get(NAME_KEY);
+  const history = useHistory();
 
   useEffect(() => {
     if (!joinerId) {
@@ -40,6 +43,13 @@ export default function ParticipantScreen() {
       .catch((_) => setValidId(false))
       .finally(() => setLoading(false));
   }, []);
+
+  useEffect(() => {
+    if (!socket) return;
+    socket.on('meetingUpdated', function (_) {
+      history.replace('/ongoing/' + id);
+    });
+  }, [socket]);
 
   async function pullMeeting() {
     const response = await server.get(`/meeting/${id}`, defaultHeaders);
@@ -77,6 +87,9 @@ export default function ParticipantScreen() {
     return <RedirectionScreen message={MEETING_NOT_FOUND_ERR} />;
   if (joinerId === meeting?.hostId) {
     return <Redirect to={'/meeting/' + id} />;
+  }
+  if (meeting.type !== undefined && meeting.type !== 1) {
+    return <Redirect to={'/ongoing/' + id} />;
   }
 
   return (
