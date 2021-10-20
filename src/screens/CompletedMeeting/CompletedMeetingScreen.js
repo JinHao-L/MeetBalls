@@ -71,7 +71,14 @@ export default function CompletedMeetingScreen() {
   }
 
   function emailParticipants() {
-    const recipients = meeting.participants.map((p) => p.userEmail).join(',');
+    const hosts = meeting.participants
+      .filter((p) => p.role === 2)
+      .map((p) => p.userEmail)
+      .join(',');
+    const bcc = meeting.participants
+      .filter((p) => p.role !== 2)
+      .map((p) => p.userEmail)
+      .join(',');
     const title = `Minutes to ${meeting.name}`;
     const body =
       'Dear all,\n\n' +
@@ -79,7 +86,7 @@ export default function CompletedMeetingScreen() {
       `to our meeting on ${getFormattedDate(meeting.startedAt)}.\n\n` +
       'Thank you.';
     const encodedBody = encodeURI(body);
-    const href = `mailto:${recipients}?subject=${title}&body=${encodedBody}`;
+    const href = `mailto:${hosts}?subject=${title}&body=${encodedBody}&bcc=${bcc}`;
     window.open(href);
   }
 

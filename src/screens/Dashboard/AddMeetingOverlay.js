@@ -94,6 +94,7 @@ export default function AddMeetingOverlay({
         logEvent(googleAnalytics, 'created_meeting');
       })
       .catch(() => {
+        setLoading(false);
         toast.error('Failed to create.');
       });
   }
