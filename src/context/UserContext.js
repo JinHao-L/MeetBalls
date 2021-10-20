@@ -44,11 +44,7 @@ const UserProvider = ({ children }) => {
     return <FullLoadingIndicator />;
   }
 
-  return (
-    <UserContext.Provider value={(user)}>
-      {children}
-    </UserContext.Provider>
-  );
+  return <UserContext.Provider value={user}>{children}</UserContext.Provider>;
 };
 
 export { UserContext, UserProvider };
