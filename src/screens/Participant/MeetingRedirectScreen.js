@@ -21,13 +21,17 @@ export default function RedirectScreen() {
 
   const history = useHistory();
 
-  useEffect(async () => {
+  useEffect(() => {
     if (!token) {
       setError(true);
       setLoading(false);
       return;
     }
 
+    return resolveToken();
+  }, []);
+
+  async function resolveToken() {
     try {
       const response = await server.get(
         `/meeting/magic-link/${token}`,
@@ -35,16 +39,20 @@ export default function RedirectScreen() {
       );
       setError(false);
       setLoading(false);
-      const id = response.data?.meeting?.id;
-      const joiner = response.data?.joiner?.id;
-      const name = response.data?.joiner?.userName;
-      history.push(`/participant/${id}?joiner=${joiner}&name=${name}`);
+      handleRedirection(response.data);
     } catch (error) {
       toast.error(extractError(error));
       setError(true);
       setLoading(false);
     }
-  }, []);
+  }
+
+  function handleRedirection(responseData) {
+    const id = responseData?.meeting?.id;
+    const joiner = responseData?.joiner?.id;
+    const name = responseData?.joiner?.userName;
+    history.push(`/participant/${id}?joiner=${joiner}&name=${name}`);
+  }
 
   const message = !loading && error ? ERROR_MSG : LOADING_MSG;
 
