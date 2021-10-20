@@ -2,8 +2,6 @@ import { Card, Col, Row } from 'react-bootstrap';
 import { getDateInfo } from '../../common/CommonFunctions';
 import { useHistory } from 'react-router';
 import { Eye, Front } from 'react-bootstrap-icons';
-import { useContext } from 'react';
-import { UserContext } from '../../context/UserContext';
 
 export default function CompletedMeetingItem({
   meeting,
@@ -12,7 +10,6 @@ export default function CompletedMeetingItem({
 }) {
   const dateInfo = getDateInfo(meeting.startedAt, meeting.duration);
   const history = useHistory();
-  const user = useContext(UserContext);
 
   function viewMeeting() {
     history.push(`/completed/${meeting.id}`);
