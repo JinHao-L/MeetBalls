@@ -47,7 +47,7 @@ export function getFormattedDuration(duration) {
 }
 
 export function openLinkInNewTab(link) {
-  const newWindow = window.open(link, '_blank', 'noopener,noreferer');
+  let newWindow = window.open(link, '_blank', 'noopener,noreferer');
   if (newWindow) newWindow = null;
 }
 

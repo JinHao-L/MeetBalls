@@ -8,7 +8,6 @@ import { Col, Nav, Row, Button, Container } from 'react-bootstrap';
 import {
   getDateInfo,
   getFormattedDate,
-  openLinkInNewTab,
 } from '../../common/CommonFunctions';
 import Statistics from './Statistics';
 import RedirectionScreen, {
@@ -81,7 +80,7 @@ export default function CompletedMeetingScreen() {
       'Thank you.';
     const encodedBody = encodeURI(body);
     const href = `mailto:${recipients}?subject=${title}&body=${encodedBody}`;
-    openLinkInNewTab(href);
+    window.open(href);
   }
 
   const startTimeIso = meeting.startedAt;

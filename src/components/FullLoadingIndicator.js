@@ -1,5 +1,5 @@
 import React from 'react';
-import { Container, Spinner } from 'react-bootstrap';
+import { Container } from 'react-bootstrap';
 import MrMeatball from '../assets/MrMeatball.png';
 
 export const FullLoadingIndicator = () => {
