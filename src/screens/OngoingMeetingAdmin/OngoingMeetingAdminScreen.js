@@ -25,6 +25,8 @@ import useSound from 'use-sound';
 import Bell from '../../assets/Bell.mp3';
 import BackgroundPattern from '../../assets/background_pattern2.jpg';
 import FeedbackOverlay from './FeedbackOverlay';
+import { logEvent } from '@firebase/analytics';
+import { googleAnalytics } from '../../services/firebase';
 
 export default function OngoingMeetingAdminScreen() {
   const [position, setPosition] = useState(-1);
@@ -49,6 +51,7 @@ export default function OngoingMeetingAdminScreen() {
 
   useEffect(() => {
     pullMeeting();
+    logEvent(googleAnalytics, 'visit_ongoing_screen', { meeting: id });
     setInterval(() => {
       setTime(new Date().getTime());
     }, 1000);
@@ -112,6 +115,7 @@ export default function OngoingMeetingAdminScreen() {
     }
     try {
       await callStartMeeting(id);
+      logEvent(googleAnalytics, 'start_meeting', { meetingId: id });
       setMeetingStatus(2);
       setPosition(position + 1);
       initializeAgenda(time, agenda);
@@ -127,6 +131,7 @@ export default function OngoingMeetingAdminScreen() {
       if (isLastItem) {
         setMeetingStatus(3);
         setShowFeedback(true);
+        logEvent(googleAnalytics, 'end_meeting', { meetingId: id });
       }
       const newPosition = position + 1;
       setPosition(newPosition);

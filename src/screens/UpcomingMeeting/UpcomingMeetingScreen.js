@@ -21,6 +21,8 @@ import RedirectionScreen, {
 } from '../../components/RedirectionScreen';
 import { UserContext } from '../../context/UserContext';
 import BackgroundPattern from '../../assets/background_pattern2.jpg';
+import { logEvent } from '@firebase/analytics';
+import { googleAnalytics } from '../../services/firebase';
 
 export default function UpcomingMeetingScreen() {
   const [meeting, setMeeting] = useState(blankMeeting);
@@ -42,7 +44,10 @@ export default function UpcomingMeetingScreen() {
 
   useEffect(() => {
     return pullMeeting()
-      .then(() => setValidId(true))
+      .then(() => {
+        logEvent(googleAnalytics, 'visit_upcoming_screen', { meeting: id });
+        setValidId(true);
+      })
       .catch((_) => setValidId(false))
       .finally(() => setLoading(false));
   }, []);

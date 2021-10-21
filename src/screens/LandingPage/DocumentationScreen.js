@@ -1,3 +1,5 @@
+import { logEvent } from '@firebase/analytics';
+import { useEffect } from 'react';
 import { Image, Row, Col } from 'react-bootstrap';
 import Banner from '../../assets/banner_privacy.jpg';
 import AddAgendaImage from '../../assets/guide_add_agenda.jpg';
@@ -7,8 +9,13 @@ import OngoingMeetingImage from '../../assets/guide_ongoing_meeting.jpg';
 import MeetingReportImage from '../../assets/guide_report.jpg';
 import SampleEmailImage from '../../assets/guide_sample_email.jpg';
 import AppFooter from '../../components/AppFooter';
+import { googleAnalytics } from '../../services/firebase';
 
 export default function DocumentationScreen() {
+  useEffect(() => {
+    logEvent(googleAnalytics, 'visit_documentation');
+  }, []);
+
   return (
     <>
       <div className="Banner">
