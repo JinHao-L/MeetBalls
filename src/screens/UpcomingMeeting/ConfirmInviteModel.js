@@ -3,8 +3,6 @@ import { toast } from 'react-toastify';
 import { extractError } from '../../utils/extractError';
 import server from '../../services/server';
 import { defaultHeaders } from '../../utils/axiosConfig';
-import { UserContext } from '../../context/UserContext';
-import { useContext } from 'react';
 
 const INVITE_SUCCESS = 'Invitations sent!';
 const INVITE_SOME_FAIL =
@@ -19,8 +17,6 @@ export default function ConfirmInviteModel({
   inviteList,
   setInviteList,
 }) {
-  const user = useContext(UserContext);
-
   async function sendInvitation(participants) {
     if (inviteList.length === 0) return;
     try {
@@ -103,6 +99,21 @@ export default function ConfirmInviteModel({
               )}
             </ListGroup>
           </Card>
+          <div className="d-grid gap-2">
+            <Button
+              onClick={() =>
+                setInviteList(
+                  meeting.participants.filter(
+                    (participant) => participant?.role !== 2,
+                  ),
+                )
+              }
+            >
+              Select All
+            </Button>
+          </div>
+
+          <div className="Buffer--10px" />
           <p className="Text__paragraph">Are you sure you want to continue?</p>
         </div>
       </Modal.Body>
