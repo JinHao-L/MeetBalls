@@ -3,6 +3,8 @@ import { toast } from 'react-toastify';
 import { extractError } from '../../utils/extractError';
 import server from '../../services/server';
 import { defaultHeaders } from '../../utils/axiosConfig';
+import { UserContext } from '../../context/UserContext';
+import { useContext } from 'react';
 
 const INVITE_SUCCESS = 'Invitations sent!';
 const INVITE_SOME_FAIL =
@@ -17,6 +19,8 @@ export default function ConfirmInviteModel({
   inviteList,
   setInviteList,
 }) {
+  const user = useContext(UserContext);
+
   async function sendInvitation(participants) {
     if (inviteList.length === 0) return;
     try {
@@ -87,6 +91,11 @@ export default function ConfirmInviteModel({
             <ListGroup variant="flush">
               {meeting.participants.length > 0 ? (
                 meeting.participants.map((participant, id) => {
+                  if (
+                    participant?.userEmail !== null &&
+                    participant?.userEmail === user?.email
+                  )
+                    return;
                   return <ParticipantItem key={id} participant={participant} />;
                 })
               ) : (
