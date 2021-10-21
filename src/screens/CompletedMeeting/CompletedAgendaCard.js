@@ -25,9 +25,12 @@ export default function CompletedAgendaCard({ agendaItem }) {
       >
         <Card.Body>
           <Card.Title>{agendaItem.name}</Card.Title>
-          <Card.Text>{agendaItem.description}</Card.Text>
           <SpeakerSection item={agendaItem} />
-          <MaterialsSection item={agendaItem} />
+          <Card.Text>{agendaItem.description}</Card.Text>
+          <MaterialsSection
+            item={agendaItem}
+            variant={exceededDuration ? 'outline-danger' : 'primary'}
+          />
         </Card.Body>
         <Card.Footer>
           <Card.Text>
