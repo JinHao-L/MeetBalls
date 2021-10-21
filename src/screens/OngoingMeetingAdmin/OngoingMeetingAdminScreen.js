@@ -45,7 +45,7 @@ export default function OngoingMeetingAdminScreen() {
   const isHost = useMemo(() => {
     return meeting?.hostId === user?.uuid;
   }, [meeting.hostId, user]);
-  const [play] = useSound(Bell);
+  const [play] = useSound(Bell, { volume: 0.1 });
 
   useEffect(() => {
     pullMeeting();
