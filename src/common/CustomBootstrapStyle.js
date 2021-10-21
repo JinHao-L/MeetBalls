@@ -211,6 +211,18 @@ export default function CustomBootstrapStyle() {
       color: white;
     }
 
+    .btn-card-middle {
+      border-top-left-radius: 0;
+      border-top-right-radius: 0;
+      border-width: 1px 0.5px 0px 0px;
+      border-color: #ebebeb;
+    }
+    .btn-card-middle:hover, .btn-card-middle:active, .btn-card-middle:focus {
+      background-color: #8F6B58;
+      color: white;
+      border-color: #8F6B58;
+    }
+
     .card {
       border-radius: 6px;
       box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.1);
@@ -273,7 +285,12 @@ export default function CustomBootstrapStyle() {
     .nav-tabs {
       border-width: 0px;
     }
- 
+
+    .nav-tabs .nav-link:hover {
+      border-color: #725546;
+      background-color: #725546;
+      color: white;
+    }
 
     `}
     </style>

@@ -18,25 +18,28 @@ export default function UploadItem({ agendaItem, speakerId }) {
   function EditButton() {
     return (
       <Row>
-        <Col className="d-grid gap-2">
-          <Button
-            onClick={() =>
-              openFile(
-                materials,
-                agendaItem.meetingId,
-                speakerId,
-              ).catch((_err) => {
-                toast.error('File not found');
-              })
-            }
-          >
-            Open File
-          </Button>
+        <Col style={{ paddingRight: 0 }}>
+          <div className="d-grid gap-2">
+            <Button variant="card-left-danger" onClick={() => remove()}>
+              Remove File
+            </Button>
+          </div>
         </Col>
-        <Col className="d-grid gap-2">
-          <Button variant="secondary" onClick={() => remove()}>
-            Remove File
-          </Button>
+        <Col style={{ paddingLeft: 0 }}>
+          <div className="d-grid gap-2">
+            <Button
+              variant="card-right"
+              onClick={() =>
+                openFile(materials, agendaItem.meetingId, speakerId).catch(
+                  (_err) => {
+                    toast.error('File not found');
+                  },
+                )
+              }
+            >
+              Open File
+            </Button>
+          </div>
         </Col>
       </Row>
     );
@@ -126,20 +129,22 @@ export default function UploadItem({ agendaItem, speakerId }) {
         <Card.Body>
           <Card.Title>{agendaItem?.name}</Card.Title>
           <Card.Text>{agendaItem?.description}</Card.Text>
-          {isEditing ? (
-            <>
-              <Form.Group as={Row}>
-                <Form.Label column>Materials (optional)</Form.Label>
-                <Form.Label
-                  column
-                  onClick={() => setIsUpload((prev) => !prev)}
-                  className="Clickable"
-                  variant="primary"
-                  style={{ textAlign: 'right', color: '#725546' }}
-                >
-                  {isUpload ? 'Use url' : 'Upload local file'}
-                </Form.Label>
-              </Form.Group>
+        </Card.Body>
+        {isEditing ? (
+          <>
+            <Form.Group as={Row} className="Container__padding--horizontal">
+              <Form.Label column>Materials (optional)</Form.Label>
+              <Form.Label
+                column
+                onClick={() => setIsUpload((prev) => !prev)}
+                className="Clickable"
+                variant="primary"
+                style={{ textAlign: 'right', color: '#725546' }}
+              >
+                {isUpload ? 'Use url' : 'Upload local file'}
+              </Form.Label>
+            </Form.Group>
+            <div className="Container__padding--horizontal">
               <Form.Control
                 type="file"
                 hidden={!isUpload}
@@ -151,15 +156,18 @@ export default function UploadItem({ agendaItem, speakerId }) {
                 placeholder="Add a URL to your presentation materials"
                 onChange={(event) => setMaterials(event.target.value)}
               />
-              <div className="Buffer--20px" />
-              <div className="d-grid gap-2">
-                <Button onClick={submit}>Submit</Button>
-              </div>
-            </>
-          ) : (
-            <EditButton />
-          )}
-        </Card.Body>
+            </div>
+
+            <div className="Buffer--20px" />
+            <div className="d-grid gap-2">
+              <Button variant="card-middle" onClick={submit}>
+                Submit
+              </Button>
+            </div>
+          </>
+        ) : (
+          <EditButton />
+        )}
       </Card>
     </Col>
   );
