@@ -21,7 +21,7 @@ export default function UploadItem({ agendaItem, speakerId }) {
         <Col style={{ paddingRight: 0 }}>
           <div className="d-grid gap-2">
             <Button variant="card-left-danger" onClick={() => remove()}>
-              Remove File
+              {isValidUrl(materials) ? 'Remove Link' : 'Remove File'}
             </Button>
           </div>
         </Col>
@@ -37,7 +37,7 @@ export default function UploadItem({ agendaItem, speakerId }) {
                 )
               }
             >
-              Open File
+              {isValidUrl(materials) ? 'Open Link' : 'Open File'}
             </Button>
           </div>
         </Col>
@@ -60,8 +60,14 @@ export default function UploadItem({ agendaItem, speakerId }) {
       await server.put(
         `/agenda-item/${agendaItem.meetingId}/${agendaItem.position}`,
         data,
-        defaultHeaders,
+        {
+          headers: {
+            ...defaultHeaders.headers,
+            'X-Participant': sessionStorage.getItem(agendaItem.meetingId) || '',
+          },
+        },
       );
+      setMaterials('');
     } catch (err) {
       toast.error(extractError(err));
       return;
@@ -108,7 +114,12 @@ export default function UploadItem({ agendaItem, speakerId }) {
       await server.put(
         `/agenda-item/${agendaItem.meetingId}/${agendaItem.position}`,
         data,
-        defaultHeaders,
+        {
+          headers: {
+            ...defaultHeaders.headers,
+            'X-Participant': sessionStorage.getItem(agendaItem.meetingId) || '',
+          },
+        },
       );
       agendaItem.speakerMaterials = speakerMaterials;
       setEditing(false);

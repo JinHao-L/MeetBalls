@@ -24,7 +24,11 @@ export default function CompletedMeetingScreen() {
 
   useEffect(() => {
     return server
-      .get(`/meeting/${id}`)
+      .get(`/meeting/${id}`, {
+        headers: {
+          'X-Participant': sessionStorage.getItem(id) || '',
+        },
+      })
       .then((res) => {
         const participants = res.data?.participants?.filter(
           (x) => !x.isDuplicate,

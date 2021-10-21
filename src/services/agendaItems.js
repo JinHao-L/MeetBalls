@@ -1,3 +1,4 @@
+import { defaultHeaders } from '../utils/axiosConfig';
 import server from './server';
 
 export const deleteAgendaItem = (meetingId, position) => {
@@ -38,5 +39,10 @@ export const updateAgendaItem = ({
     ...(actualDuration && { actualDuration }),
     ...(isCurrent && { isCurrent }),
   };
-  return server.put(`agenda-item/${meetingId}/${position}`, body);
+  return server.put(`agenda-item/${meetingId}/${position}`, body, {
+    headers: {
+      ...defaultHeaders.headers,
+      'X-Participant': sessionStorage.getItem(meetingId) || '',
+    },
+  });
 };

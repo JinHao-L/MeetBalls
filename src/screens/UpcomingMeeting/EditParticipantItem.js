@@ -25,12 +25,12 @@ export default function EditParticipantItem({
     );
   };
 
-  function syncAgenda(prevParticipantId) {
+  function syncAgenda(prevParticipantId, newParticipant) {
     setMeeting((meeting) => ({
       ...meeting,
       agendaItems: meeting.agendaItems.map((item) => {
         if (item?.speaker?.id === prevParticipantId) {
-          item.speaker = null;
+          item.speaker = prevParticipantId === newParticipant.id ? newParticipant : null;
         }
         return item;
       }),
@@ -67,7 +67,7 @@ export default function EditParticipantItem({
         oldEmail,
       );
       meeting.participants[position] = newParticipant;
-      syncAgenda(oldId);
+      syncAgenda(oldId, newParticipant);
       setEditing(false);
     } catch (err) {
       toast.error(extractError(err));
@@ -140,6 +140,19 @@ export default function EditParticipantItem({
 }
 
 async function updateDatabase(meetingId, newEmail, newUsername, oldEmail) {
+  if (oldEmail === newEmail.toLowerCase()) {
+    const result = await server.put(
+      '/participant',
+      {
+        meetingId: meetingId,
+        userEmail: oldEmail,
+        userName: newUsername,
+      },
+      defaultHeaders,
+    );
+    return result.data;
+  }
+
   if (oldEmail.length !== 0) {
     await server.delete('/participant', {
       data: {
