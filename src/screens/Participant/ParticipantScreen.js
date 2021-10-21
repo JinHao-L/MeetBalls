@@ -124,8 +124,10 @@ export default function ParticipantScreen() {
             <p className="Text__header">Hi {name}!</p>
             <p className="Text__subheader">
               You have a meeting <b>{meeting?.name}</b> scheduled on{' '}
-              {getFormattedDateTime(meeting?.startedAt)}.
+              {getFormattedDateTime(meeting?.startedAt)}. We will redirect you
+              to the meeting page once the host starts the meeting.
             </p>
+            <div className="Buffer--20px" />
             <div className="Container__row--space-between">
               <p className="Text__subsubheader">Description</p>
               <div
