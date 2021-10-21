@@ -55,8 +55,8 @@ export default function Statistics({ meeting }) {
     <Row>
       <Col sm={12} md={6} lg={6} className="Container__padding--vertical-small">
         <Card className="Card__statistics">
+          <Card.Header>Attendance</Card.Header>
           <Card.Body>
-            <Card.Title>Attendance</Card.Title>
             <Chart
               chartType="PieChart"
               data={attendance}
@@ -75,12 +75,12 @@ export default function Statistics({ meeting }) {
       </Col>
       <Col sm={12} md={6} lg={6} className="Container__padding--vertical-small">
         <Card className="Card__statistics">
+          <Card.Header>Total Duration</Card.Header>
           <Card.Body>
-            <Card.Title>Total Duration</Card.Title>
             <div
               className="Container__center--vertical"
               style={{
-                height: 190,
+                height: '100%',
                 alignItems: 'center',
               }}
             >
@@ -110,8 +110,8 @@ export default function Statistics({ meeting }) {
         className="Container__padding--vertical-small"
       >
         <Card className="Card__statistics">
+          <Card.Header>Duration Comparison</Card.Header>
           <Card.Body>
-            <Card.Title>Duration Comparison</Card.Title>
             <Chart
               chartType="AreaChart"
               data={durationComparison}

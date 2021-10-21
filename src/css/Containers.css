@@ -4,7 +4,7 @@
   top: 0px;
   z-index: 100;
   background-color: white;
-  box-shadow: 0px 0.2px gray;
+  box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.2);
 }
 
 .Container__footer {
@@ -91,7 +91,7 @@
 }
 
 .Card__statistics {
-  height: 250px;
+  height: 270px;
 }
 
 .Card__dashboard {

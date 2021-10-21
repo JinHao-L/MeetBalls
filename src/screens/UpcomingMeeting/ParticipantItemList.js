@@ -1,10 +1,6 @@
 import ParticipantItem from './ParticipantItem';
 
-export default function ParticipantItemList({
-  meeting,
-  setMeeting,
-  hostEmail,
-}) {
+export default function ParticipantItemList({ meeting, setMeeting }) {
   const items = [];
   for (let i = 0; i < meeting.participants.length; i++) {
     items.push(
@@ -13,7 +9,6 @@ export default function ParticipantItemList({
         meeting={meeting}
         setMeeting={setMeeting}
         position={i}
-        hostEmail={hostEmail}
       />,
     );
   }

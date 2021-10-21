@@ -15,12 +15,7 @@ import { SmallLoadingIndicator } from '../../components/SmallLoadingIndicator';
 import { extractError } from '../../utils/extractError';
 import { Envelope } from 'react-bootstrap-icons';
 
-export default function ParticipantItem({
-  setMeeting,
-  meeting,
-  position,
-  hostEmail,
-}) {
+export default function ParticipantItem({ setMeeting, meeting, position }) {
   const [removing, setRemoving] = useState(false);
   const [editing, setEditing] = useState(false);
   const participant = meeting.participants[position];
@@ -60,16 +55,25 @@ export default function ParticipantItem({
     }));
   }
 
-  function RemoveParticipantButton() {
+  function Buttons() {
     if (participant?.role === 2) return null;
     return (
-      <Col>
-        <div className="d-grid gap-2">
-          <Button variant="danger" onClick={removeParticipant}>
-            Remove
-          </Button>
-        </div>
-      </Col>
+      <Row>
+        <Col style={{ paddingRight: 0 }}>
+          <div className="d-grid gap-2">
+            <Button variant="card-left-danger" onClick={removeParticipant}>
+              Remove
+            </Button>
+          </div>
+        </Col>
+        <Col style={{ paddingLeft: 0 }}>
+          <div className="d-grid gap-2">
+            <Button variant="card-right" onClick={() => setEditing(true)}>
+              Edit
+            </Button>
+          </div>
+        </Col>
+      </Row>
     );
   }
 
@@ -92,10 +96,10 @@ export default function ParticipantItem({
       ) : (
         <Card>
           <Card.Header className="Container__row--space-between">
-            {participant.userEmail === hostEmail ? 'Host' : 'Participant'}
-            {participant.userEmail !== hostEmail && participant.invited ? (
+            {participant?.role === 2 ? 'Host' : 'Participant'}
+            {participant?.role !== 2 && participant.invited ? (
               <OverlayTrigger placement="top" overlay={renderTooltip}>
-                <Envelope size={20} className="Clickable" />
+                <Envelope size={20} />
               </OverlayTrigger>
             ) : null}
           </Card.Header>
@@ -106,17 +110,8 @@ export default function ParticipantItem({
                 : 'Guest'}
             </Card.Title>
             <Card.Text>{participant?.userEmail}</Card.Text>
-            <Row>
-              <RemoveParticipantButton />
-              <Col>
-                <div className="d-grid gap-2">
-                  <Button variant="primary" onClick={() => setEditing(true)}>
-                    Edit
-                  </Button>
-                </div>
-              </Col>
-            </Row>
           </Card.Body>
+          <Buttons />
         </Card>
       )}
     </Col>

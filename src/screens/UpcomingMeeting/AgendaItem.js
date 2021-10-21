@@ -142,28 +142,31 @@ export default function AgendaItem({
                     </Card.Subtitle>
                     <div className="Buffer--10px" />
                     <Card.Text>{item.description}</Card.Text>
-                    {isReordering || (
-                      <Row>
-                        <Col>
-                          <div className="d-grid gap-2">
-                            <Button variant="danger" onClick={removeAgendaItem}>
-                              Remove
-                            </Button>
-                          </div>
-                        </Col>
-                        <Col>
-                          <div className="d-grid gap-2">
-                            <Button
-                              variant="primary"
-                              onClick={() => setEditing(true)}
-                            >
-                              Edit
-                            </Button>
-                          </div>
-                        </Col>
-                      </Row>
-                    )}
                   </Card.Body>
+                  {isReordering || (
+                    <Row>
+                      <Col style={{ paddingRight: 0 }}>
+                        <div className="d-grid gap-2">
+                          <Button
+                            variant="card-left-danger"
+                            onClick={removeAgendaItem}
+                          >
+                            Remove
+                          </Button>
+                        </div>
+                      </Col>
+                      <Col style={{ paddingLeft: 0 }}>
+                        <div className="d-grid gap-2">
+                          <Button
+                            variant="card-right"
+                            onClick={() => setEditing(true)}
+                          >
+                            Edit
+                          </Button>
+                        </div>
+                      </Col>
+                    </Row>
+                  )}
                 </Card>
               </Col>
             </div>

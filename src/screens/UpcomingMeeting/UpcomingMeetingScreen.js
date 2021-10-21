@@ -89,13 +89,7 @@ export default function UpcomingMeetingScreen() {
         />
       );
     } else {
-      return (
-        <ParticipantItemList
-          meeting={meeting}
-          setMeeting={setMeeting}
-          hostEmail={user.email}
-        />
-      );
+      return <ParticipantItemList meeting={meeting} setMeeting={setMeeting} />;
     }
   }
 
