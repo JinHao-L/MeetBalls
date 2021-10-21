@@ -16,17 +16,18 @@ export default function UploadItem({ agendaItem, speakerId }) {
   );
 
   function EditButton() {
-    if (materials == '') return (
-      <Row>
-        <Col style={{ paddingRight: 0 }}>
-          <div className="d-grid gap-2">
-            <Button variant="card-middle" onClick={() => remove()}>
-              Add a link or a file
-            </Button>
-          </div>
-        </Col>
-      </Row>
-    );
+    if (materials == '')
+      return (
+        <Row>
+          <Col>
+            <div className="d-grid gap-2">
+              <Button variant="card-middle" onClick={() => remove()}>
+                Add a link or a file
+              </Button>
+            </div>
+          </Col>
+        </Row>
+      );
 
     return (
       <Row>
@@ -101,7 +102,7 @@ export default function UploadItem({ agendaItem, speakerId }) {
         setMaterials(fileName);
         speakerMaterials = fileName;
       } catch (err) {
-        console.log("Uploading fucked up HELP");
+        console.log('Uploading fucked up HELP');
         if (err.response?.status === 400) {
           toast.error(extractError(err) || 'Failed to upload file');
         } else {
@@ -191,7 +192,9 @@ export default function UploadItem({ agendaItem, speakerId }) {
               </Button>
             </div>
           </>
-        ) : <EditButton />}
+        ) : (
+          <EditButton />
+        )}
       </Card>
     </Col>
   );
