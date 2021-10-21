@@ -5,6 +5,9 @@ import { agendaReviver } from '../common/CommonFunctions';
 export const getMeeting = async (meetingId) => {
   const res = await server.get(`meeting/${meetingId}`, {
     transformResponse: [],
+    headers: {
+      'X-Participant': sessionStorage.getItem(meetingId) || '',
+    }
   });
   res.data = JSON.parse(res.data, agendaReviver);
   return res;

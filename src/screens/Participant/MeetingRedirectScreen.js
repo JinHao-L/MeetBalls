@@ -33,12 +33,12 @@ export default function RedirectScreen() {
 
   async function resolveToken() {
     try {
-      const response = await server.get(
-        `/meeting/magic-link/${token}`,
-        defaultHeaders,
-      );
+      const response = await server.get(`/meeting/magic-link`, {
+        headers: { ...defaultHeaders, 'X-Participant': token },
+      });
       setError(false);
       setLoading(false);
+      sessionStorage.setItem(response.data.meeting.id, token);
       handleRedirection(response.data);
     } catch (error) {
       toast.error(extractError(error));
