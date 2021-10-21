@@ -234,6 +234,7 @@ export default function UpcomingMeetingScreen() {
 }
 
 function addParticipant(meeting, setMeeting) {
+  scrollToBottom();
   if (meeting.participants.findIndex((item) => item.userEmail === '') >= 0)
     return;
   const newMeeting = Object.assign({}, meeting);
@@ -244,6 +245,7 @@ function addParticipant(meeting, setMeeting) {
 }
 
 async function addAgenda(meeting, setMeeting) {
+  scrollToBottom();
   if (meeting.agendaItems.findIndex((item) => item.name === '') >= 0) return;
   const newMeeting = Object.assign({}, meeting);
   const newAgenda = Object.assign({}, blankAgenda);
@@ -258,4 +260,8 @@ async function addAgenda(meeting, setMeeting) {
   newAgenda.prevPosition = newAgenda.position;
   newMeeting.agendaItems = [...newMeeting.agendaItems, newAgenda];
   setMeeting(newMeeting);
+}
+
+function scrollToBottom() {
+  window.scrollTo(0, window.outerHeight);
 }
