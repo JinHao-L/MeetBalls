@@ -58,8 +58,8 @@ export default function OngoingMeetingAdminScreen() {
     if (!socket) return;
 
     socket.on('meetingUpdated', function (data) {
-        const newMeeting = JSON.parse(data, agendaReviver);
-        setMeeting((meeting) => updateMeeting({ ...meeting, ...newMeeting }));
+      const newMeeting = JSON.parse(data, agendaReviver);
+      setMeeting((meeting) => updateMeeting({ ...meeting, ...newMeeting }));
     });
     socket.on('participantUpdated', function (data) {
       const update = JSON.parse(data);
@@ -71,7 +71,7 @@ export default function OngoingMeetingAdminScreen() {
     socket.on('agendaUpdated', function (_) {
       pullMeeting();
     });
-    socket.on('userConnected', function (_) { });
+    socket.on('userConnected', function (_) {});
   }, [socket]);
 
   function startZoom() {
@@ -194,16 +194,16 @@ export default function OngoingMeetingAdminScreen() {
       }}
     >
       <div className="Buffer--50px" />
-      <Container className="Container__padding--vertical Container__foreground">
-        <div className="Buffer--50px" />
-        <Row>
-          <Col lg={1} md={12} sm={12} />
+      <Container className="Container__foreground">
+        <Row style={{ minHeight: 'calc(100vh - 56px - 100px)' }}>
           <Col
             lg={4}
             md={12}
             sm={12}
+            className="Container__side"
             style={{ paddingLeft: 30, paddingRight: 30 }}
           >
+            <div className="Buffer--50px" />
             <p className="Text__header">{meeting.name}</p>
             <p className="Text__subheader">
               {getFormattedDateTime(meeting.startedAt)}
@@ -251,9 +251,11 @@ export default function OngoingMeetingAdminScreen() {
                 </Card.Text>
               </Card.Body>
             </Card>
-            <div className="Buffer--20px" />
+            <div className="Buffer--50px" />
           </Col>
+          <Col lg={1} md={12} sm={12} />
           <Col lg={6} md={12} sm={12}>
+            <div className="Buffer--50px" />
             <Nav
               variant="tabs"
               defaultActiveKey="agenda"

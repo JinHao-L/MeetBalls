@@ -124,17 +124,19 @@ export default function UpcomingMeetingScreen() {
       }}
     >
       <div className="Buffer--50px" />
-      <Container className="Container__padding--vertical Container__foreground">
-        <div className="Buffer--50px" />
-
-        <Row>
-          <Col lg={1} md={12} sm={12} />
+      <Container className="Container__foreground">
+        <Row style={{ minHeight: 'calc(100vh - 56px - 100px)' }}>
           <Col
             lg={4}
             md={12}
             sm={12}
-            style={{ paddingLeft: 30, paddingRight: 30 }}
+            className="Container__side"
+            style={{
+              paddingLeft: 30,
+              paddingRight: 30,
+            }}
           >
+            <div className="Buffer--50px" />
             <p className="Text__header">{meeting.name}</p>
             <p className="Text__subheader">
               {getFormattedDateTime(meeting.startedAt)}
@@ -188,9 +190,11 @@ export default function UpcomingMeetingScreen() {
             >
               {meeting.description}
             </p>
-            <div className="Buffer--20px" />
+            <div className="Buffer--50px" />
           </Col>
+          <Col lg={1} md={12} sm={12} />
           <Col lg={6} md={12} sm={12}>
+            <div className="Buffer--50px" />
             <Nav
               variant="tabs"
               defaultActiveKey="participants"
