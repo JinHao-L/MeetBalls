@@ -38,6 +38,7 @@ server.interceptors.response.use(
             const tokenObj = res.data;
             setAuthToken(tokenObj.access_token || null, type);
             localStorage.setItem(refreshTokenKey, tokenObj.refresh_token);
+            originalRequest.headers['Authorization'] = `Bearer ${tokenObj.access_token}`;
             return server(originalRequest);
           }
         })
