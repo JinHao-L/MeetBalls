@@ -59,6 +59,7 @@ export default function UploadItem({ agendaItem, speakerId }) {
         data,
         defaultHeaders,
       );
+      setMaterials('')
     } catch (err) {
       toast.error(extractError(err));
       return;
