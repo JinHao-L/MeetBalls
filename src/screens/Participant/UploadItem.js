@@ -16,7 +16,7 @@ export default function UploadItem({ agendaItem, speakerId }) {
   );
 
   function EditButton() {
-    if (materials == '')
+    if (materials === '')
       return (
         <Row>
           <Col>
