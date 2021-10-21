@@ -1,86 +1,53 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Container, Row, Image } from 'react-bootstrap';
 import { CalendarPlusFill } from 'react-bootstrap-icons';
 import UpcomingMeetingItem from './UpcomingMeetingItem';
 import OngoingMeetingItem from './OngoingMeetingItem';
-import { defaultHeaders } from '../../utils/axiosConfig';
 import AddMeetingOverlay from './AddMeetingOverlay';
-import server from '../../services/server';
 import { FullLoadingIndicator } from '../../components/FullLoadingIndicator';
 import CompletedMeetingItem from './CompletedMeetingItem';
 import { toast } from 'react-toastify';
 import { extractError } from '../../utils/extractError';
 import { logEvent } from '@firebase/analytics';
 import { googleAnalytics } from '../../services/firebase';
+import { clearMeetingsCache, pullMeetings } from '../../utils/dashboardCache';
 
 export default function DashboardScreen() {
   const [upcoming, setUpcoming] = useState([]);
   const [meetingHistory, setHistory] = useState([]);
-  const [loadingUpcoming, setLoadingUpcoming] = useState(true);
-  const [loadingPast, setLoadingPast] = useState(true);
+  const [loading, setLoading] = useState(true);
   const [showOverlay, setShowOverlay] = useState(false);
   const [cloneMeeting, setCloneMeeting] = useState(null);
+
+  const mounted = useRef(true);
 
   useEffect(() => {
     logEvent(googleAnalytics, 'visit_dashboard');
     getBanner();
-    return pullMeetings();
+    populateMeetings();
+
+    return () => {
+      mounted.current = false;
+    };
   }, []);
 
-  async function pullMeetings() {
-    try {
-      await pullPastMeetings();
-      await pullUpcomingMeetings();
-    } catch (err) {
-      toast.error(extractError(err));
-    }
+  function populateMeetings() {
+    return pullMeetings()
+      .then((meetings) => {
+        if (!mounted.current) return;
+        setUpcoming(meetings.upcoming);
+        setHistory(meetings.completed);
+      })
+      .catch((e) => toast(extractError(e)))
+      .finally(() => {
+        if (!mounted.current) return;
+        setLoading(false);
+      });
   }
 
-  async function pullUpcomingMeetings() {
-    function sortMeetings(meetingA, meetingB) {
-      const startA = meetingA.startedAt;
-      const startB = meetingB.startedAt;
-      if (startA > startB) return 1;
-      else if (startA < startB) return -1;
-      else return 0;
-    }
-
-    return server
-      .get('/meeting', {
-        params: { type: 'upcoming' },
-        ...defaultHeaders,
-      })
-      .then((res) => {
-        const meetings = res.data;
-        const upcoming = meetings.sort(sortMeetings);
-        setUpcoming(upcoming);
-      })
-      .catch(console.error)
-      .finally(() => setLoadingUpcoming(false));
-  }
-
-  async function pullPastMeetings() {
-    function sortMeetings(meetingA, meetingB) {
-      const startA = meetingA.startedAt;
-      const startB = meetingB.startedAt;
-      if (startA < startB) return 1;
-      else if (startA > startB) return -1;
-      else return 0;
-    }
-
-    return server
-      .get('/meeting', {
-        params: { type: 'past' },
-        ...defaultHeaders,
-      })
-      .then((res) => {
-        const pastMeetings = res.data.sort(sortMeetings);
-        setHistory(pastMeetings);
-      })
-      .catch((err) => {
-        toast.error(extractError(err));
-      })
-      .finally(() => setLoadingPast(false));
+  function onUpdate() {
+    clearMeetingsCache();
+    return populateMeetings();
   }
 
   function checkIfExist(id) {
@@ -102,7 +69,7 @@ export default function DashboardScreen() {
       <UpcomingMeetingItem
         key={idx}
         meeting={meeting}
-        pullMeeting={pullMeetings}
+        onUpdate={onUpdate}
         setCloneMeeting={setCloneMeeting}
         setShowOverlay={setShowOverlay}
       />
@@ -120,7 +87,7 @@ export default function DashboardScreen() {
     />
   ));
 
-  if (loadingUpcoming || loadingPast) {
+  if (loading) {
     return <FullLoadingIndicator />;
   }
 
@@ -149,7 +116,7 @@ export default function DashboardScreen() {
       <AddMeetingOverlay
         show={showOverlay}
         setShow={setShowOverlay}
-        onUpdate={pullMeetings}
+        onUpdate={onUpdate}
         checkIfExist={checkIfExist}
         cloneMeeting={cloneMeeting}
       />
