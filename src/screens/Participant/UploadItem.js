@@ -21,21 +21,19 @@ export default function UploadItem({ agendaItem, speakerId }) {
         <Col className="d-grid gap-2">
           <Button
             onClick={() =>
-              openFile(
-                materials,
-                agendaItem.meetingId,
-                speakerId,
-              ).catch((_err) => {
-                toast.error('File not found');
-              })
+              openFile(materials, agendaItem.meetingId, speakerId).catch(
+                (_err) => {
+                  toast.error('File not found');
+                },
+              )
             }
           >
-            Open File
+            {isValidUrl(materials) ? 'Open Link' : 'Open File'}
           </Button>
         </Col>
         <Col className="d-grid gap-2">
           <Button variant="secondary" onClick={() => remove()}>
-            Remove File
+            {isValidUrl(materials) ? 'Remove Link' : 'Remove File'}
           </Button>
         </Col>
       </Row>
@@ -57,9 +55,14 @@ export default function UploadItem({ agendaItem, speakerId }) {
       await server.put(
         `/agenda-item/${agendaItem.meetingId}/${agendaItem.position}`,
         data,
-        defaultHeaders,
+        {
+          headers: {
+            ...defaultHeaders.headers,
+            'X-Participant': sessionStorage.getItem(agendaItem.meetingId) || '',
+          },
+        },
       );
-      setMaterials('')
+      setMaterials('');
     } catch (err) {
       toast.error(extractError(err));
       return;
@@ -106,7 +109,12 @@ export default function UploadItem({ agendaItem, speakerId }) {
       await server.put(
         `/agenda-item/${agendaItem.meetingId}/${agendaItem.position}`,
         data,
-        defaultHeaders,
+        {
+          headers: {
+            ...defaultHeaders.headers,
+            'X-Participant': sessionStorage.getItem(agendaItem.meetingId) || '',
+          },
+        },
       );
       agendaItem.speakerMaterials = speakerMaterials;
       setEditing(false);

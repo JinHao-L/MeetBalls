@@ -256,7 +256,12 @@ async function updateDatabase(
     await server.put(
       `/agenda-item/${meetingId}/${position}`,
       data,
-      defaultHeaders,
+      {
+        headers: {
+          ...defaultHeaders.headers,
+          'X-Participant': sessionStorage.getItem(meetingId) || '',
+        },
+      },
     );
   }
 }

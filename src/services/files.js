@@ -4,6 +4,9 @@ import server from './server';
 export const uploadFile = async (file, meetingId, uploaderId) => {
   const res = await server.get(`/uploads/write/${meetingId}`, {
     params: { name: file.name, type: file.type, uploader: uploaderId },
+    headers: {
+      'X-Participant': sessionStorage.getItem(meetingId) || '',
+    },
   });
   const signedUrl = res.data.uploadUrl;
   await uploadToS3(signedUrl, file);
@@ -32,6 +35,9 @@ export const openFile = async (file, meetingId, uploaderId) => {
 
   const res = await server.get(`/uploads/read/${meetingId}`, {
     params: { name: file, uploader: uploaderId },
+    headers: {
+      'X-Participant': sessionStorage.getItem(meetingId) || '',
+    },
   });
   const downloadUrl = res.data;
   return openLinkInNewTab(downloadUrl);

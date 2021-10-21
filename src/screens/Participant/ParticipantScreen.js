@@ -52,7 +52,12 @@ export default function ParticipantScreen() {
   }, [socket]);
 
   async function pullMeeting() {
-    const response = await server.get(`/meeting/${id}`, defaultHeaders);
+    const response = await server.get(`/meeting/${id}`, {
+      headers: {
+        ...defaultHeaders.headers,
+        'X-Participant': sessionStorage.getItem(id) || '',
+      },
+    });
     if (response.status !== 200) return;
     const result = response.data;
     setMeeting(result);

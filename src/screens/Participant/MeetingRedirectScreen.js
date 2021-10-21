@@ -39,6 +39,7 @@ export default function RedirectScreen() {
       );
       setError(false);
       setLoading(false);
+      sessionStorage.setItem(response.data.meeting.id, token);
       handleRedirection(response.data);
     } catch (error) {
       toast.error(extractError(error));

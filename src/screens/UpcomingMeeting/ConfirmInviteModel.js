@@ -34,7 +34,12 @@ export default function ConfirmInviteModel({
       const inviteData = inviteResponse.data.data;
       const successes = inviteData.filter((status) => status.success).length;
 
-      const res = await server.get(`/participant/${meeting.id}`);
+      const res = await server.get(`/participant/${meeting.id}`, {
+        headers: {
+          ...defaultHeaders.headers,
+          'X-Participant': sessionStorage.getItem(meeting.id) || '',
+        },
+      });
       setMeeting((prev) => ({ ...prev, participants: res.data }));
 
       if (successes === participants.length) toast.success(INVITE_SUCCESS);

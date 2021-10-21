@@ -5,10 +5,7 @@ import server from '../../services/server';
 import AttendanceList from './AttendanceList';
 import CompletedAgendaCard from './CompletedAgendaCard';
 import { Col, Nav, Row, Button, Container } from 'react-bootstrap';
-import {
-  getDateInfo,
-  getFormattedDate,
-} from '../../common/CommonFunctions';
+import { getDateInfo, getFormattedDate } from '../../common/CommonFunctions';
 import Statistics from './Statistics';
 import RedirectionScreen, {
   MEETING_NOT_FOUND_ERR,
@@ -27,7 +24,11 @@ export default function CompletedMeetingScreen() {
 
   useEffect(() => {
     return server
-      .get(`/meeting/${id}`)
+      .get(`/meeting/${id}`, {
+        headers: {
+          'X-Participant': sessionStorage.getItem(id) || '',
+        },
+      })
       .then((res) => {
         const participants = res.data?.participants?.filter(
           (x) => !x.isDuplicate,
