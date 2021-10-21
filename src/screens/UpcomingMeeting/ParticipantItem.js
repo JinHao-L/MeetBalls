@@ -1,4 +1,11 @@
-import { Button, Row, Col, Card } from 'react-bootstrap';
+import {
+  Button,
+  Row,
+  Col,
+  Card,
+  OverlayTrigger,
+  Tooltip,
+} from 'react-bootstrap';
 import { useState } from 'react';
 import EditParticipantItem from './EditParticipantItem';
 import server from '../../services/server';
@@ -6,8 +13,14 @@ import { defaultHeaders } from '../../utils/axiosConfig';
 import { toast } from 'react-toastify';
 import { SmallLoadingIndicator } from '../../components/SmallLoadingIndicator';
 import { extractError } from '../../utils/extractError';
+import { Envelope } from 'react-bootstrap-icons';
 
-export default function ParticipantItem({ setMeeting, meeting, position }) {
+export default function ParticipantItem({
+  setMeeting,
+  meeting,
+  position,
+  hostEmail,
+}) {
   const [removing, setRemoving] = useState(false);
   const [editing, setEditing] = useState(false);
   const participant = meeting.participants[position];
@@ -78,6 +91,14 @@ export default function ParticipantItem({ setMeeting, meeting, position }) {
         <SmallLoadingIndicator />
       ) : (
         <Card>
+          <Card.Header className="Container__row--space-between">
+            {participant.userEmail === hostEmail ? 'Host' : 'Participant'}
+            {participant.userEmail !== hostEmail && participant.invited ? (
+              <OverlayTrigger placement="top" overlay={renderTooltip}>
+                <Envelope size={20} className="Clickable" />
+              </OverlayTrigger>
+            ) : null}
+          </Card.Header>
           <Card.Body>
             <Card.Title>
               {participant?.userName != null && participant?.userName.length > 0
@@ -111,3 +132,9 @@ async function removeFromDatabase(email, meetingId) {
     },
   });
 }
+
+const renderTooltip = (props) => (
+  <Tooltip id="button-tooltip" {...props}>
+    Invite Sent
+  </Tooltip>
+);

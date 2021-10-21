@@ -84,7 +84,13 @@ export default function UpcomingMeetingScreen() {
         />
       );
     } else {
-      return <ParticipantItemList meeting={meeting} setMeeting={setMeeting} />;
+      return (
+        <ParticipantItemList
+          meeting={meeting}
+          setMeeting={setMeeting}
+          hostEmail={user.email}
+        />
+      );
     }
   }
 
@@ -262,6 +268,7 @@ async function addAgenda(meeting, setMeeting) {
   setMeeting(newMeeting);
 }
 
-function scrollToBottom() {
+async function scrollToBottom() {
+  await new Promise((resolve) => setTimeout(resolve, 200));
   window.scrollTo(0, window.outerHeight);
 }
