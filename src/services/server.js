@@ -16,6 +16,7 @@ server.interceptors.response.use(
     if (
       originalRequest.url !== '' &&
       !originalRequest.url?.startsWith('auth/') &&
+      !originalRequest.url?.startsWith('/meeting/magic-link') &&
       err?.response?.status === 401 &&
       !originalRequest._retry &&
       refreshToken
