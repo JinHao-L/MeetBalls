@@ -7,7 +7,7 @@ export const getMeeting = async (meetingId) => {
     transformResponse: [],
     headers: {
       'X-Participant': sessionStorage.getItem(meetingId) || '',
-    }
+    },
   });
   res.data = JSON.parse(res.data, agendaReviver);
   return res;

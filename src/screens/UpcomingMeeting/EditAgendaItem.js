@@ -256,16 +256,12 @@ async function updateDatabase(
   if (oldName.length === 0) {
     await server.post(`/agenda-item`, data, defaultHeaders);
   } else {
-    await server.put(
-      `/agenda-item/${meetingId}/${position}`,
-      data,
-      {
-        headers: {
-          ...defaultHeaders.headers,
-          'X-Participant': sessionStorage.getItem(meetingId) || '',
-        },
+    await server.put(`/agenda-item/${meetingId}/${position}`, data, {
+      headers: {
+        ...defaultHeaders.headers,
+        'X-Participant': sessionStorage.getItem(meetingId) || '',
       },
-    );
+    });
   }
 }
 

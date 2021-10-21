@@ -34,7 +34,7 @@ export default function RedirectScreen() {
   async function resolveToken() {
     try {
       const response = await server.get(`/meeting/magic-link`, {
-        headers: { ...(defaultHeaders.headers), 'X-Participant': token },
+        headers: { ...defaultHeaders.headers, 'X-Participant': token },
       });
       setError(false);
       setLoading(false);
