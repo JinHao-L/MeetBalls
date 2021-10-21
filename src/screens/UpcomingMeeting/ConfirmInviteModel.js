@@ -51,13 +51,12 @@ export default function ConfirmInviteModel({
       <ListGroup.Item
         className="Clickable"
         onClick={() => {
+          let newList = [];
           if (!inviteList.some((p) => p === participant)) {
-            var newList = [];
             newList = newList.concat(inviteList);
             newList.push(participant);
             setInviteList(newList);
           } else if (inviteList.some((p) => p === participant)) {
-            var newList = [];
             newList = newList.concat(inviteList);
             const position = inviteList.indexOf(participant);
             newList.splice(position, 1);
@@ -91,7 +90,7 @@ export default function ConfirmInviteModel({
             <ListGroup variant="flush">
               {meeting.participants.length > 0 ? (
                 meeting.participants.map((participant, id) => {
-                  if (participant?.role === 2) return;
+                  if (participant?.role === 2) return null;
                   return <ParticipantItem key={id} participant={participant} />;
                 })
               ) : (
