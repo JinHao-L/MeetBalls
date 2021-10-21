@@ -15,6 +15,7 @@ import {
   callStartMeeting,
   callEndMeeting,
   callNextMeeting,
+  syncMeetingWithZoom,
 } from '../../services/meeting';
 import { useSocket } from '../../hooks/useSocket';
 import { UserContext } from '../../context/UserContext';
@@ -40,6 +41,7 @@ export default function OngoingMeetingAdminScreen() {
 
   const [loading, setLoading] = useState(true);
   const [validId, setIsValidId] = useState(false);
+  const [once, setOnce] = useState(false);
 
   const { id } = useParams();
   const { socket } = useSocket(id);
@@ -56,6 +58,21 @@ export default function OngoingMeetingAdminScreen() {
       setTime(new Date().getTime());
     }, 1000);
   }, []);
+
+  useEffect(() => {
+    if (validId && isHost && !once) {
+      syncMeetingWithZoom(meeting)
+        .then((newZoomUuid) => {
+          if (newZoomUuid) {
+            setMeeting((meeting) => ({ ...meeting, zoomUuid: newZoomUuid }));
+          }
+        })
+        .catch((err) => {
+          console.log('Failed to sync with zoom', err);
+        });
+      setOnce(true);
+    }
+  }, [validId]);
 
   useEffect(() => {
     if (!socket) return;
