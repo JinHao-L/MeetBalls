@@ -25,7 +25,6 @@ export default function ConfirmInviteModel({
     if (inviteList.length === 0) return;
     try {
       setInviteLoading(true);
-      console.log({ participants });
       const inviteResponse = await server.post(
         `/participant/send-multiple-invites`,
         { participants },
@@ -91,11 +90,7 @@ export default function ConfirmInviteModel({
             <ListGroup variant="flush">
               {meeting.participants.length > 0 ? (
                 meeting.participants.map((participant, id) => {
-                  if (
-                    participant?.userEmail !== null &&
-                    participant?.userEmail === user?.email
-                  )
-                    return;
+                  if (participant?.role === 2) return;
                   return <ParticipantItem key={id} participant={participant} />;
                 })
               ) : (

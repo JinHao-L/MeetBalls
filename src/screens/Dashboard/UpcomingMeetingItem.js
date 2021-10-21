@@ -25,7 +25,6 @@ export default function UpcomingMeetingItem({
   }
 
   function startMeeting() {
-    openLinkInNewTab(meeting.joinUrl);
     history.push(`/ongoing/${meeting.id}`);
   }
 

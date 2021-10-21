@@ -213,6 +213,7 @@ export default function CustomBootstrapStyle() {
 
     .card {
       border-radius: 6px;
+      box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.1);
     }
 
     .bg-primary {
@@ -250,15 +251,28 @@ export default function CustomBootstrapStyle() {
     }
 
     .nav-tabs .nav-item.show .nav-link, .nav-tabs .nav-link.active {
-      color: #8F6B58;
-      font-weight: 500;
+      background-color: #8F6B58;
+      color: white;
+      border-radius: 20px;
+      width: 120px;
+      text-align: center;
+      margin-right: 10px;
+      padding: 5px;
     }
 
     .nav-tabs .nav-link {
-      color: #c5c5c5;
-      font-weight: 500;
+      color: #8F6B58;
+      border-radius: 20px;
+      border-color: #8F6B58;
+      width: 120px;
+      text-align: center;
+      margin-right: 10px;
+      padding: 5px;
     }
 
+    .nav-tabs {
+      border-width: 0px;
+    }
  
 
     `}
