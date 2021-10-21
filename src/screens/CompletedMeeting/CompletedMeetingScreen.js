@@ -11,6 +11,8 @@ import RedirectionScreen, {
   MEETING_NOT_FOUND_ERR,
 } from '../../components/RedirectionScreen';
 import BackgroundPattern from '../../assets/background_pattern2.jpg';
+import { logEvent } from '@firebase/analytics';
+import { googleAnalytics } from '../../services/firebase';
 
 export default function CompletedMeetingScreen() {
   const [meeting, setMeeting] = useState(blankMeeting);
@@ -34,6 +36,7 @@ export default function CompletedMeetingScreen() {
           (x) => !x.isDuplicate,
         );
         setMeeting({ ...res.data, participants });
+        logEvent(googleAnalytics, 'visit_completed_screen', { meetingId: id });
         setValidId(true);
       })
       .catch((_) => setValidId(false))

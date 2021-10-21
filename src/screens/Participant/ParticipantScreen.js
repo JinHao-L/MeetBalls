@@ -11,6 +11,8 @@ import UploadItem from './UploadItem';
 import RedirectionScreen, {
   MEETING_NOT_FOUND_ERR,
 } from '../../components/RedirectionScreen';
+import { logEvent } from '@firebase/analytics';
+import { googleAnalytics } from '../../services/firebase';
 
 const JOINER_KEY = 'joiner';
 const NAME_KEY = 'name';
@@ -39,6 +41,10 @@ export default function ParticipantScreen() {
     return pullMeeting()
       .then(() => {
         setValidId(true);
+        logEvent(googleAnalytics, 'visit_participant_screen', {
+          meetingId: id,
+          participant: joinerId,
+        });
       })
       .catch((_) => setValidId(false))
       .finally(() => setLoading(false));

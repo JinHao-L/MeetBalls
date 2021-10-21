@@ -10,6 +10,8 @@ import { FullLoadingIndicator } from '../../components/FullLoadingIndicator';
 import CompletedMeetingItem from './CompletedMeetingItem';
 import { toast } from 'react-toastify';
 import { extractError } from '../../utils/extractError';
+import { logEvent } from '@firebase/analytics';
+import { googleAnalytics } from '../../services/firebase';
 
 export default function DashboardScreen() {
   const [upcoming, setUpcoming] = useState([]);
@@ -20,6 +22,7 @@ export default function DashboardScreen() {
   const [cloneMeeting, setCloneMeeting] = useState(null);
 
   useEffect(() => {
+    logEvent(googleAnalytics, 'visit_dashboard');
     getBanner();
     return pullMeetings();
   }, []);

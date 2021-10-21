@@ -45,7 +45,6 @@ server.interceptors.response.use(
         .catch((err) => {
           if (err?.response?.status === 401) {
             setAuthToken(null);
-            localStorage.removeItem(refreshTokenKey);
             toast.error('Not logged in');
             return Promise.reject();
           }

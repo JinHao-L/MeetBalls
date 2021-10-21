@@ -90,8 +90,8 @@ export default function AddMeetingOverlay({
         onUpdate();
         const id = res.data.id;
         setShow(false);
+        logEvent(googleAnalytics, 'created_meeting', { meetingId: id });
         history.push('/meeting/' + id);
-        logEvent(googleAnalytics, 'created_meeting');
       })
       .catch(() => {
         setLoading(false);
@@ -112,7 +112,7 @@ export default function AddMeetingOverlay({
       const start = meeting.start_time;
       const startField = start ? new Date(start) : new Date();
       setFieldValue('name', meeting.topic);
-      setFieldValue('desc', meeting.agenda);
+      setFieldValue('desc', meeting.agenda || '');
       setFieldValue('meetingId', meeting.id);
       setFieldValue('meetingPassword', zoomMeeting.password);
       setFieldValue('link', meeting.join_url);
