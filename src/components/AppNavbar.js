@@ -49,7 +49,7 @@ export const AppNavbar = () => {
             variant="outline-primary"
             size="sm"
             style={{ borderRadius: 50 }}
-            onClick={() => history.push('/login')}
+            href='/login'
           >
             Login
           </Button>
@@ -59,7 +59,7 @@ export const AppNavbar = () => {
             variant="outline-primary"
             size="sm"
             style={{ borderRadius: 50 }}
-            onClick={() => history.push('/home')}
+            href='/home'
           >
             Dashboard
           </Button>

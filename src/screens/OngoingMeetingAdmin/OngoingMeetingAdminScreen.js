@@ -102,11 +102,9 @@ export default function OngoingMeetingAdminScreen() {
   }
 
   const updateMeeting = (meetingObj) => {
-    meetingObj.participants = meetingObj.participants
-      .filter((x) => !x.isDuplicate)
-      .sort((p1, p2) => {
-        return (' ' + p1.userName).localeCompare(p2.userName);
-      });
+    const participants = meetingObj.participants;
+    meetingObj.participants = sortAndRemoveDupes(participants);
+
     meetingObj.agendaItems = meetingObj.agendaItems.sort((p1, p2) => {
       return p1.position - p2.position;
     });
@@ -441,12 +439,15 @@ function updateParticipants(participants, update) {
     }
   });
   if (!hasUpdate) {
-    return [update, ...participants]
-      .filter((x) => !x.isDuplicate)
-      .sort((p1, p2) => {
-        return (' ' + p1.userName).localeCompare(p2.userName);
-      });
+    const newList = [update, ...participants]
+    return sortAndRemoveDupes(newList);
   } else {
     return participants.filter((x) => !x.isDuplicate);
   }
+}
+
+function sortAndRemoveDupes(participants) {
+  return participants
+      .filter((x) => !x.isDuplicate)
+      .sort((p1, p2) => (p1.userName).localeCompare(p2.userName));
 }
