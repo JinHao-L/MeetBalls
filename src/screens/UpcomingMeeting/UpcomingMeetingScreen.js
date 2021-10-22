@@ -39,6 +39,7 @@ import BackgroundPattern from '../../assets/background_pattern2.jpg';
 import { logEvent } from '@firebase/analytics';
 import { googleAnalytics } from '../../services/firebase';
 import SuggestionOverlay from './SuggestionOverlay';
+import { FullLoadingIndicator } from '../../components/FullLoadingIndicator';
 
 export default function UpcomingMeetingScreen() {
   const [meeting, setMeeting] = useState(blankMeeting);
@@ -50,7 +51,7 @@ export default function UpcomingMeetingScreen() {
   const [isReordering, setReordering] = useState(false);
   const [inviteList, setInviteList] = useState([]);
 
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [validId, setValidId] = useState(true);
   const [openSuggestion, setOpenSuggestion] = useState(false);
 
@@ -205,6 +206,10 @@ export default function UpcomingMeetingScreen() {
 
   if (meeting.type !== undefined && meeting.type !== 1) {
     return <Redirect to={'/ongoing/' + id} />;
+  }
+
+  if (loading) {
+    return <FullLoadingIndicator />;
   }
 
   return (

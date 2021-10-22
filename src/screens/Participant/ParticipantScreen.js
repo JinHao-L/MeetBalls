@@ -14,6 +14,7 @@ import RedirectionScreen, {
 import { logEvent } from '@firebase/analytics';
 import { googleAnalytics } from '../../services/firebase';
 import SuggestionItem from './SuggestionItem';
+import { FullLoadingIndicator } from '../../components/FullLoadingIndicator';
 
 const JOINER_KEY = 'joiner';
 const NAME_KEY = 'name';
@@ -23,7 +24,7 @@ export default function ParticipantScreen() {
   const { socket } = useSocket(id);
   const [meeting, setMeeting] = useState(blankMeeting);
   const [validId, setValidId] = useState(true);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [restrictDescription, setRestrictDescription] = useState(true);
   const [agendaItems, setAgendaItems] = useState([]);
   const [suggestions, setSuggestions] = useState([]);
@@ -131,6 +132,9 @@ export default function ParticipantScreen() {
   }
   if (meeting.type !== undefined && meeting.type !== 1) {
     return <Redirect to={'/ongoing/' + id} />;
+  }
+  if (loading) {
+    return <FullLoadingIndicator />;
   }
 
   function addSuggestion() {

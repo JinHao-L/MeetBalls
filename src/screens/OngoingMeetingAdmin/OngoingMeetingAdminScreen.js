@@ -29,6 +29,7 @@ import FeedbackOverlay from './FeedbackOverlay';
 import { logEvent } from '@firebase/analytics';
 import { googleAnalytics } from '../../services/firebase';
 import { clearMeetingsCache } from '../../utils/dashboardCache';
+import { FullLoadingIndicator } from '../../components/FullLoadingIndicator';
 
 export default function OngoingMeetingAdminScreen() {
   const [position, setPosition] = useState(-1);
@@ -208,6 +209,10 @@ export default function OngoingMeetingAdminScreen() {
 
   if (!loading && !validId)
     return <RedirectionScreen message={MEETING_NOT_FOUND_ERR} />;
+
+  if (loading) {
+    return <FullLoadingIndicator />;
+  }
 
   updateDelay(meeting.agendaItems, time, position, play);
 
