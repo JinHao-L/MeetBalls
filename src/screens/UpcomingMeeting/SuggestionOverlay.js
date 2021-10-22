@@ -4,6 +4,7 @@ import { toast } from 'react-toastify';
 import server from '../../services/server';
 import { extractError } from '../../utils/extractError';
 import { defaultHeaders } from '../../utils/axiosConfig';
+import { getFormattedDuration } from '../../common/CommonFunctions';
 
 export default function SuggestionOverlay({ show, setShow, meetingId }) {
   const [suggestions, setSuggestions] = useState([]);
@@ -33,7 +34,11 @@ export default function SuggestionOverlay({ show, setShow, meetingId }) {
       items.push(
         <Card>
           <Card.Body>
-            <Card.Title>item.name</Card.Title>
+            <Card.Title>{item.name}</Card.Title>
+            <Card.Subtitle>
+              {getFormattedDuration(item.expectedDuration)}
+            </Card.Subtitle>
+            <Card.Text>{item.description}</Card.Text>
           </Card.Body>
         </Card>,
       );
