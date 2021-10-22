@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { Container, Row, Image } from 'react-bootstrap';
 import { CalendarPlusFill } from 'react-bootstrap-icons';
 import UpcomingMeetingItem from './UpcomingMeetingItem';
@@ -21,9 +21,12 @@ export default function DashboardScreen() {
 
   const mounted = useRef(true);
 
+  useLayoutEffect(() => {
+    getBanner();
+  }, [])
+
   useEffect(() => {
     logEvent(googleAnalytics, 'visit_dashboard');
-    getBanner();
     populateMeetings();
 
     return () => {
