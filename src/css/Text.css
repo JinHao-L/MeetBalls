@@ -73,3 +73,11 @@
 .Text--no-decoration {
   text-decoration: none;
 }
+
+.Text--rotated {
+  width: 130px;
+  transform: rotate(270deg);
+  color: white;
+  font-weight: 500;
+  position: absolute;
+}

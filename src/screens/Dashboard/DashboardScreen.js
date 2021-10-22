@@ -23,7 +23,7 @@ export default function DashboardScreen() {
 
   useLayoutEffect(() => {
     getBanner();
-  }, [])
+  }, []);
 
   useEffect(() => {
     logEvent(googleAnalytics, 'visit_dashboard');
@@ -132,6 +132,7 @@ export default function DashboardScreen() {
       >
         <CalendarPlusFill size={22} color="white" />
       </div>
+      <FeedbackToggle />
     </>
   );
 }
@@ -149,4 +150,17 @@ function getBanner() {
   } else {
     return require('../../assets/banner_night.jpg');
   }
+}
+
+function FeedbackToggle() {
+  return (
+    <a
+      href="https://docs.google.com/forms/d/e/1FAIpQLSfN7K-1RdMzzlIf-9DtvKxhlqMpYkUGV_w3cYMofNsehDw_qA/viewform?usp=sf_link"
+      target="_blank"
+    >
+      <div className="Toggle__feedback">
+        <p className="Text--rotated">Have Feedback?</p>
+      </div>
+    </a>
+  );
 }
