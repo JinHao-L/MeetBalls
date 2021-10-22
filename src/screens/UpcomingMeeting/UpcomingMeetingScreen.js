@@ -107,7 +107,6 @@ export default function UpcomingMeetingScreen() {
           meeting={meeting}
           setMeeting={setMeeting}
           isReordering={isReordering}
-          setReordering={setReordering}
         />
       );
     } else {

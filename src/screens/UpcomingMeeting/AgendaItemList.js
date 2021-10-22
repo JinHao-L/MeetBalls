@@ -1,16 +1,8 @@
 import { DragDropContext, Droppable } from 'react-beautiful-dnd';
 import AgendaItem from './AgendaItem';
-import { Button, Row, Col, ListGroup } from 'react-bootstrap';
-import server from '../../services/server';
-import { defaultHeaders } from '../../utils/axiosConfig';
 import { useState } from 'react';
 
-export default function AgendaItemList({
-  meeting,
-  setMeeting,
-  isReordering,
-  setReordering,
-}) {
+export default function AgendaItemList({ meeting, setMeeting, isReordering }) {
   const [isDeleting, setDeleting] = useState(false);
   const items = [];
 
