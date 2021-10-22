@@ -1,15 +1,43 @@
 import { useEffect, useState } from 'react';
 import { Modal, Card } from 'react-bootstrap';
+import { toast } from 'react-toastify';
+import server from '../../services/server';
+import { extractError } from '../../utils/extractError';
+import { defaultHeaders } from '../../utils/axiosConfig';
 
-export default function SuggestionOverlay({ show, setShow }) {
+export default function SuggestionOverlay({ show, setShow, meetingId }) {
   const [suggestions, setSuggestions] = useState([]);
 
   useEffect(() => {
     if (!show) return;
+    getSuggestions();
   }, [show]);
+
+  async function getSuggestions() {
+    try {
+      const response = await server.get(`/suggestion/${meetingId}`, {
+        ...defaultHeaders.headers,
+        'X-Participant': sessionStorage.getItem(meetingId) || '',
+      });
+      if (response.status !== 200) return;
+      const result = response.data;
+      setSuggestions(result);
+    } catch (err) {
+      toast.error(extractError(err));
+    }
+  }
 
   function SuggestionItems() {
     const items = [];
+    suggestions.forEach((item) => {
+      items.push(
+        <Card>
+          <Card.Body>
+            <Card.Title>item.name</Card.Title>
+          </Card.Body>
+        </Card>,
+      );
+    });
     return items;
   }
 

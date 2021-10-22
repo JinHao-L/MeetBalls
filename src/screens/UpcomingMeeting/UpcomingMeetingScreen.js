@@ -326,7 +326,11 @@ export default function UpcomingMeetingScreen() {
       />
       <AddToggle />
       {currentTab === 'agenda' && !isReordering ? <ExtraToggles /> : null}
-      <SuggestionOverlay show={openSuggestion} setShow={setOpenSuggestion} />
+      <SuggestionOverlay
+        show={openSuggestion}
+        setShow={setOpenSuggestion}
+        meetingId={meeting.id}
+      />
     </div>
   );
 }

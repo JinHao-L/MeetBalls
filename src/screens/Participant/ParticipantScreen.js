@@ -149,46 +149,56 @@ export default function ParticipantScreen() {
       }}
     >
       <div className="Buffer--50px" />
-      <Container className="Container__padding--vertical Container__foreground">
-        <div className="Buffer--50px" />
+      <Container className="Container__foreground">
         <Row>
-          <Col lg={1} md={12} sm={12} />
           <Col
-            lg={10}
+            lg={12}
             md={12}
             sm={12}
+            className="Container__side"
             style={{ paddingLeft: 30, paddingRight: 30 }}
           >
-            <p className="Text__header">Hi {name}!</p>
-            <p className="Text__subheader">
-              You have a meeting <b>{meeting?.name}</b> scheduled on{' '}
-              {getFormattedDateTime(meeting?.startedAt)}. We will redirect you
-              to the meeting page once the host starts the meeting.
-            </p>
-            <div className="Buffer--20px" />
-            <div className="Container__row--space-between">
-              <p className="Text__subsubheader">Description</p>
-              <div
-                className="Text__hint Clickable"
-                onClick={() => setRestrictDescription(!restrictDescription)}
-              >
-                {restrictDescription ? 'Show More' : 'Show Less'}
-              </div>
-            </div>
-            <div className="Buffer--10px" />
-            <p
-              className={
-                'Text__paragraph' +
-                (restrictDescription ? ' Text__elipsized--5-lines' : '')
-              }
-            >
-              {meeting?.description}
-            </p>
+            <Row>
+              <Col lg={1} md={12} sm={12} />
+              <Col lg={4} md={12} sm={12}>
+                <div className="Buffer--50px" />
+                <p className="Text__header">Hi {name}!</p>
+                <p className="Text__subheader">
+                  You have a meeting <b>{meeting?.name}</b> scheduled on{' '}
+                  {getFormattedDateTime(meeting?.startedAt)}.
+                </p>
+                <Button onClick={() => history.push('/ongoing/' + id)}>
+                  Go to Meeting
+                </Button>
+                <div className="Buffer--50px" />
+              </Col>
+              <Col lg={1} md={12} sm={12} />
+              <Col lg={5} md={12} sm={12}>
+                <div className="Buffer--50px" />
+                <div className="Container__row--space-between">
+                  <p className="Text__subsubheader">Description</p>
+                  <div
+                    className="Text__hint Clickable"
+                    onClick={() => setRestrictDescription(!restrictDescription)}
+                  >
+                    {restrictDescription ? 'Show More' : 'Show Less'}
+                  </div>
+                </div>
+                <div className="Buffer--10px" />
+                <p
+                  className={
+                    'Text__paragraph' +
+                    (restrictDescription ? ' Text__elipsized--5-lines' : '')
+                  }
+                >
+                  {meeting?.description}
+                </p>
+                <div className="Buffer--50px" />
+              </Col>
+            </Row>
           </Col>
         </Row>
-        <div className="Buffer--20px" />
-        <div className="Line--horizontal" />
-        <div className="Buffer--20px" />
+        <div className="Buffer--50px" />
         <Row>
           <Col lg={1} md={12} sm={12} />
           <Col
