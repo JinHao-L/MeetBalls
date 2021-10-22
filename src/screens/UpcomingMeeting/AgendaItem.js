@@ -140,7 +140,7 @@ export default function AgendaItem({
                         ? 'Presented by ' + item.speaker.userName
                         : ''}
                     </Card.Subtitle>
-                    <div className="Buffer--10px" />
+                    <div className="Buffer--5px" />
                     <Card.Text>{item.description}</Card.Text>
                   </Card.Body>
                   {isReordering || (

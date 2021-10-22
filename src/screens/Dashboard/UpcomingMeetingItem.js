@@ -6,8 +6,8 @@ import ConfirmDeleteModal from './ConfirmDeleteModal';
 import server from '../../services/server';
 import PropTypes from 'prop-types';
 import { Trash, CameraVideo, Pen, Front } from 'react-bootstrap-icons';
-import { FullLoadingIndicator } from '../../components/FullLoadingIndicator';
 import { toast } from 'react-toastify';
+import { SmallLoadingIndicator } from '../../components/SmallLoadingIndicator';
 
 export default function UpcomingMeetingItem({
   meeting,
@@ -39,8 +39,8 @@ export default function UpcomingMeetingItem({
       })
       .catch(() => {
         toast.error('Failed to delete');
-      })
-      .finally(() => setDeleting(false));
+        setDeleting(false);
+      });
   }
 
   function Details() {
@@ -103,7 +103,12 @@ export default function UpcomingMeetingItem({
     >
       <Card className="Card__dashboard">
         {deleting ? (
-          <FullLoadingIndicator />
+          <div
+            style={{ height: '100%', width: '100%' }}
+            className="Container__center--vertical"
+          >
+            <SmallLoadingIndicator />
+          </div>
         ) : (
           <Card.Body>
             <Details />

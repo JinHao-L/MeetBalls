@@ -1,5 +1,14 @@
 import { useState, useEffect, useContext } from 'react';
-import { Button, Row, Col, Container, Nav, Spinner } from 'react-bootstrap';
+import {
+  Button,
+  Row,
+  Col,
+  Container,
+  Nav,
+  Spinner,
+  Tooltip,
+  OverlayTrigger,
+} from 'react-bootstrap';
 import { getFormattedDateTime } from '../../common/CommonFunctions';
 import AgendaItemList from './AgendaItemList';
 import ParticipantItemList from './ParticipantItemList';
@@ -29,6 +38,7 @@ import { UserContext } from '../../context/UserContext';
 import BackgroundPattern from '../../assets/background_pattern2.jpg';
 import { logEvent } from '@firebase/analytics';
 import { googleAnalytics } from '../../services/firebase';
+import SuggestionOverlay from './SuggestionOverlay';
 
 export default function UpcomingMeetingScreen() {
   const [meeting, setMeeting] = useState(blankMeeting);
@@ -42,6 +52,7 @@ export default function UpcomingMeetingScreen() {
 
   const [loading, setLoading] = useState(false);
   const [validId, setValidId] = useState(true);
+  const [openSuggestion, setOpenSuggestion] = useState(false);
 
   const history = useHistory();
   const user = useContext(UserContext);
@@ -105,55 +116,84 @@ export default function UpcomingMeetingScreen() {
   }
 
   function AddToggle() {
+    const renderTooltip = (props) => (
+      <Tooltip id="button-tooltip" {...props}>
+        {isReordering ? 'Save' : 'Add New'}
+      </Tooltip>
+    );
+
     if (currentTab === 'participants') {
       return (
-        <div
-          className="Fab"
-          onClick={() => addParticipant(meeting, setMeeting)}
-        >
-          <PersonPlusFill size={25} color="white" />
-        </div>
+        <OverlayTrigger placement="top" overlay={renderTooltip}>
+          <div
+            className="Fab"
+            onClick={() => addParticipant(meeting, setMeeting)}
+          >
+            <PersonPlusFill size={25} color="white" />
+          </div>
+        </OverlayTrigger>
       );
     } else if (isReordering)
       return (
-        <div
-          className="Fab"
-          onClick={() => {
-            setReordering(false);
-            updateDatabase(meeting.id, meeting.agendaItems);
-          }}
-        >
-          <Save size={22} color="white" />
-        </div>
+        <OverlayTrigger placement="top" overlay={renderTooltip}>
+          <div
+            className="Fab"
+            onClick={() => {
+              setReordering(false);
+              updateDatabase(meeting.id, meeting.agendaItems);
+            }}
+          >
+            <Save size={22} color="white" />
+          </div>
+        </OverlayTrigger>
       );
 
     return (
-      <div
-        className="Fab"
-        onClick={() => {
-          addAgenda(meeting, setMeeting);
-        }}
-      >
-        <CalendarPlusFill size={22} color="white" />
-      </div>
+      <OverlayTrigger placement="top" overlay={renderTooltip}>
+        <div
+          className="Fab"
+          onClick={() => {
+            addAgenda(meeting, setMeeting);
+          }}
+        >
+          <CalendarPlusFill size={22} color="white" />
+        </div>
+      </OverlayTrigger>
     );
   }
 
   function ExtraToggles() {
+    const renderTooltipFirst = (props) => (
+      <Tooltip id="button-tooltip" {...props}>
+        Reorder
+      </Tooltip>
+    );
+    const renderTooltipSecond = (props) => (
+      <Tooltip id="button-tooltip" {...props}>
+        Suggestions
+      </Tooltip>
+    );
     return (
       <>
-        <div
-          className="Fab-secondary-first"
-          onClick={() => {
-            removeEmpty(meeting, setMeeting);
-            setReordering(true);
-          }}
-        >
-          <ArrowRepeat size={25} color="white" />
-        </div>
-        <div className="Fab-secondary-second">
-          <ChatSquareText size={20} color="white" />
-        </div>
+        <OverlayTrigger placement="top" overlay={renderTooltipFirst}>
+          <div
+            className="Fab-secondary-first"
+            onClick={() => {
+              removeEmpty(meeting, setMeeting);
+              setReordering(true);
+            }}
+          >
+            <ArrowRepeat size={25} color="white" />
+          </div>
+        </OverlayTrigger>
+        <OverlayTrigger placement="top" overlay={renderTooltipSecond}>
+          <div
+            className="Fab-secondary-second"
+            onClick={() => setOpenSuggestion(true)}
+          >
+            <ChatSquareText size={20} color="white" />
+          </div>
+        </OverlayTrigger>
       </>
     );
   }
@@ -286,6 +326,7 @@ export default function UpcomingMeetingScreen() {
       />
       <AddToggle />
       {currentTab === 'agenda' && !isReordering ? <ExtraToggles /> : null}
+      <SuggestionOverlay show={openSuggestion} setShow={setOpenSuggestion} />
     </div>
   );
 }

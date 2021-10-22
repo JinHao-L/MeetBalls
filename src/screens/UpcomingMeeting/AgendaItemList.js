@@ -14,8 +14,7 @@ export default function AgendaItemList({
   const [isDeleting, setDeleting] = useState(false);
   const items = [];
 
-  if (!isReordering) {
-  } else {
+  if (isReordering) {
     items.push(
       <div className="d-grid gap-2" key={'Button'}>
         <p className="Text__subsubheader">
@@ -24,9 +23,9 @@ export default function AgendaItemList({
         </p>
       </div>,
     );
+    items.push(<div className="Buffer--20px" key={'Buffer'} />);
   }
 
-  items.push(<div className="Buffer--20px" key={'Buffer'} />);
   for (let i = 0; i < meeting.agendaItems.length; i++) {
     items.push(
       <AgendaItem
