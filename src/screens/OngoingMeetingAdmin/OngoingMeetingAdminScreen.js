@@ -28,6 +28,7 @@ import BackgroundPattern from '../../assets/background_pattern2.jpg';
 import FeedbackOverlay from './FeedbackOverlay';
 import { logEvent } from '@firebase/analytics';
 import { googleAnalytics } from '../../services/firebase';
+import { clearMeetingsCache } from '../../utils/dashboardCache';
 
 export default function OngoingMeetingAdminScreen() {
   const [position, setPosition] = useState(-1);
@@ -132,6 +133,7 @@ export default function OngoingMeetingAdminScreen() {
     }
     try {
       await callStartMeeting(id);
+      clearMeetingsCache();
       logEvent(googleAnalytics, 'start_meeting', { meetingId: id });
       setMeetingStatus(2);
       setPosition(position + 1);
@@ -146,6 +148,7 @@ export default function OngoingMeetingAdminScreen() {
       await apiCall(id);
       agenda[position].actualDuration = time - agenda[position].startTime;
       if (isLastItem) {
+        clearMeetingsCache();
         setMeetingStatus(3);
         setShowFeedback(true);
         logEvent(googleAnalytics, 'end_meeting', { meetingId: id });
