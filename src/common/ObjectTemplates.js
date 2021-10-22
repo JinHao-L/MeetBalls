@@ -6,7 +6,7 @@ export const blankMeeting = {
   hostId: '',
   id: '',
   joinUrl: '',
-  startedAt: '1999-24-06T22:00:00Z',
+  startedAt: '1999-06-24T22:00:00Z',
   endedAt: '',
   enableTranscription: false,
   transcription: null,
