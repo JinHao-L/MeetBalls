@@ -92,7 +92,11 @@ export default function ParticipantItem({ setMeeting, meeting, position }) {
   return (
     <Col className="Container__padding--vertical-small">
       {removing ? (
-        <SmallLoadingIndicator />
+        <Card>
+          <div className="Buffer--50px" />
+          <SmallLoadingIndicator />
+          <div className="Buffer--50px" />
+        </Card>
       ) : (
         <Card>
           <Card.Header className="Container__row--space-between">

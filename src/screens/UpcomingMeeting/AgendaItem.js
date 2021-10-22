@@ -66,7 +66,13 @@ export default function AgendaItem({
     return (
       <>
         {loading ? (
-          <SmallLoadingIndicator />
+          <div className="Container__padding--vertical-small">
+            <Card>
+              <div className="Buffer--50px" />
+              <SmallLoadingIndicator />
+              <div className="Buffer--50px" />
+            </Card>
+          </div>
         ) : (
           <Draggable
             draggableId={'Draggable' + item.position}
@@ -98,7 +104,11 @@ export default function AgendaItem({
   return (
     <>
       {loading ? (
-        <SmallLoadingIndicator />
+        <Card>
+          <div className="Buffer--50px" />
+          <SmallLoadingIndicator />
+          <div className="Buffer--50px" />
+        </Card>
       ) : (
         <Draggable
           draggableId={'Draggable' + item.position}
