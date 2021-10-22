@@ -9,9 +9,10 @@ import { SmallLoadingIndicator } from '../../components/SmallLoadingIndicator';
 
 export default function SuggestionItem({
   item,
-  meetingId,
   suggestions,
   setSuggestions,
+  meeting,
+  setMeeting,
 }) {
   const [loading, setLoading] = useState(false);
 
@@ -21,17 +22,19 @@ export default function SuggestionItem({
     try {
       const response = await server.put(`/suggestion/accept/${item.id}`, {
         ...defaultHeaders.headers,
-        'X-Participant': sessionStorage.getItem(meetingId) || '',
+        'X-Participant': sessionStorage.getItem(meeting.id) || '',
       });
       if (response.status !== 200 && response.status !== 201) return;
       const newSuggestions = Object.assign([], suggestions);
       const index = newSuggestions.indexOf(item);
       newSuggestions.splice(index, 1);
       setSuggestions(newSuggestions);
+      const newMeeting = Object.assign({}, meeting);
+      newMeeting.agendaItems.push(response.data);
+      setMeeting(newMeeting);
     } catch (err) {
       toast.error(extractError(err));
     }
-    setLoading(false);
   }
 
   async function reject() {
@@ -40,7 +43,7 @@ export default function SuggestionItem({
     try {
       const response = await server.delete(`/suggestion/${item.id}`, {
         ...defaultHeaders.headers,
-        'X-Participant': sessionStorage.getItem(meetingId) || '',
+        'X-Participant': sessionStorage.getItem(meeting.id) || '',
       });
       if (response.status !== 200 && response.status !== 201) return;
       const newSuggestions = Object.assign([], suggestions);
@@ -50,7 +53,6 @@ export default function SuggestionItem({
     } catch (err) {
       toast.error(extractError(err));
     }
-    setLoading(false);
   }
 
   if (loading)

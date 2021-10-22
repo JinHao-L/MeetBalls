@@ -6,7 +6,12 @@ import { extractError } from '../../utils/extractError';
 import { defaultHeaders } from '../../utils/axiosConfig';
 import SuggestionItem from './SuggestionItem';
 
-export default function SuggestionOverlay({ show, setShow, meetingId }) {
+export default function SuggestionOverlay({
+  show,
+  setShow,
+  meeting,
+  setMeeting,
+}) {
   const [suggestions, setSuggestions] = useState([]);
 
   useEffect(() => {
@@ -16,13 +21,12 @@ export default function SuggestionOverlay({ show, setShow, meetingId }) {
 
   async function getSuggestions() {
     try {
-      const response = await server.get(`/suggestion/${meetingId}`, {
+      const response = await server.get(`/suggestion/${meeting.id}`, {
         ...defaultHeaders.headers,
-        'X-Participant': sessionStorage.getItem(meetingId) || '',
+        'X-Participant': sessionStorage.getItem(meeting.id) || '',
       });
       if (response.status !== 200) return;
       const result = response.data;
-      console.log(result);
       setSuggestions(result.filter((item) => !item?.accepted));
     } catch (err) {
       toast.error(extractError(err));
@@ -34,10 +38,12 @@ export default function SuggestionOverlay({ show, setShow, meetingId }) {
     suggestions.forEach((item) => {
       items.push(
         <SuggestionItem
+          key={item.id}
           item={item}
-          meetingId={meetingId}
           suggestions={suggestions}
           setSuggestions={setSuggestions}
+          meeting={meeting}
+          setMeeting={setMeeting}
         />,
       );
     });

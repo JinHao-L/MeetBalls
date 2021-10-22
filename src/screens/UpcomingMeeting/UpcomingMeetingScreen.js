@@ -70,6 +70,17 @@ export default function UpcomingMeetingScreen() {
       .finally(() => setLoading(false));
   }, []);
 
+  useEffect(() => {
+    if (!openSuggestion && meeting.agendaItems.length > 1) {
+      const newMeeting = Object.assign({}, meeting);
+      newMeeting.agendaItems.sort((p1, p2) => {
+        return p1.position - p2.position;
+      });
+      setMeeting(newMeeting);
+      console.log('working');
+    }
+  }, [openSuggestion]);
+
   async function pullMeeting() {
     const response = await server.get(`/meeting/${id}`, {
       headers: {
@@ -79,8 +90,8 @@ export default function UpcomingMeetingScreen() {
     });
     if (response.status !== 200) return;
     const result = response.data;
-    if (result.agendaItems && result.agendaItems.length > 1) {
-      result.agendaItems.sort((p1, p2) => {
+    if (result?.agendaItems && result?.agendaItems.length > 1) {
+      result?.agendaItems.sort((p1, p2) => {
         return p1.position - p2.position;
       });
       result.agendaItems.forEach((item) => {
@@ -333,7 +344,8 @@ export default function UpcomingMeetingScreen() {
       <SuggestionOverlay
         show={openSuggestion}
         setShow={setOpenSuggestion}
-        meetingId={meeting.id}
+        meeting={meeting}
+        setMeeting={setMeeting}
       />
     </div>
   );

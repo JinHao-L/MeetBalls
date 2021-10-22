@@ -5,6 +5,7 @@ import { toast } from 'react-toastify';
 import server from '../../services/server';
 import { extractError } from '../../utils/extractError';
 import { defaultHeaders } from '../../utils/axiosConfig';
+import { getFormattedDuration } from '../../common/CommonFunctions';
 
 export default function SuggestionItem({ item, suggestions, setSuggestions }) {
   const [editing, setEditing] = useState(false);
@@ -60,21 +61,28 @@ export default function SuggestionItem({ item, suggestions, setSuggestions }) {
       <Card>
         <Card.Body>
           <Card.Title>{item?.name}</Card.Title>
+          <Card.Subtitle>
+            {getFormattedDuration(item?.expectedDuration)}
+          </Card.Subtitle>
           <div className="Buffer--5px" />
           <Card.Text>{item.description}</Card.Text>
         </Card.Body>
-        <Row>
-          <Col style={{ paddingRight: 0 }} onClick={remove}>
-            <div className="d-grid gap-2">
-              <Button variant="card-left-danger">Remove</Button>
-            </div>
-          </Col>
-          <Col style={{ paddingLeft: 0 }}>
-            <div className="d-grid gap-2" onClick={edit}>
-              <Button variant="card-right">Edit</Button>
-            </div>
-          </Col>
-        </Row>
+        {item?.accepted ? (
+          <Card.Footer>Accepted</Card.Footer>
+        ) : (
+          <Row>
+            <Col style={{ paddingRight: 0 }} onClick={remove}>
+              <div className="d-grid gap-2">
+                <Button variant="card-left-danger">Remove</Button>
+              </div>
+            </Col>
+            <Col style={{ paddingLeft: 0 }}>
+              <div className="d-grid gap-2" onClick={edit}>
+                <Button variant="card-right">Edit</Button>
+              </div>
+            </Col>
+          </Row>
+        )}
       </Card>
     </Col>
   );

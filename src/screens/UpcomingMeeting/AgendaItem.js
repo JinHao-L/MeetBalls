@@ -51,7 +51,6 @@ export default function AgendaItem({
       }
     } catch (err) {
       toast.error(extractError(err));
-    } finally {
       setLoading(false);
     }
     setDeleting(false);
