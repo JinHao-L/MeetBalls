@@ -35,7 +35,6 @@ export default function SuggestionItem({ item, suggestions, setSuggestions }) {
           'X-Participant': sessionStorage.getItem(item.meetingId) || '',
         },
       });
-      console(response.status);
       if (response.status !== 200) {
         toast.error('Failed to Delete');
         return;

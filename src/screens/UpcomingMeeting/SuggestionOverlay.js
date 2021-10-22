@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react';
-import { Modal, Card } from 'react-bootstrap';
+import { Modal } from 'react-bootstrap';
 import { toast } from 'react-toastify';
 import server from '../../services/server';
 import { extractError } from '../../utils/extractError';
 import { defaultHeaders } from '../../utils/axiosConfig';
-import { getFormattedDuration } from '../../common/CommonFunctions';
+import SuggestionItem from './SuggestionItem';
 
 export default function SuggestionOverlay({ show, setShow, meetingId }) {
   const [suggestions, setSuggestions] = useState([]);
@@ -22,7 +22,8 @@ export default function SuggestionOverlay({ show, setShow, meetingId }) {
       });
       if (response.status !== 200) return;
       const result = response.data;
-      setSuggestions(result);
+      console.log(result);
+      setSuggestions(result.filter((item) => !item?.accepted));
     } catch (err) {
       toast.error(extractError(err));
     }
@@ -32,15 +33,12 @@ export default function SuggestionOverlay({ show, setShow, meetingId }) {
     const items = [];
     suggestions.forEach((item) => {
       items.push(
-        <Card>
-          <Card.Body>
-            <Card.Title>{item.name}</Card.Title>
-            <Card.Subtitle>
-              {getFormattedDuration(item.expectedDuration)}
-            </Card.Subtitle>
-            <Card.Text>{item.description}</Card.Text>
-          </Card.Body>
-        </Card>,
+        <SuggestionItem
+          item={item}
+          meetingId={meetingId}
+          suggestions={suggestions}
+          setSuggestions={setSuggestions}
+        />,
       );
     });
     return items;
@@ -60,7 +58,9 @@ export default function SuggestionOverlay({ show, setShow, meetingId }) {
         {suggestions.length === 0 ? (
           'You have no suggestions.'
         ) : (
-          <SuggestionItems />
+          <div className="Container__suggestion-list">
+            <SuggestionItems />
+          </div>
         )}
       </Modal.Body>
     </Modal>
