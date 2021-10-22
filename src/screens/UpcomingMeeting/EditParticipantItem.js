@@ -81,7 +81,7 @@ export default function EditParticipantItem({
     const oldEmail = meeting.participants[position].userEmail;
     if (oldEmail === '') {
       const newMeeting = Object.assign({}, meeting);
-      const newParticipants = newMeeting.participants;
+      const newParticipants = Object.assign([], newMeeting.participants);
       newParticipants.splice(position, 1);
       newMeeting.participants = newParticipants;
       setMeeting(newMeeting);

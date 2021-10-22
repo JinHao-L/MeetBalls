@@ -28,7 +28,7 @@ export default function ParticipantItem({ setMeeting, meeting, position }) {
     try {
       setRemoving(true);
       const newMeeting = Object.assign({}, meeting);
-      const newParticipants = newMeeting.participants;
+      const newParticipants = Object.assign([], newMeeting.participants);
       const email = newParticipants[position].userEmail;
       const id = newParticipants[position].id;
       await removeFromDatabase(email, meeting.id);

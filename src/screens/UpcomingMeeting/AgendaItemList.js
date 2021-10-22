@@ -56,12 +56,12 @@ function onDragEnd(result, meeting, setMeeting) {
   if (idMatch && idxMatch) return;
 
   const newMeeting = Object.assign({}, meeting);
-  const newAgenda = newMeeting.agendaItems;
+  const newAgenda = Object.assign([], newMeeting.agendaItems);
   const item = newAgenda.splice(source.index, 1);
   newAgenda.splice(destination.index, 0, item[0]);
+  newMeeting.agendaItems = newAgenda;
+  setMeeting(newMeeting);
   for (let i = 0; i < newAgenda.length; i++) {
     newAgenda[i].position = i;
   }
-  newMeeting.agendaItems = newAgenda;
-  setMeeting(newMeeting);
 }
