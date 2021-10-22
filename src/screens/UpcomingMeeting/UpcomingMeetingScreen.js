@@ -3,7 +3,13 @@ import { Button, Row, Col, Container, Nav, Spinner } from 'react-bootstrap';
 import { getFormattedDateTime } from '../../common/CommonFunctions';
 import AgendaItemList from './AgendaItemList';
 import ParticipantItemList from './ParticipantItemList';
-import { PersonPlusFill, CalendarPlusFill } from 'react-bootstrap-icons';
+import {
+  PersonPlusFill,
+  CalendarPlusFill,
+  ArrowRepeat,
+  ChatSquareText,
+  Save,
+} from 'react-bootstrap-icons';
 import {
   blankAgenda,
   blankMeeting,
@@ -108,11 +114,47 @@ export default function UpcomingMeetingScreen() {
           <PersonPlusFill size={25} color="white" />
         </div>
       );
-    }
+    } else if (isReordering)
+      return (
+        <div
+          className="Fab"
+          onClick={() => {
+            setReordering(false);
+            updateDatabase(meeting.id, meeting.agendaItems);
+          }}
+        >
+          <Save size={22} color="white" />
+        </div>
+      );
+
     return (
-      <div className="Fab" onClick={() => addAgenda(meeting, setMeeting)}>
+      <div
+        className="Fab"
+        onClick={() => {
+          addAgenda(meeting, setMeeting);
+        }}
+      >
         <CalendarPlusFill size={22} color="white" />
       </div>
+    );
+  }
+
+  function ExtraToggles() {
+    return (
+      <>
+        <div
+          className="Fab-secondary-first"
+          onClick={() => {
+            removeEmpty(meeting, setMeeting);
+            setReordering(true);
+          }}
+        >
+          <ArrowRepeat size={25} color="white" />
+        </div>
+        <div className="Fab-secondary-second">
+          <ChatSquareText size={20} color="white" />
+        </div>
+      </>
     );
   }
 
@@ -243,6 +285,7 @@ export default function UpcomingMeetingScreen() {
         setInviteList={setInviteList}
       />
       <AddToggle />
+      {currentTab === 'agenda' && !isReordering ? <ExtraToggles /> : null}
     </div>
   );
 }
@@ -279,4 +322,36 @@ async function addAgenda(meeting, setMeeting) {
 async function scrollToBottom() {
   await new Promise((resolve) => setTimeout(resolve, 200));
   window.scrollTo(0, window.outerHeight);
+}
+
+function removeEmpty(meeting, setMeeting) {
+  const agenda = meeting.agendaItems;
+  if (agenda.length > 0 && agenda[agenda.length - 1]?.name?.length === 0) {
+    const newMeeting = Object.assign({}, meeting);
+    const newAgenda = newMeeting.agendaItems;
+    newAgenda.splice(agenda.length - 1, 1);
+    newMeeting.agendaItems = newAgenda;
+    setMeeting(newMeeting);
+  }
+}
+
+async function updateDatabase(meetingId, agendaItems) {
+  const changes = [];
+  agendaItems.forEach((item) => {
+    changes.push({
+      oldPosition: item.prevPosition,
+      newPosition: item.position,
+    });
+    item.prevPosition = item.position;
+  });
+  if (changes.length > 0) {
+    await server.put(
+      '/agenda-item/positions',
+      {
+        positions: changes,
+        meetingId: meetingId,
+      },
+      defaultHeaders,
+    );
+  }
 }

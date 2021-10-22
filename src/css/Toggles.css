@@ -34,3 +34,41 @@
   background-color: #725546;
   cursor: pointer;
 }
+
+.Fab-secondary-first {
+  position: fixed;
+  bottom: 25px;
+  right: 90px;
+  height: 50px;
+  width: 50px;
+  background-color: #a88979;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 4px 4px 0 rgba(0, 0, 0, 0.2);
+}
+
+.Fab-secondary-first:hover {
+  background-color: #725546;
+  cursor: pointer;
+}
+
+.Fab-secondary-second {
+  position: fixed;
+  bottom: 25px;
+  right: 150px;
+  height: 50px;
+  width: 50px;
+  background-color: #a88979;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 4px 4px 0 rgba(0, 0, 0, 0.2);
+}
+
+.Fab-secondary-second:hover {
+  background-color: #725546;
+  cursor: pointer;
+}
