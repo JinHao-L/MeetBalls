@@ -37,3 +37,13 @@ export const blankAgenda = {
   expectedDuration: 300000,
   isCurrent: false,
 };
+
+export const blankSuggestion = {
+  id: '',
+  meetingId: '',
+  accepted: false,
+  name: '',
+  description: '',
+  expectedDuration: 300000,
+  participantId: '',
+};

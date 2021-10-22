@@ -145,7 +145,7 @@ export default function UploadItem({ agendaItem, speakerId }) {
 
   return (
     <Col
-      lg={6}
+      lg={12}
       md={12}
       sm={12}
       style={{ paddingLeft: 10, paddingRight: 10 }}
