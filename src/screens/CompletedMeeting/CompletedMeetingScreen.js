@@ -5,15 +5,14 @@ import server from '../../services/server';
 import AttendanceList from './AttendanceList';
 import CompletedAgendaCard from './CompletedAgendaCard';
 import { Col, Nav, Row, Button, Container } from 'react-bootstrap';
-import {
-  getDateInfo,
-  getFormattedDate,
-} from '../../common/CommonFunctions';
+import { getDateInfo, getFormattedDate } from '../../common/CommonFunctions';
 import Statistics from './Statistics';
 import RedirectionScreen, {
   MEETING_NOT_FOUND_ERR,
 } from '../../components/RedirectionScreen';
 import BackgroundPattern from '../../assets/background_pattern2.jpg';
+import { logEvent } from '@firebase/analytics';
+import { googleAnalytics } from '../../services/firebase';
 
 export default function CompletedMeetingScreen() {
   const [meeting, setMeeting] = useState(blankMeeting);
@@ -27,12 +26,17 @@ export default function CompletedMeetingScreen() {
 
   useEffect(() => {
     return server
-      .get(`/meeting/${id}`)
+      .get(`/meeting/${id}`, {
+        headers: {
+          'X-Participant': sessionStorage.getItem(id) || '',
+        },
+      })
       .then((res) => {
         const participants = res.data?.participants?.filter(
           (x) => !x.isDuplicate,
         );
         setMeeting({ ...res.data, participants });
+        logEvent(googleAnalytics, 'visit_completed_screen', { meetingId: id });
         setValidId(true);
       })
       .catch((_) => setValidId(false))
@@ -103,16 +107,16 @@ export default function CompletedMeetingScreen() {
       className="Container__background-image"
     >
       <div className="Buffer--50px" />
-      <Container className="Container__padding--vertical Container__foreground">
-        <div className="Buffer--50px" />
-        <Row>
-          <Col lg={1} md={12} sm={12} />
+      <Container className="Container__foreground">
+        <Row style={{ minHeight: 'calc(100vh - 56px - 100px)' }}>
           <Col
             lg={4}
             md={12}
             sm={12}
+            className="Container__side"
             style={{ paddingLeft: 30, paddingRight: 30 }}
           >
+            <div className="Buffer--50px" />
             <p className="Text__header">{meeting.name}</p>
             <p className="Text__subheader">
               {date}, {startTime} - {endTime}
@@ -145,9 +149,11 @@ export default function CompletedMeetingScreen() {
             >
               {meeting.description}
             </p>
-            <div className="Buffer--20px" />
+            <div className="Buffer--50px" />
           </Col>
+          <Col lg={1} md={12} sm={12} />
           <Col lg={6} md={12} sm={12}>
+            <div className="Buffer--50px" />
             <Nav
               variant="tabs"
               defaultActiveKey="statistics"

@@ -1,4 +1,11 @@
-import { Button, Row, Col, Card } from 'react-bootstrap';
+import {
+  Button,
+  Row,
+  Col,
+  Card,
+  OverlayTrigger,
+  Tooltip,
+} from 'react-bootstrap';
 import { Draggable } from 'react-beautiful-dnd';
 import { useState } from 'react';
 import { getFormattedDuration } from '../../common/CommonFunctions';
@@ -109,19 +116,21 @@ export default function AgendaItem({
                   <Card.Header className="Container__row--space-between">
                     {getFormattedDuration(item.expectedDuration)}
                     {item.speakerMaterials && item.speaker ? (
-                      <Link45deg
-                        size={24}
-                        className="Clickable"
-                        onClick={() =>
-                          openFile(
-                            item.speakerMaterials,
-                            meeting.id,
-                            item.speaker.id,
-                          ).catch((err) => {
-                            toast.error('File not found');
-                          })
-                        }
-                      />
+                      <OverlayTrigger placement="top" overlay={renderTooltip}>
+                        <Link45deg
+                          size={24}
+                          className="Clickable"
+                          onClick={() =>
+                            openFile(
+                              item.speakerMaterials,
+                              meeting.id,
+                              item.speaker.id,
+                            ).catch((err) => {
+                              toast.error('File not found');
+                            })
+                          }
+                        />
+                      </OverlayTrigger>
                     ) : null}
                   </Card.Header>
                   <Card.Body>
@@ -133,28 +142,31 @@ export default function AgendaItem({
                     </Card.Subtitle>
                     <div className="Buffer--10px" />
                     <Card.Text>{item.description}</Card.Text>
-                    {isReordering || (
-                      <Row>
-                        <Col>
-                          <div className="d-grid gap-2">
-                            <Button variant="danger" onClick={removeAgendaItem}>
-                              Remove
-                            </Button>
-                          </div>
-                        </Col>
-                        <Col>
-                          <div className="d-grid gap-2">
-                            <Button
-                              variant="primary"
-                              onClick={() => setEditing(true)}
-                            >
-                              Edit
-                            </Button>
-                          </div>
-                        </Col>
-                      </Row>
-                    )}
                   </Card.Body>
+                  {isReordering || (
+                    <Row>
+                      <Col style={{ paddingRight: 0 }}>
+                        <div className="d-grid gap-2">
+                          <Button
+                            variant="card-left-danger"
+                            onClick={removeAgendaItem}
+                          >
+                            Remove
+                          </Button>
+                        </div>
+                      </Col>
+                      <Col style={{ paddingLeft: 0 }}>
+                        <div className="d-grid gap-2">
+                          <Button
+                            variant="card-right"
+                            onClick={() => setEditing(true)}
+                          >
+                            Edit
+                          </Button>
+                        </div>
+                      </Col>
+                    </Row>
+                  )}
                 </Card>
               </Col>
             </div>
@@ -168,3 +180,9 @@ export default function AgendaItem({
 async function removeFromDatabase(meetingId, position) {
   await server.delete(`/agenda-item/${meetingId}/${position}`, defaultHeaders);
 }
+
+const renderTooltip = (props) => (
+  <Tooltip id="button-tooltip" {...props}>
+    Link/File Attached
+  </Tooltip>
+);

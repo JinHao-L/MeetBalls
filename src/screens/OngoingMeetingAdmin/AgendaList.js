@@ -68,7 +68,7 @@ function CurrentItem({ item, time }) {
           <Card.Text>{item.description}</Card.Text>
           <MaterialsSection
             item={item}
-            variant={timeRemaining > 0 ? 'secondary' : 'outline-danger'}
+            variant={timeRemaining > 0 ? 'primary' : 'outline-danger'}
           />
         </Card.Body>
         <Card.Footer>

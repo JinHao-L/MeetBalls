@@ -97,8 +97,10 @@ function ParticipantItem({ person }) {
         <Card.Body>
           <Card.Title>{displayName}</Card.Title>
           <Card.Text>{person.userEmail}</Card.Text>
-          <Card.Text>{presence}</Card.Text>
         </Card.Body>
+        <Card.Footer>
+          <Card.Text>{presence}</Card.Text>
+        </Card.Footer>
       </Card>
     </Col>
   );

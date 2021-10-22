@@ -9,7 +9,7 @@ export default function ConfirmDupeModal({
   return (
     <Modal show={showModal} onHide={() => setShowModal(false)} centered>
       <Modal.Header>
-        <Modal.Title>Confirm Duplicate?</Modal.Title>
+        <Modal.Title>Remove Duplicate?</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <p className="Text__paragraph">

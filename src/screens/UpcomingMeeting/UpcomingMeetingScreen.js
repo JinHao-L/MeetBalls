@@ -21,6 +21,8 @@ import RedirectionScreen, {
 } from '../../components/RedirectionScreen';
 import { UserContext } from '../../context/UserContext';
 import BackgroundPattern from '../../assets/background_pattern2.jpg';
+import { logEvent } from '@firebase/analytics';
+import { googleAnalytics } from '../../services/firebase';
 
 export default function UpcomingMeetingScreen() {
   const [meeting, setMeeting] = useState(blankMeeting);
@@ -42,13 +44,21 @@ export default function UpcomingMeetingScreen() {
 
   useEffect(() => {
     return pullMeeting()
-      .then(() => setValidId(true))
+      .then(() => {
+        logEvent(googleAnalytics, 'visit_upcoming_screen', { meeting: id });
+        setValidId(true);
+      })
       .catch((_) => setValidId(false))
       .finally(() => setLoading(false));
   }, []);
 
   async function pullMeeting() {
-    const response = await server.get(`/meeting/${id}`, defaultHeaders);
+    const response = await server.get(`/meeting/${id}`, {
+      headers: {
+        ...defaultHeaders.headers,
+        'X-Participant': sessionStorage.getItem(id) || '',
+      },
+    });
     if (response.status !== 200) return;
     const result = response.data;
     if (result.agendaItems && result.agendaItems.length > 1) {
@@ -124,17 +134,19 @@ export default function UpcomingMeetingScreen() {
       }}
     >
       <div className="Buffer--50px" />
-      <Container className="Container__padding--vertical Container__foreground">
-        <div className="Buffer--50px" />
-
-        <Row>
-          <Col lg={1} md={12} sm={12} />
+      <Container className="Container__foreground">
+        <Row style={{ minHeight: 'calc(100vh - 56px - 100px)' }}>
           <Col
             lg={4}
             md={12}
             sm={12}
-            style={{ paddingLeft: 30, paddingRight: 30 }}
+            className="Container__side"
+            style={{
+              paddingLeft: 30,
+              paddingRight: 30,
+            }}
           >
+            <div className="Buffer--50px" />
             <p className="Text__header">{meeting.name}</p>
             <p className="Text__subheader">
               {getFormattedDateTime(meeting.startedAt)}
@@ -188,9 +200,11 @@ export default function UpcomingMeetingScreen() {
             >
               {meeting.description}
             </p>
-            <div className="Buffer--20px" />
+            <div className="Buffer--50px" />
           </Col>
+          <Col lg={1} md={12} sm={12} />
           <Col lg={6} md={12} sm={12}>
+            <div className="Buffer--50px" />
             <Nav
               variant="tabs"
               defaultActiveKey="participants"
@@ -234,6 +248,7 @@ export default function UpcomingMeetingScreen() {
 }
 
 function addParticipant(meeting, setMeeting) {
+  scrollToBottom();
   if (meeting.participants.findIndex((item) => item.userEmail === '') >= 0)
     return;
   const newMeeting = Object.assign({}, meeting);
@@ -244,6 +259,7 @@ function addParticipant(meeting, setMeeting) {
 }
 
 async function addAgenda(meeting, setMeeting) {
+  scrollToBottom();
   if (meeting.agendaItems.findIndex((item) => item.name === '') >= 0) return;
   const newMeeting = Object.assign({}, meeting);
   const newAgenda = Object.assign({}, blankAgenda);
@@ -258,4 +274,9 @@ async function addAgenda(meeting, setMeeting) {
   newAgenda.prevPosition = newAgenda.position;
   newMeeting.agendaItems = [...newMeeting.agendaItems, newAgenda];
   setMeeting(newMeeting);
+}
+
+async function scrollToBottom() {
+  await new Promise((resolve) => setTimeout(resolve, 200));
+  window.scrollTo(0, window.outerHeight);
 }

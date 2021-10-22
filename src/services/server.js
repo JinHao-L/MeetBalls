@@ -16,6 +16,7 @@ server.interceptors.response.use(
     if (
       originalRequest.url !== '' &&
       !originalRequest.url?.startsWith('auth/') &&
+      !originalRequest.url?.startsWith('/meeting/magic-link') &&
       err?.response?.status === 401 &&
       !originalRequest._retry &&
       refreshToken
@@ -37,13 +38,15 @@ server.interceptors.response.use(
             const tokenObj = res.data;
             setAuthToken(tokenObj.access_token || null, type);
             localStorage.setItem(refreshTokenKey, tokenObj.refresh_token);
+
+            const authHeader = `Bearer ${tokenObj.access_token}`;
+            originalRequest.headers['Authorization'] = authHeader;
             return server(originalRequest);
           }
         })
         .catch((err) => {
           if (err?.response?.status === 401) {
             setAuthToken(null);
-            localStorage.removeItem(refreshTokenKey);
             toast.error('Not logged in');
             return Promise.reject();
           }

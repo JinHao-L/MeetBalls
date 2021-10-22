@@ -1,6 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
+import './services/server';
 import App from './App';
 import { UserProvider } from './context/UserContext';
 import reportWebVitals from './reportWebVitals';

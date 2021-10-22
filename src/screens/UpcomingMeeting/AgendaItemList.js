@@ -64,9 +64,7 @@ export default function AgendaItemList({
   }
   return (
     <DragDropContext
-      onDragEnd={(result) =>
-        onDragEnd(result, meeting, setMeeting)
-      }
+      onDragEnd={(result) => onDragEnd(result, meeting, setMeeting)}
     >
       <Droppable droppableId="Agenda">
         {(provided) => (

@@ -8,6 +8,7 @@ import { toast } from 'react-toastify';
 import { extractError } from '../../utils/extractError';
 import { useMemo, useState } from 'react';
 import ConfirmDupeModal from './ConfirmDupeModal';
+import { Trash } from 'react-bootstrap-icons';
 
 export default function ParticipantList({
   meeting,
@@ -77,23 +78,25 @@ function AwaitItem({ meeting, setMeeting, position, showButton }) {
           <Card.Text className="Text__elipsized--1-line">
             {participant.userEmail}
           </Card.Text>
-          {showButton && participant.role !== 2 && (
-            <div className="d-grid gap-2">
+        </Card.Body>
+        {showButton && participant.role !== 2 && (
+          <div className="Container__row--space-between">
+            <div className="d-grid gap-2" style={{ width: '100%' }}>
               <Button
-                variant="outline-primary"
+                variant="card-left"
                 onClick={() => markPresent(meeting, setMeeting, position)}
               >
                 Mark as Present
               </Button>
-              <MarkDuplicateButton
-                setMeeting={setMeeting}
-                meeting={meeting}
-                position={position}
-                variant="outline-primary"
-              />
             </div>
-          )}
-        </Card.Body>
+            <MarkDuplicateButton
+              setMeeting={setMeeting}
+              meeting={meeting}
+              position={position}
+              variant="card-right-danger"
+            />
+          </div>
+        )}
       </Card>
     </Col>
   );
@@ -120,23 +123,25 @@ function PresentItem({ meeting, setMeeting, position, showButton }) {
           <Card.Text className="Text__elipsized--1-line">
             {participant.userEmail}
           </Card.Text>
-          {showButton && participant.role !== 2 && (
-            <div className="d-grid gap-2">
+        </Card.Body>
+        {showButton && participant.role !== 2 && (
+          <div className="Container__row--space-between">
+            <div className="d-grid gap-2" style={{ width: '100%' }}>
               <Button
-                variant="outline-light"
+                variant="card-left-light"
                 onClick={() => unmarkPresent(meeting, setMeeting, position)}
               >
                 Mark as Absent
               </Button>
-              <MarkDuplicateButton
-                setMeeting={setMeeting}
-                meeting={meeting}
-                position={position}
-                variant={'outline-light'}
-              />
             </div>
-          )}
-        </Card.Body>
+            <MarkDuplicateButton
+              setMeeting={setMeeting}
+              meeting={meeting}
+              position={position}
+              variant={'card-right-danger-light'}
+            />
+          </div>
+        )}
       </Card>
     </Col>
   );
@@ -148,8 +153,12 @@ function MarkDuplicateButton({ meeting, setMeeting, position, variant }) {
   const markDupe = () => markDuplicate(meeting, setMeeting, position);
   return (
     <>
-      <Button variant={variant} onClick={() => setShowModal(true)}>
-        Mark As Duplicate
+      <Button
+        variant={variant}
+        onClick={() => setShowModal(true)}
+        style={{ width: 50 }}
+      >
+        <Trash />
       </Button>
       <ConfirmDupeModal
         participant={participant}

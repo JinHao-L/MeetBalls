@@ -3,6 +3,7 @@ import { accessTokenKey, loginTypeKey } from '../common/CommonValues';
 import { FullLoadingIndicator } from '../components/FullLoadingIndicator';
 import { refresh, zoomRefresh } from '../services/auth';
 import { getUser } from '../services/user';
+import { googleAnalytics } from '../services/firebase';
 
 const UserContext = createContext(null);
 
@@ -23,6 +24,7 @@ const UserProvider = ({ children }) => {
         try {
           const user = await getUser();
           setUser(user.data);
+          googleAnalytics.setUser(user.data?.uuid);
         } catch (err) {}
       }
       setLoading(false);

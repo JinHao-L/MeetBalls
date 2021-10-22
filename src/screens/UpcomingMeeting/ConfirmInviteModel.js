@@ -21,7 +21,6 @@ export default function ConfirmInviteModel({
     if (inviteList.length === 0) return;
     try {
       setInviteLoading(true);
-      console.log({ participants });
       const inviteResponse = await server.post(
         `/participant/send-multiple-invites`,
         { participants },
@@ -30,7 +29,12 @@ export default function ConfirmInviteModel({
       const inviteData = inviteResponse.data.data;
       const successes = inviteData.filter((status) => status.success).length;
 
-      const res = await server.get(`/participant/${meeting.id}`);
+      const res = await server.get(`/participant/${meeting.id}`, {
+        headers: {
+          ...defaultHeaders.headers,
+          'X-Participant': sessionStorage.getItem(meeting.id) || '',
+        },
+      });
       setMeeting((prev) => ({ ...prev, participants: res.data }));
 
       if (successes === participants.length) toast.success(INVITE_SUCCESS);
@@ -47,13 +51,12 @@ export default function ConfirmInviteModel({
       <ListGroup.Item
         className="Clickable"
         onClick={() => {
+          let newList = [];
           if (!inviteList.some((p) => p === participant)) {
-            var newList = [];
             newList = newList.concat(inviteList);
             newList.push(participant);
             setInviteList(newList);
           } else if (inviteList.some((p) => p === participant)) {
-            var newList = [];
             newList = newList.concat(inviteList);
             const position = inviteList.indexOf(participant);
             newList.splice(position, 1);
@@ -87,6 +90,7 @@ export default function ConfirmInviteModel({
             <ListGroup variant="flush">
               {meeting.participants.length > 0 ? (
                 meeting.participants.map((participant, id) => {
+                  if (participant?.role === 2) return null;
                   return <ParticipantItem key={id} participant={participant} />;
                 })
               ) : (
@@ -99,6 +103,21 @@ export default function ConfirmInviteModel({
               )}
             </ListGroup>
           </Card>
+          <div className="d-grid gap-2">
+            <Button
+              onClick={() =>
+                setInviteList(
+                  meeting.participants.filter(
+                    (participant) => participant?.role !== 2,
+                  ),
+                )
+              }
+            >
+              Select All
+            </Button>
+          </div>
+
+          <div className="Buffer--10px" />
           <p className="Text__paragraph">Are you sure you want to continue?</p>
         </div>
       </Modal.Body>

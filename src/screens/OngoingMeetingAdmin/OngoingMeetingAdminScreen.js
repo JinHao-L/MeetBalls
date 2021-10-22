@@ -15,6 +15,7 @@ import {
   callStartMeeting,
   callEndMeeting,
   callNextMeeting,
+  syncMeetingWithZoom,
 } from '../../services/meeting';
 import { useSocket } from '../../hooks/useSocket';
 import { UserContext } from '../../context/UserContext';
@@ -25,6 +26,8 @@ import useSound from 'use-sound';
 import Bell from '../../assets/Bell.mp3';
 import BackgroundPattern from '../../assets/background_pattern2.jpg';
 import FeedbackOverlay from './FeedbackOverlay';
+import { logEvent } from '@firebase/analytics';
+import { googleAnalytics } from '../../services/firebase';
 
 export default function OngoingMeetingAdminScreen() {
   const [position, setPosition] = useState(-1);
@@ -38,6 +41,7 @@ export default function OngoingMeetingAdminScreen() {
 
   const [loading, setLoading] = useState(true);
   const [validId, setIsValidId] = useState(false);
+  const [once, setOnce] = useState(false);
 
   const { id } = useParams();
   const { socket } = useSocket(id);
@@ -45,21 +49,37 @@ export default function OngoingMeetingAdminScreen() {
   const isHost = useMemo(() => {
     return meeting?.hostId === user?.uuid;
   }, [meeting.hostId, user]);
-  const [play] = useSound(Bell);
+  const [play] = useSound(Bell, { volume: 0.1 });
 
   useEffect(() => {
     pullMeeting();
+    logEvent(googleAnalytics, 'visit_ongoing_screen', { meeting: id });
     setInterval(() => {
       setTime(new Date().getTime());
     }, 1000);
   }, []);
 
   useEffect(() => {
+    if (validId && isHost && !once) {
+      syncMeetingWithZoom(meeting)
+        .then((newZoomUuid) => {
+          if (newZoomUuid) {
+            setMeeting((meeting) => ({ ...meeting, zoomUuid: newZoomUuid }));
+          }
+        })
+        .catch((err) => {
+          console.log('Failed to sync with zoom', err);
+        });
+      setOnce(true);
+    }
+  }, [validId]);
+
+  useEffect(() => {
     if (!socket) return;
 
     socket.on('meetingUpdated', function (data) {
-        const newMeeting = JSON.parse(data, agendaReviver);
-        setMeeting((meeting) => updateMeeting({ ...meeting, ...newMeeting }));
+      const newMeeting = JSON.parse(data, agendaReviver);
+      setMeeting((meeting) => updateMeeting({ ...meeting, ...newMeeting }));
     });
     socket.on('participantUpdated', function (data) {
       const update = JSON.parse(data);
@@ -71,7 +91,7 @@ export default function OngoingMeetingAdminScreen() {
     socket.on('agendaUpdated', function (_) {
       pullMeeting();
     });
-    socket.on('userConnected', function (_) { });
+    socket.on('userConnected', function (_) {});
   }, [socket]);
 
   function startZoom() {
@@ -112,6 +132,7 @@ export default function OngoingMeetingAdminScreen() {
     }
     try {
       await callStartMeeting(id);
+      logEvent(googleAnalytics, 'start_meeting', { meetingId: id });
       setMeetingStatus(2);
       setPosition(position + 1);
       initializeAgenda(time, agenda);
@@ -127,6 +148,7 @@ export default function OngoingMeetingAdminScreen() {
       if (isLastItem) {
         setMeetingStatus(3);
         setShowFeedback(true);
+        logEvent(googleAnalytics, 'end_meeting', { meetingId: id });
       }
       const newPosition = position + 1;
       setPosition(newPosition);
@@ -194,16 +216,16 @@ export default function OngoingMeetingAdminScreen() {
       }}
     >
       <div className="Buffer--50px" />
-      <Container className="Container__padding--vertical Container__foreground">
-        <div className="Buffer--50px" />
-        <Row>
-          <Col lg={1} md={12} sm={12} />
+      <Container className="Container__foreground">
+        <Row style={{ minHeight: 'calc(100vh - 56px - 100px)' }}>
           <Col
             lg={4}
             md={12}
             sm={12}
+            className="Container__side"
             style={{ paddingLeft: 30, paddingRight: 30 }}
           >
+            <div className="Buffer--50px" />
             <p className="Text__header">{meeting.name}</p>
             <p className="Text__subheader">
               {getFormattedDateTime(meeting.startedAt)}
@@ -251,9 +273,11 @@ export default function OngoingMeetingAdminScreen() {
                 </Card.Text>
               </Card.Body>
             </Card>
-            <div className="Buffer--20px" />
+            <div className="Buffer--50px" />
           </Col>
+          <Col lg={1} md={12} sm={12} />
           <Col lg={6} md={12} sm={12}>
+            <div className="Buffer--50px" />
             <Nav
               variant="tabs"
               defaultActiveKey="agenda"

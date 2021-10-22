@@ -146,9 +146,9 @@ export default function EditAgendaItem({
 
   return (
     <Col className="Container__padding--vertical-small">
-      <Card>
-        <Card.Header>
-          <p className="Text__subsubheader">Editing Agenda Item</p>
+      <Card border="primary">
+        <Card.Header style={{ backgroundColor: '#8F6B58', color: 'white' }}>
+          Editing Agenda Item
         </Card.Header>
         <Card.Body>
           <Form.Group>
@@ -204,25 +204,28 @@ export default function EditAgendaItem({
               disabled={speaker === null}
               onChange={(event) => setMaterials(event.target.value)}
             />
-            <div className="Buffer--20px" />
-            <Row>
-              <Col>
-                <div className="d-grid gap-2">
-                  <Button variant="outline-primary" onClick={close}>
-                    Cancel
-                  </Button>
-                </div>
-              </Col>
-              <Col>
-                <div className="d-grid gap-2">
-                  <Button variant="primary" onClick={() => updateChanges()}>
-                    Confirm
-                  </Button>
-                </div>
-              </Col>
-            </Row>
           </Form.Group>
+          <div className="Buffer--10px" />
         </Card.Body>
+        <Row>
+          <Col style={{ paddingRight: 0 }}>
+            <div className="d-grid gap-2">
+              <Button variant="card-left-cancel" onClick={close}>
+                Cancel
+              </Button>
+            </div>
+          </Col>
+          <Col style={{ paddingLeft: 0 }}>
+            <div className="d-grid gap-2">
+              <Button
+                variant="card-right-confirm"
+                onClick={() => updateChanges()}
+              >
+                Confirm
+              </Button>
+            </div>
+          </Col>
+        </Row>
       </Card>
     </Col>
   );
@@ -253,11 +256,12 @@ async function updateDatabase(
   if (oldName.length === 0) {
     await server.post(`/agenda-item`, data, defaultHeaders);
   } else {
-    await server.put(
-      `/agenda-item/${meetingId}/${position}`,
-      data,
-      defaultHeaders,
-    );
+    await server.put(`/agenda-item/${meetingId}/${position}`, data, {
+      headers: {
+        ...defaultHeaders.headers,
+        'X-Participant': sessionStorage.getItem(meetingId) || '',
+      },
+    });
   }
 }
 

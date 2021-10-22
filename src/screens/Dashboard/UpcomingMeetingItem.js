@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Card, Col, Row } from 'react-bootstrap';
-import { getDateInfo, openLinkInNewTab } from '../../common/CommonFunctions';
+import { getDateInfo } from '../../common/CommonFunctions';
 import { useHistory } from 'react-router';
 import ConfirmDeleteModal from './ConfirmDeleteModal';
 import server from '../../services/server';
@@ -25,7 +25,6 @@ export default function UpcomingMeetingItem({
   }
 
   function startMeeting() {
-    openLinkInNewTab(meeting.joinUrl);
     history.push(`/ongoing/${meeting.id}`);
   }
 

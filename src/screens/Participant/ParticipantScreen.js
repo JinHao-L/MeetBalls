@@ -11,6 +11,8 @@ import UploadItem from './UploadItem';
 import RedirectionScreen, {
   MEETING_NOT_FOUND_ERR,
 } from '../../components/RedirectionScreen';
+import { logEvent } from '@firebase/analytics';
+import { googleAnalytics } from '../../services/firebase';
 
 const JOINER_KEY = 'joiner';
 const NAME_KEY = 'name';
@@ -39,6 +41,10 @@ export default function ParticipantScreen() {
     return pullMeeting()
       .then(() => {
         setValidId(true);
+        logEvent(googleAnalytics, 'visit_participant_screen', {
+          meetingId: id,
+          participant: joinerId,
+        });
       })
       .catch((_) => setValidId(false))
       .finally(() => setLoading(false));
@@ -52,7 +58,12 @@ export default function ParticipantScreen() {
   }, [socket]);
 
   async function pullMeeting() {
-    const response = await server.get(`/meeting/${id}`, defaultHeaders);
+    const response = await server.get(`/meeting/${id}`, {
+      headers: {
+        ...defaultHeaders.headers,
+        'X-Participant': sessionStorage.getItem(id) || '',
+      },
+    });
     if (response.status !== 200) return;
     const result = response.data;
     setMeeting(result);
@@ -113,8 +124,10 @@ export default function ParticipantScreen() {
             <p className="Text__header">Hi {name}!</p>
             <p className="Text__subheader">
               You have a meeting <b>{meeting?.name}</b> scheduled on{' '}
-              {getFormattedDateTime(meeting?.startedAt)}.
+              {getFormattedDateTime(meeting?.startedAt)}. We will redirect you
+              to the meeting page once the host starts the meeting.
             </p>
+            <div className="Buffer--20px" />
             <div className="Container__row--space-between">
               <p className="Text__subsubheader">Description</p>
               <div

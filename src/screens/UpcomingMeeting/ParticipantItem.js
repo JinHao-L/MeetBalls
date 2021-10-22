@@ -1,4 +1,11 @@
-import { Button, Row, Col, Card } from 'react-bootstrap';
+import {
+  Button,
+  Row,
+  Col,
+  Card,
+  OverlayTrigger,
+  Tooltip,
+} from 'react-bootstrap';
 import { useState } from 'react';
 import EditParticipantItem from './EditParticipantItem';
 import server from '../../services/server';
@@ -6,6 +13,7 @@ import { defaultHeaders } from '../../utils/axiosConfig';
 import { toast } from 'react-toastify';
 import { SmallLoadingIndicator } from '../../components/SmallLoadingIndicator';
 import { extractError } from '../../utils/extractError';
+import { Envelope } from 'react-bootstrap-icons';
 
 export default function ParticipantItem({ setMeeting, meeting, position }) {
   const [removing, setRemoving] = useState(false);
@@ -47,16 +55,25 @@ export default function ParticipantItem({ setMeeting, meeting, position }) {
     }));
   }
 
-  function RemoveParticipantButton() {
+  function Buttons() {
     if (participant?.role === 2) return null;
     return (
-      <Col>
-        <div className="d-grid gap-2">
-          <Button variant="danger" onClick={removeParticipant}>
-            Remove
-          </Button>
-        </div>
-      </Col>
+      <Row>
+        <Col style={{ paddingRight: 0 }}>
+          <div className="d-grid gap-2">
+            <Button variant="card-left-danger" onClick={removeParticipant}>
+              Remove
+            </Button>
+          </div>
+        </Col>
+        <Col style={{ paddingLeft: 0 }}>
+          <div className="d-grid gap-2">
+            <Button variant="card-right" onClick={() => setEditing(true)}>
+              Edit
+            </Button>
+          </div>
+        </Col>
+      </Row>
     );
   }
 
@@ -78,6 +95,14 @@ export default function ParticipantItem({ setMeeting, meeting, position }) {
         <SmallLoadingIndicator />
       ) : (
         <Card>
+          <Card.Header className="Container__row--space-between">
+            {participant?.role === 2 ? 'Host' : 'Participant'}
+            {participant?.role !== 2 && participant.invited ? (
+              <OverlayTrigger placement="top" overlay={renderTooltip}>
+                <Envelope size={20} />
+              </OverlayTrigger>
+            ) : null}
+          </Card.Header>
           <Card.Body>
             <Card.Title>
               {participant?.userName != null && participant?.userName.length > 0
@@ -85,17 +110,8 @@ export default function ParticipantItem({ setMeeting, meeting, position }) {
                 : 'Guest'}
             </Card.Title>
             <Card.Text>{participant?.userEmail}</Card.Text>
-            <Row>
-              <RemoveParticipantButton />
-              <Col>
-                <div className="d-grid gap-2">
-                  <Button variant="primary" onClick={() => setEditing(true)}>
-                    Edit
-                  </Button>
-                </div>
-              </Col>
-            </Row>
           </Card.Body>
+          <Buttons />
         </Card>
       )}
     </Col>
@@ -111,3 +127,9 @@ async function removeFromDatabase(email, meetingId) {
     },
   });
 }
+
+const renderTooltip = (props) => (
+  <Tooltip id="button-tooltip" {...props}>
+    Invite Sent
+  </Tooltip>
+);

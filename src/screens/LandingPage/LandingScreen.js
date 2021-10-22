@@ -80,6 +80,7 @@ export default function LandingScreen() {
           style={{
             backgroundImage: `url(${BackgroundImage})`,
             backgroundPosition: 'center',
+            backgroundSize: 'cover',
           }}
         >
           <div className="Buffer--50px" />

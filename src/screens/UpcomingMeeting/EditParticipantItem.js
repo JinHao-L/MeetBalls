@@ -25,12 +25,13 @@ export default function EditParticipantItem({
     );
   };
 
-  function syncAgenda(prevParticipantId) {
+  function syncAgenda(prevParticipantId, newParticipant) {
     setMeeting((meeting) => ({
       ...meeting,
       agendaItems: meeting.agendaItems.map((item) => {
         if (item?.speaker?.id === prevParticipantId) {
-          item.speaker = null;
+          item.speaker =
+            prevParticipantId === newParticipant.id ? newParticipant : null;
         }
         return item;
       }),
@@ -67,7 +68,7 @@ export default function EditParticipantItem({
         oldEmail,
       );
       meeting.participants[position] = newParticipant;
-      syncAgenda(oldId);
+      syncAgenda(oldId, newParticipant);
       setEditing(false);
     } catch (err) {
       toast.error(extractError(err));
@@ -98,9 +99,9 @@ export default function EditParticipantItem({
           </Spinner>
         </div>
       ) : (
-        <Card>
-          <Card.Header>
-            <p className="Text__subsubheader">Editing Participant</p>
+        <Card border="primary">
+          <Card.Header style={{ backgroundColor: '#8F6B58', color: 'white' }}>
+            Editing Participant
           </Card.Header>
           <Card.Body>
             <Form.Group>
@@ -114,25 +115,25 @@ export default function EditParticipantItem({
                 defaultValue={email}
                 onChange={(event) => setEmail(event.target.value)}
               />
-              <div className="Buffer--20px" />
-              <Row>
-                <Col>
-                  <div className="d-grid gap-2">
-                    <Button variant="outline-primary" onClick={close}>
-                      Cancel
-                    </Button>
-                  </div>
-                </Col>
-                <Col>
-                  <div className="d-grid gap-2">
-                    <Button variant="primary" onClick={updateChanges}>
-                      Confirm
-                    </Button>
-                  </div>
-                </Col>
-              </Row>
             </Form.Group>
+            <div className="Buffer--10px" />
           </Card.Body>
+          <Row>
+            <Col style={{ paddingRight: 0 }}>
+              <div className="d-grid gap-2">
+                <Button variant="card-left-cancel" onClick={close}>
+                  Cancel
+                </Button>
+              </div>
+            </Col>
+            <Col style={{ paddingLeft: 0 }}>
+              <div className="d-grid gap-2">
+                <Button variant="card-right-confirm" onClick={updateChanges}>
+                  Confirm
+                </Button>
+              </div>
+            </Col>
+          </Row>
         </Card>
       )}
     </Col>
@@ -140,6 +141,19 @@ export default function EditParticipantItem({
 }
 
 async function updateDatabase(meetingId, newEmail, newUsername, oldEmail) {
+  if (oldEmail === newEmail.toLowerCase()) {
+    const result = await server.put(
+      '/participant',
+      {
+        meetingId: meetingId,
+        userEmail: oldEmail,
+        userName: newUsername,
+      },
+      defaultHeaders,
+    );
+    return result.data;
+  }
+
   if (oldEmail.length !== 0) {
     await server.delete('/participant', {
       data: {
