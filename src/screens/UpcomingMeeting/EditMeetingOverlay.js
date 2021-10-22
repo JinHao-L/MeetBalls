@@ -1,4 +1,5 @@
 import { Offcanvas, Form, Button } from 'react-bootstrap';
+import DatePicker from 'react-datepicker';
 import { useRef, useState } from 'react';
 import { useHistory } from 'react-router';
 import server from '../../services/server';
@@ -7,6 +8,7 @@ import { toast } from 'react-toastify';
 import { FullLoadingIndicator } from '../../components/FullLoadingIndicator';
 import { extractError } from '../../utils/extractError';
 import { clearMeetingsCache } from '../../utils/dashboardCache';
+import { useEffect } from 'react';
 
 export default function EditMeetingOverlay({
   show,
@@ -17,7 +19,16 @@ export default function EditMeetingOverlay({
   const [loading, setLoading] = useState(false);
   const nameRef = useRef();
   const descriptionRef = useRef();
+  const [date, setDate] = useState(new Date());
   const history = useHistory();
+
+  useEffect(() => {
+    if (!show) return;
+
+    const startDate = new Date(meeting.startedAt);
+    console.log(`date is now ${startDate}`);
+    setDate(startDate)
+  }, [show]);
 
   async function update() {
     try {
@@ -25,6 +36,7 @@ export default function EditMeetingOverlay({
       const newMeeting = Object.assign({}, meeting);
       newMeeting.name = nameRef.current.value;
       newMeeting.description = descriptionRef.current.value;
+      newMeeting.startedAt = date.toISOString();
       setMeeting(newMeeting);
       setShow(false);
       updateDatabase(newMeeting);
@@ -72,6 +84,14 @@ export default function EditMeetingOverlay({
               defaultValue={meeting.description}
               ref={descriptionRef}
             />
+            <Form.Label column>Start Date</Form.Label>
+            <DatePicker
+              showTimeSelect
+              dateFormat="Pp"
+              selected={date}
+              onChange={setDate}
+              customInput={<Form.Control />}
+            />
           </Form.Group>
           <div className="Buffer--20px" />
           <div className="d-grid gap-2">
@@ -99,6 +119,7 @@ async function updateDatabase(newMeeting) {
       description: newMeeting.description,
       duration: newMeeting.duration,
       enableTranscription: newMeeting.enableTranscription,
+      startedAt: newMeeting.startedAt,
     },
     defaultHeaders,
   );
