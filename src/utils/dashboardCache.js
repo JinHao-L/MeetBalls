@@ -17,13 +17,11 @@ function cacheUpcoming(data, type) {
 
 export async function pullMeetings() {
   const upcomingStr = sessionStorage.getItem(UPCOMING);
-  console.log(`cached? ${upcomingStr ? 'yeah' : 'nah'}`);
   const upcoming = upcomingStr
     ? JSON.parse(upcomingStr)
     : await pullUpcomingMeetings();
 
   const completedStr = sessionStorage.getItem(COMPLETED);
-  console.log(`cached? ${completedStr ? 'yeah' : 'nah'}`);
   const completed = completedStr
     ? JSON.parse(completedStr)
     : await pullPastMeetings();
