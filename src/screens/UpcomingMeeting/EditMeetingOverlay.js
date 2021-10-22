@@ -6,6 +6,7 @@ import { defaultHeaders } from '../../utils/axiosConfig';
 import { toast } from 'react-toastify';
 import { FullLoadingIndicator } from '../../components/FullLoadingIndicator';
 import { extractError } from '../../utils/extractError';
+import { clearMeetingsCache } from '../../utils/dashboardCache';
 
 export default function EditMeetingOverlay({
   show,
@@ -42,6 +43,7 @@ export default function EditMeetingOverlay({
         defaultHeaders,
       );
       if (response.status === 200) {
+        clearMeetingsCache();
         history.goBack();
       }
     } catch (err) {
@@ -100,4 +102,5 @@ async function updateDatabase(newMeeting) {
     },
     defaultHeaders,
   );
+  clearMeetingsCache();
 }
