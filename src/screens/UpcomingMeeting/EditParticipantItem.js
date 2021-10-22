@@ -30,7 +30,8 @@ export default function EditParticipantItem({
       ...meeting,
       agendaItems: meeting.agendaItems.map((item) => {
         if (item?.speaker?.id === prevParticipantId) {
-          item.speaker = prevParticipantId === newParticipant.id ? newParticipant : null;
+          item.speaker =
+            prevParticipantId === newParticipant.id ? newParticipant : null;
         }
         return item;
       }),

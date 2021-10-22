@@ -16,7 +16,7 @@ export default function UploadItem({ agendaItem, speakerId }) {
   );
 
   function EditButton() {
-    if (materials == '')
+    if (materials === '')
       return (
         <Row>
           <Col>
@@ -102,7 +102,6 @@ export default function UploadItem({ agendaItem, speakerId }) {
         setMaterials(fileName);
         speakerMaterials = fileName;
       } catch (err) {
-        console.log('Uploading fucked up HELP');
         if (err.response?.status === 400) {
           toast.error(extractError(err) || 'Failed to upload file');
         } else {

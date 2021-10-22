@@ -16,7 +16,7 @@ export const useSocket = (meetingId) => {
         },
       });
       newSocket.on('connect', function () {});
-      newSocket.on('disconnect', function (_) { });
+      newSocket.on('disconnect', function (_) {});
       setSocket(newSocket);
 
       return () => {
