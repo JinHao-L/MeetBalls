@@ -1,5 +1,11 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
-import { Container, Row, Image } from 'react-bootstrap';
+import {
+  Container,
+  Row,
+  Image,
+  OverlayTrigger,
+  Tooltip,
+} from 'react-bootstrap';
 import { CalendarPlusFill } from 'react-bootstrap-icons';
 import UpcomingMeetingItem from './UpcomingMeetingItem';
 import OngoingMeetingItem from './OngoingMeetingItem';
@@ -123,15 +129,17 @@ export default function DashboardScreen() {
         checkIfExist={checkIfExist}
         cloneMeeting={cloneMeeting}
       />
-      <div
-        className="Fab"
-        onClick={() => {
-          setCloneMeeting(null);
-          setShowOverlay(true);
-        }}
-      >
-        <CalendarPlusFill size={22} color="white" />
-      </div>
+      <OverlayTrigger overlay={renderTooltip}>
+        <div
+          className="Fab"
+          onClick={() => {
+            setCloneMeeting(null);
+            setShowOverlay(true);
+          }}
+        >
+          <CalendarPlusFill size={22} color="white" />
+        </div>
+      </OverlayTrigger>
       <FeedbackToggle />
     </>
   );
@@ -164,3 +172,9 @@ function FeedbackToggle() {
     </a>
   );
 }
+
+const renderTooltip = (props) => (
+  <Tooltip id="button-tooltip" {...props}>
+    Add
+  </Tooltip>
+);

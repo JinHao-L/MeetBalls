@@ -82,14 +82,14 @@ export default function SuggestionItem({
         <Row>
           <Col style={{ paddingRight: 0 }}>
             <div className="d-grid gap-2">
-              <Button variant="card-left-danger" onClick={() => reject(item)}>
+              <Button variant="card-left-danger" onClick={() => reject()}>
                 Reject
               </Button>
             </div>
           </Col>
           <Col style={{ paddingLeft: 0 }}>
             <div className="d-grid gap-2">
-              <Button variant="card-right" onClick={() => approve(item)}>
+              <Button variant="card-right" onClick={() => approve()}>
                 Approve
               </Button>
             </div>
