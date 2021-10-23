@@ -1,4 +1,4 @@
-import { Card, Col, Row, Form, Button } from 'react-bootstrap';
+import { Card, Col, Row, Form, Button, Spinner } from 'react-bootstrap';
 import { useState } from 'react';
 import { isValidUrl } from '../../common/CommonFunctions';
 import server from '../../services/server';
@@ -11,9 +11,8 @@ export default function UploadItem({ agendaItem, speakerId }) {
   const [isUpload, setIsUpload] = useState(false);
   const [materials, setMaterials] = useState(agendaItem.speakerMaterials || '');
   const [file, setFile] = useState(null);
-  const [isEditing, setEditing] = useState(
-    agendaItem.speakerMaterials === null || agendaItem.speakerMaterials === '',
-  );
+  const [isEditing, setEditing] = useState(!agendaItem.speakerMaterials);
+  const [loading, setLoading] = useState(false);
 
   function EditButton() {
     if (materials === '')
@@ -90,6 +89,9 @@ export default function UploadItem({ agendaItem, speakerId }) {
   }
 
   async function submit() {
+    if (loading) return;
+
+    setLoading(true);
     const linkSubmitted = materials !== '';
     let speakerMaterials = materials;
     if (isUpload && file) {
@@ -107,11 +109,13 @@ export default function UploadItem({ agendaItem, speakerId }) {
         } else {
           toast.error('Failed to upload file');
         }
+        setLoading(false);
         return;
       }
     } else if (linkSubmitted && !isValidUrl(materials)) {
       toast.error('Attempted to submit an invalid URL');
       setMaterials('');
+      setLoading(false);
       return;
     }
 
@@ -140,12 +144,14 @@ export default function UploadItem({ agendaItem, speakerId }) {
       setEditing(false);
     } catch (err) {
       toast.error(extractError(err));
+    } finally {
+      setLoading(false);
     }
   }
 
   return (
     <Col
-      lg={6}
+      lg={12}
       md={12}
       sm={12}
       style={{ paddingLeft: 10, paddingRight: 10 }}
@@ -186,8 +192,17 @@ export default function UploadItem({ agendaItem, speakerId }) {
 
             <div className="Buffer--20px" />
             <div className="d-grid gap-2">
-              <Button variant="card-middle" onClick={submit}>
+              <Button variant="card-middle" disabled={loading} onClick={submit}>
                 Submit
+                {loading && (
+                  <Spinner
+                    as="span"
+                    animation="border"
+                    size="sm"
+                    role="status"
+                    aria-hidden="true"
+                  />
+                )}
               </Button>
             </div>
           </>

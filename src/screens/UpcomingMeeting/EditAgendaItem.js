@@ -135,7 +135,7 @@ export default function EditAgendaItem({
     const oldName = item.name;
     if (oldName === '') {
       const newMeeting = Object.assign({}, meeting);
-      const newAgenda = newMeeting.agendaItems;
+      const newAgenda = Object.assign([], newMeeting.agendaItems);
       newAgenda.splice(position, 1);
       newMeeting.agendaItems = newAgenda;
       setMeeting(newMeeting);

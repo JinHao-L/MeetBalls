@@ -28,6 +28,8 @@ import BackgroundPattern from '../../assets/background_pattern2.jpg';
 import FeedbackOverlay from './FeedbackOverlay';
 import { logEvent } from '@firebase/analytics';
 import { googleAnalytics } from '../../services/firebase';
+import { clearMeetingsCache } from '../../utils/dashboardCache';
+import { FullLoadingIndicator } from '../../components/FullLoadingIndicator';
 
 export default function OngoingMeetingAdminScreen() {
   const [position, setPosition] = useState(-1);
@@ -100,11 +102,9 @@ export default function OngoingMeetingAdminScreen() {
   }
 
   const updateMeeting = (meetingObj) => {
-    meetingObj.participants = meetingObj.participants
-      .filter((x) => !x.isDuplicate)
-      .sort((p1, p2) => {
-        return (' ' + p1.userName).localeCompare(p2.userName);
-      });
+    const participants = meetingObj.participants;
+    meetingObj.participants = sortAndRemoveDupes(participants);
+
     meetingObj.agendaItems = meetingObj.agendaItems.sort((p1, p2) => {
       return p1.position - p2.position;
     });
@@ -132,6 +132,7 @@ export default function OngoingMeetingAdminScreen() {
     }
     try {
       await callStartMeeting(id);
+      clearMeetingsCache();
       logEvent(googleAnalytics, 'start_meeting', { meetingId: id });
       setMeetingStatus(2);
       setPosition(position + 1);
@@ -146,6 +147,7 @@ export default function OngoingMeetingAdminScreen() {
       await apiCall(id);
       agenda[position].actualDuration = time - agenda[position].startTime;
       if (isLastItem) {
+        clearMeetingsCache();
         setMeetingStatus(3);
         setShowFeedback(true);
         logEvent(googleAnalytics, 'end_meeting', { meetingId: id });
@@ -205,6 +207,10 @@ export default function OngoingMeetingAdminScreen() {
 
   if (!loading && !validId)
     return <RedirectionScreen message={MEETING_NOT_FOUND_ERR} />;
+
+  if (loading) {
+    return <FullLoadingIndicator />;
+  }
 
   updateDelay(meeting.agendaItems, time, position, play);
 
@@ -433,12 +439,21 @@ function updateParticipants(participants, update) {
     }
   });
   if (!hasUpdate) {
-    return [update, ...participants]
-      .filter((x) => !x.isDuplicate)
-      .sort((p1, p2) => {
-        return (' ' + p1.userName).localeCompare(p2.userName);
-      });
+    const newList = [update, ...participants];
+    return sortAndRemoveDupes(newList);
   } else {
     return participants.filter((x) => !x.isDuplicate);
   }
+}
+
+function sortAndRemoveDupes(participants) {
+  function byArrivalThenName(p1, p2) {
+    const p1Join = p1.timeJoined;
+    const p2Join = p2.timeJoined;
+    if (p1Join && !p2Join) return -1;
+    else if (!p1Join && p2Join) return 1;
+    else return p1.userName.localeCompare(p2.userName);
+  }
+
+  return participants.filter((x) => !x.isDuplicate).sort(byArrivalThenName);
 }

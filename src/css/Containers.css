@@ -98,6 +98,12 @@
   text-align: center;
 }
 
+.Container__suggestion-list {
+  max-height: 400px;
+  overflow-y: scroll;
+  overflow-x: hidden;
+}
+
 .Card__statistics {
   height: 270px;
 }

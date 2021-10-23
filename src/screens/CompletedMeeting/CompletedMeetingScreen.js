@@ -13,6 +13,7 @@ import RedirectionScreen, {
 import BackgroundPattern from '../../assets/background_pattern2.jpg';
 import { logEvent } from '@firebase/analytics';
 import { googleAnalytics } from '../../services/firebase';
+import { FullLoadingIndicator } from '../../components/FullLoadingIndicator';
 
 export default function CompletedMeetingScreen() {
   const [meeting, setMeeting] = useState(blankMeeting);
@@ -99,6 +100,11 @@ export default function CompletedMeetingScreen() {
     startTimeIso,
     meeting.duration,
   );
+
+  if (loading) {
+    return <FullLoadingIndicator />;
+  }
+
   return (
     <div
       style={{

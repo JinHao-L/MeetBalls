@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Card, Col, Row } from 'react-bootstrap';
 import { getDateInfo } from '../../common/CommonFunctions';
 import { useHistory } from 'react-router';
@@ -6,12 +6,12 @@ import ConfirmDeleteModal from './ConfirmDeleteModal';
 import server from '../../services/server';
 import PropTypes from 'prop-types';
 import { Trash, CameraVideo, Pen, Front } from 'react-bootstrap-icons';
-import { FullLoadingIndicator } from '../../components/FullLoadingIndicator';
 import { toast } from 'react-toastify';
+import { SmallLoadingIndicator } from '../../components/SmallLoadingIndicator';
 
 export default function UpcomingMeetingItem({
   meeting,
-  pullMeeting,
+  onUpdate,
   setCloneMeeting,
   setShowOverlay,
 }) {
@@ -19,6 +19,14 @@ export default function UpcomingMeetingItem({
   const history = useHistory();
   const [deleting, setDeleting] = useState(false);
   const [showConfirmDelete, setShowConfirmDelete] = useState(false);
+
+  const mounted = useRef(true);
+
+  useEffect(() => {
+    return () => {
+      mounted.current = false;
+    };
+  }, []);
 
   function editMeeting() {
     history.push(`/meeting/${meeting.id}`);
@@ -33,14 +41,15 @@ export default function UpcomingMeetingItem({
     setDeleting(true);
     return server
       .delete(`/meeting/${meeting.id}`)
-      .then((_) => {
-        pullMeeting();
-        history.push('/home');
+      .then(async (_) => {
+        await onUpdate();
+        if (!mounted.current) return;
+        setDeleting(false);
       })
       .catch(() => {
         toast.error('Failed to delete');
-      })
-      .finally(() => setDeleting(false));
+        setDeleting(false);
+      });
   }
 
   function Details() {
@@ -103,7 +112,12 @@ export default function UpcomingMeetingItem({
     >
       <Card className="Card__dashboard">
         {deleting ? (
-          <FullLoadingIndicator />
+          <div
+            style={{ height: '100%', width: '100%' }}
+            className="Container__center--vertical"
+          >
+            <SmallLoadingIndicator />
+          </div>
         ) : (
           <Card.Body>
             <Details />
@@ -133,5 +147,5 @@ UpcomingMeetingItem.propTypes = {
     startedAt: PropTypes.string.isRequired,
     duration: PropTypes.number.isRequired,
   }).isRequired,
-  pullMeeting: PropTypes.func.isRequired,
+  onUpdate: PropTypes.func.isRequired,
 };

@@ -40,18 +40,17 @@ export default function AgendaItem({
       setDeleting(true);
       setLoading(true);
       const newMeeting = Object.assign({}, meeting);
-      const newAgenda = newMeeting.agendaItems;
+      const newAgenda = Object.assign([], newMeeting.agendaItems);
       const actualPosition = newAgenda[position].position;
       newAgenda.splice(position, 1);
-      for (let i = 0; i < newAgenda.length; i++) {
-        newAgenda[i].position = i;
-      }
       newMeeting.agendaItems = newAgenda;
       await removeFromDatabase(meeting.id, actualPosition);
       setMeeting(newMeeting);
+      for (let i = 0; i < newAgenda.length; i++) {
+        newAgenda[i].position = i;
+      }
     } catch (err) {
       toast.error(extractError(err));
-    } finally {
       setLoading(false);
     }
     setDeleting(false);
@@ -66,7 +65,13 @@ export default function AgendaItem({
     return (
       <>
         {loading ? (
-          <SmallLoadingIndicator />
+          <div className="Container__padding--vertical-small">
+            <Card>
+              <div className="Buffer--50px" />
+              <SmallLoadingIndicator />
+              <div className="Buffer--50px" />
+            </Card>
+          </div>
         ) : (
           <Draggable
             draggableId={'Draggable' + item.position}
@@ -98,7 +103,11 @@ export default function AgendaItem({
   return (
     <>
       {loading ? (
-        <SmallLoadingIndicator />
+        <Card>
+          <div className="Buffer--50px" />
+          <SmallLoadingIndicator />
+          <div className="Buffer--50px" />
+        </Card>
       ) : (
         <Draggable
           draggableId={'Draggable' + item.position}
@@ -140,7 +149,7 @@ export default function AgendaItem({
                         ? 'Presented by ' + item.speaker.userName
                         : ''}
                     </Card.Subtitle>
-                    <div className="Buffer--10px" />
+                    <div className="Buffer--5px" />
                     <Card.Text>{item.description}</Card.Text>
                   </Card.Body>
                   {isReordering || (

@@ -28,7 +28,7 @@ export default function ParticipantItem({ setMeeting, meeting, position }) {
     try {
       setRemoving(true);
       const newMeeting = Object.assign({}, meeting);
-      const newParticipants = newMeeting.participants;
+      const newParticipants = Object.assign([], newMeeting.participants);
       const email = newParticipants[position].userEmail;
       const id = newParticipants[position].id;
       await removeFromDatabase(email, meeting.id);
@@ -92,7 +92,11 @@ export default function ParticipantItem({ setMeeting, meeting, position }) {
   return (
     <Col className="Container__padding--vertical-small">
       {removing ? (
-        <SmallLoadingIndicator />
+        <Card>
+          <div className="Buffer--50px" />
+          <SmallLoadingIndicator />
+          <div className="Buffer--50px" />
+        </Card>
       ) : (
         <Card>
           <Card.Header className="Container__row--space-between">

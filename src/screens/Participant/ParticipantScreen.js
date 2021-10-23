@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { getFormattedDateTime } from '../../common/CommonFunctions';
-import { blankMeeting } from '../../common/ObjectTemplates';
-import { Container, Row, Col } from 'react-bootstrap';
+import { blankMeeting, blankSuggestion } from '../../common/ObjectTemplates';
+import { Container, Row, Col, Button } from 'react-bootstrap';
 import { Redirect, useLocation, useParams, useHistory } from 'react-router';
 import { useSocket } from '../../hooks/useSocket';
 import BackgroundPattern from '../../assets/background_pattern2.jpg';
@@ -13,6 +13,8 @@ import RedirectionScreen, {
 } from '../../components/RedirectionScreen';
 import { logEvent } from '@firebase/analytics';
 import { googleAnalytics } from '../../services/firebase';
+import SuggestionItem from './SuggestionItem';
+import { FullLoadingIndicator } from '../../components/FullLoadingIndicator';
 
 const JOINER_KEY = 'joiner';
 const NAME_KEY = 'name';
@@ -22,9 +24,10 @@ export default function ParticipantScreen() {
   const { socket } = useSocket(id);
   const [meeting, setMeeting] = useState(blankMeeting);
   const [validId, setValidId] = useState(true);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [restrictDescription, setRestrictDescription] = useState(true);
   const [agendaItems, setAgendaItems] = useState([]);
+  const [suggestions, setSuggestions] = useState([]);
 
   const { search } = useLocation();
   const params = new URLSearchParams(search);
@@ -38,6 +41,7 @@ export default function ParticipantScreen() {
       setLoading(false);
       return;
     }
+    pullSuggestions();
     return pullMeeting()
       .then(() => {
         setValidId(true);
@@ -56,6 +60,18 @@ export default function ParticipantScreen() {
       history.replace('/ongoing/' + id);
     });
   }, [socket]);
+
+  async function pullSuggestions() {
+    const response = await server.get(`/suggestion/participant/${id}`, {
+      headers: {
+        ...defaultHeaders.headers,
+        'X-Participant': sessionStorage.getItem(id) || '',
+      },
+    });
+    if (response.status !== 200) return;
+    const result = response.data;
+    setSuggestions(result);
+  }
 
   async function pullMeeting() {
     const response = await server.get(`/meeting/${id}`, {
@@ -94,6 +110,21 @@ export default function ParticipantScreen() {
     return items;
   }
 
+  function SuggestionItems() {
+    const items = [];
+    for (let i = 0; i < suggestions.length; i++) {
+      items.push(
+        <SuggestionItem
+          item={suggestions[i]}
+          key={i}
+          suggestions={suggestions}
+          setSuggestions={setSuggestions}
+        />,
+      );
+    }
+    return items;
+  }
+
   if (!loading && !validId)
     return <RedirectionScreen message={MEETING_NOT_FOUND_ERR} />;
   if (joinerId === meeting?.hostId) {
@@ -101,6 +132,17 @@ export default function ParticipantScreen() {
   }
   if (meeting.type !== undefined && meeting.type !== 1) {
     return <Redirect to={'/ongoing/' + id} />;
+  }
+  if (loading) {
+    return <FullLoadingIndicator />;
+  }
+
+  function addSuggestion() {
+    if (suggestions.findIndex((item) => item.name === '') >= 0) return;
+    const newSuggestion = Object.assign({}, blankSuggestion);
+    newSuggestion.meetingId = id;
+    const newSuggestions = [newSuggestion, ...suggestions];
+    setSuggestions(newSuggestions);
   }
 
   return (
@@ -111,50 +153,60 @@ export default function ParticipantScreen() {
       }}
     >
       <div className="Buffer--50px" />
-      <Container className="Container__padding--vertical Container__foreground">
+      <Container className="Container__foreground">
+        <Row>
+          <Col
+            lg={12}
+            md={12}
+            sm={12}
+            className="Container__side"
+            style={{ paddingLeft: 30, paddingRight: 30 }}
+          >
+            <Row>
+              <Col lg={1} md={12} sm={12} />
+              <Col lg={4} md={12} sm={12}>
+                <div className="Buffer--50px" />
+                <p className="Text__header">Hi {name}!</p>
+                <p className="Text__subheader">
+                  You have a meeting <b>{meeting?.name}</b> scheduled on{' '}
+                  {getFormattedDateTime(meeting?.startedAt)}.
+                </p>
+                <Button onClick={() => history.push('/ongoing/' + id)}>
+                  Go to Meeting
+                </Button>
+                <div className="Buffer--50px" />
+              </Col>
+              <Col lg={1} md={12} sm={12} />
+              <Col lg={5} md={12} sm={12}>
+                <div className="Buffer--50px" />
+                <div className="Container__row--space-between">
+                  <p className="Text__subsubheader">Description</p>
+                  <div
+                    className="Text__hint Clickable"
+                    onClick={() => setRestrictDescription(!restrictDescription)}
+                  >
+                    {restrictDescription ? 'Show More' : 'Show Less'}
+                  </div>
+                </div>
+                <div className="Buffer--10px" />
+                <p
+                  className={
+                    'Text__paragraph' +
+                    (restrictDescription ? ' Text__elipsized--5-lines' : '')
+                  }
+                >
+                  {meeting?.description}
+                </p>
+                <div className="Buffer--50px" />
+              </Col>
+            </Row>
+          </Col>
+        </Row>
         <div className="Buffer--50px" />
         <Row>
           <Col lg={1} md={12} sm={12} />
           <Col
-            lg={10}
-            md={12}
-            sm={12}
-            style={{ paddingLeft: 30, paddingRight: 30 }}
-          >
-            <p className="Text__header">Hi {name}!</p>
-            <p className="Text__subheader">
-              You have a meeting <b>{meeting?.name}</b> scheduled on{' '}
-              {getFormattedDateTime(meeting?.startedAt)}. We will redirect you
-              to the meeting page once the host starts the meeting.
-            </p>
-            <div className="Buffer--20px" />
-            <div className="Container__row--space-between">
-              <p className="Text__subsubheader">Description</p>
-              <div
-                className="Text__hint Clickable"
-                onClick={() => setRestrictDescription(!restrictDescription)}
-              >
-                {restrictDescription ? 'Show More' : 'Show Less'}
-              </div>
-            </div>
-            <div className="Buffer--10px" />
-            <p
-              className={
-                'Text__paragraph' +
-                (restrictDescription ? ' Text__elipsized--5-lines' : '')
-              }
-            >
-              {meeting?.description}
-            </p>
-          </Col>
-        </Row>
-        <div className="Buffer--20px" />
-        <div className="Line--horizontal" />
-        <div className="Buffer--20px" />
-        <Row>
-          <Col lg={1} md={12} sm={12} />
-          <Col
-            lg={10}
+            lg={5}
             md={12}
             sm={12}
             style={{ paddingLeft: 30, paddingRight: 30 }}
@@ -163,6 +215,19 @@ export default function ParticipantScreen() {
               Here are the items you will be presenting:
             </p>
             <Row>{UploadItems()}</Row>
+          </Col>
+          <Col
+            lg={5}
+            md={12}
+            sm={12}
+            style={{ paddingLeft: 30, paddingRight: 30 }}
+          >
+            <p className="Text__subheader">Got a suggestion?</p>
+            <div className="d-grid gap-2">
+              <Button onClick={addSuggestion}>Add a Suggestion</Button>
+            </div>
+            <div className="Buffer--10px" />
+            <SuggestionItems />
           </Col>
         </Row>
 

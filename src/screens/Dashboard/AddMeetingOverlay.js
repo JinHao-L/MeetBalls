@@ -133,7 +133,6 @@ export default function AddMeetingOverlay({
     setFieldValue,
     values,
     touched,
-    isValid,
     errors,
   }) {
     return (
@@ -264,6 +263,14 @@ export default function AddMeetingOverlay({
     return items;
   }
 
+  function onClose(handleReset) {
+    setShow(false);
+    setSearched(false);
+    setIsZoomMeeting(false);
+    setShowZoomList(false);
+    handleReset();
+  }
+
   return (
     <Formik
       validationSchema={schema}
@@ -274,19 +281,12 @@ export default function AddMeetingOverlay({
         handleSubmit,
         handleChange,
         setFieldValue,
+        handleReset,
         values,
         touched,
-        isValid,
         errors,
       }) => (
-        <Offcanvas
-          show={show}
-          onHide={() => {
-            setShow(false);
-            setSearched(false);
-            setShowZoomList(false);
-          }}
-        >
+        <Offcanvas show={show} onHide={() => onClose(handleReset)}>
           <Offcanvas.Header closeButton>
             <Offcanvas.Title>
               {cloneMeeting === null
@@ -343,7 +343,6 @@ export default function AddMeetingOverlay({
                     setFieldValue={setFieldValue}
                     values={values}
                     touched={touched}
-                    isValid={isValid}
                     errors={errors}
                   />
                 )}
