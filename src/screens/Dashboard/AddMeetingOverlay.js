@@ -286,10 +286,7 @@ export default function AddMeetingOverlay({
         touched,
         errors,
       }) => (
-        <Offcanvas
-          show={show}
-          onHide={() => onClose(handleReset)}
-        >
+        <Offcanvas show={show} onHide={() => onClose(handleReset)}>
           <Offcanvas.Header closeButton>
             <Offcanvas.Title>
               {cloneMeeting === null
