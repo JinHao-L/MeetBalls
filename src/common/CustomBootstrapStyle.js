@@ -296,6 +296,11 @@ export default function CustomBootstrapStyle() {
       white-space: pre-line;
     }
 
+    .dropdown-menu {
+      max-height: 200px;
+      overflow-y: scroll;
+    }
+
     `}
     </style>
   );
