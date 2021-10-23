@@ -439,7 +439,7 @@ function updateParticipants(participants, update) {
     }
   });
   if (!hasUpdate) {
-    const newList = [update, ...participants]
+    const newList = [update, ...participants];
     return sortAndRemoveDupes(newList);
   } else {
     return participants.filter((x) => !x.isDuplicate);
@@ -452,10 +452,8 @@ function sortAndRemoveDupes(participants) {
     const p2Join = p2.timeJoined;
     if (p1Join && !p2Join) return -1;
     else if (!p1Join && p2Join) return 1;
-    else return (p1.userName).localeCompare(p2.userName);
+    else return p1.userName.localeCompare(p2.userName);
   }
 
-  return participants
-      .filter((x) => !x.isDuplicate)
-      .sort(byArrivalThenName);
+  return participants.filter((x) => !x.isDuplicate).sort(byArrivalThenName);
 }

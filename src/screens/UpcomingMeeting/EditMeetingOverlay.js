@@ -27,7 +27,7 @@ export default function EditMeetingOverlay({
 
     const startDate = new Date(meeting.startedAt);
     console.log(`date is now ${startDate}`);
-    setDate(startDate)
+    setDate(startDate);
   }, [show]);
 
   async function update() {
