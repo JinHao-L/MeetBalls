@@ -292,6 +292,10 @@ export default function CustomBootstrapStyle() {
       color: white;
     }
 
+    .card .card-text {
+      white-space: pre-line;
+    }
+
     `}
     </style>
   );
