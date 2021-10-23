@@ -12,11 +12,11 @@ import {
 import { getFormattedDateTime } from '../../common/CommonFunctions';
 import AgendaItemList from './AgendaItemList';
 import ParticipantItemList from './ParticipantItemList';
+import SuggestionList from './SuggestionList';
 import {
   PersonPlusFill,
   CalendarPlusFill,
   ArrowRepeat,
-  ChatSquareText,
   Save,
 } from 'react-bootstrap-icons';
 import {
@@ -29,6 +29,8 @@ import { useHistory, Redirect, useParams } from 'react-router';
 import server from '../../services/server';
 import { defaultHeaders } from '../../utils/axiosConfig';
 import ConfirmInviteModel from './ConfirmInviteModel';
+import { toast } from 'react-toastify';
+import { extractError } from '../../utils/extractError';
 
 import RedirectionScreen, {
   BAD_MEETING_PERMS_MSG,
@@ -38,13 +40,14 @@ import { UserContext } from '../../context/UserContext';
 import BackgroundPattern from '../../assets/background_pattern2.jpg';
 import { logEvent } from '@firebase/analytics';
 import { googleAnalytics } from '../../services/firebase';
-import SuggestionOverlay from './SuggestionOverlay';
 import { FullLoadingIndicator } from '../../components/FullLoadingIndicator';
 
 export default function UpcomingMeetingScreen() {
   const [meeting, setMeeting] = useState(blankMeeting);
+  const [suggestions, setSuggestions] = useState([]);
+
   const [restrictDescription, setRestrictDescription] = useState(true);
-  const [currentTab, setCurrentTab] = useState('participants');
+  const [currentTab, setCurrentTab] = useState(Tabs.PARTICIPANTS);
   const [showEditMeeting, setShowEditMeeting] = useState(false);
   const [showInviteModal, setShowInviteModal] = useState(false);
   const [inviteLoading, setInviteLoading] = useState(false);
@@ -53,7 +56,6 @@ export default function UpcomingMeetingScreen() {
 
   const [loading, setLoading] = useState(true);
   const [validId, setValidId] = useState(true);
-  const [openSuggestion, setOpenSuggestion] = useState(false);
 
   const history = useHistory();
   const user = useContext(UserContext);
@@ -70,16 +72,19 @@ export default function UpcomingMeetingScreen() {
       .finally(() => setLoading(false));
   }, []);
 
-  useEffect(() => {
-    if (!openSuggestion && meeting.agendaItems.length > 1) {
-      const newMeeting = Object.assign({}, meeting);
-      newMeeting.agendaItems.sort((p1, p2) => {
-        return p1.position - p2.position;
+  async function getSuggestions(meetingId) {
+    try {
+      const response = await server.get(`/suggestion/${meetingId}`, {
+        ...defaultHeaders.headers,
+        'X-Participant': sessionStorage.getItem(meetingId) || '',
       });
-      setMeeting(newMeeting);
-      console.log('working');
+      if (response.status !== 200) return;
+      const result = response.data;
+      setSuggestions(result.filter((item) => !item?.accepted));
+    } catch (err) {
+      toast.error(extractError(err));
     }
-  }, [openSuggestion]);
+  }
 
   async function pullMeeting() {
     const response = await server.get(`/meeting/${id}`, {
@@ -105,6 +110,7 @@ export default function UpcomingMeetingScreen() {
           return p1.userName.localeCompare(p2.userName);
         });
     }
+    getSuggestions(result?.id);
     setMeeting(result);
   }
 
@@ -113,16 +119,28 @@ export default function UpcomingMeetingScreen() {
   }
 
   function Content() {
-    if (currentTab === 'agenda') {
-      return (
-        <AgendaItemList
-          meeting={meeting}
-          setMeeting={setMeeting}
-          isReordering={isReordering}
-        />
-      );
-    } else {
-      return <ParticipantItemList meeting={meeting} setMeeting={setMeeting} />;
+    switch (currentTab) {
+      case Tabs.AGENDA:
+        return (
+          <AgendaItemList
+            meeting={meeting}
+            setMeeting={setMeeting}
+            isReordering={isReordering}
+          />
+        );
+      case Tabs.SUGGESTIONS:
+        return (
+          <SuggestionList
+            suggestions={suggestions}
+            setSuggestions={setSuggestions}
+            meeting={meeting}
+            setMeeting={setMeeting}
+          />
+        );
+      default:
+        return (
+          <ParticipantItemList meeting={meeting} setMeeting={setMeeting} />
+        );
     }
   }
 
@@ -133,7 +151,9 @@ export default function UpcomingMeetingScreen() {
       </Tooltip>
     );
 
-    if (currentTab === 'participants') {
+    if (currentTab === Tabs.SUGGESTIONS) {
+      return null;
+    } else if (currentTab === Tabs.PARTICIPANTS) {
       return (
         <OverlayTrigger placement="top" overlay={renderTooltip}>
           <div
@@ -179,11 +199,6 @@ export default function UpcomingMeetingScreen() {
         Reorder
       </Tooltip>
     );
-    const renderTooltipSecond = (props) => (
-      <Tooltip id="button-tooltip" {...props}>
-        Suggestions
-      </Tooltip>
-    );
     return (
       <>
         <OverlayTrigger placement="top" overlay={renderTooltipFirst}>
@@ -195,14 +210,6 @@ export default function UpcomingMeetingScreen() {
             }}
           >
             <ArrowRepeat size={25} color="white" />
-          </div>
-        </OverlayTrigger>
-        <OverlayTrigger placement="top" overlay={renderTooltipSecond}>
-          <div
-            className="Fab-secondary-second"
-            onClick={() => setOpenSuggestion(true)}
-          >
-            <ChatSquareText size={20} color="white" />
           </div>
         </OverlayTrigger>
       </>
@@ -304,15 +311,18 @@ export default function UpcomingMeetingScreen() {
             <div className="Buffer--50px" />
             <Nav
               variant="tabs"
-              defaultActiveKey="participants"
+              defaultActiveKey={Tabs.PARTICIPANTS}
               onSelect={(selectedKey) => setCurrentTab(selectedKey)}
               style={{ marginLeft: 20, marginRight: 20 }}
             >
               <Nav.Item>
-                <Nav.Link eventKey="participants">Participants</Nav.Link>
+                <Nav.Link eventKey={Tabs.PARTICIPANTS}>Participants</Nav.Link>
               </Nav.Item>
               <Nav.Item>
-                <Nav.Link eventKey="agenda">Agenda</Nav.Link>
+                <Nav.Link eventKey={Tabs.AGENDA}>Agenda</Nav.Link>
+              </Nav.Item>
+              <Nav.Item>
+                <Nav.Link eventKey={Tabs.SUGGESTIONS}>Suggestions</Nav.Link>
               </Nav.Item>
             </Nav>
             <div className="Buffer--20px" />
@@ -340,13 +350,7 @@ export default function UpcomingMeetingScreen() {
         setInviteList={setInviteList}
       />
       <AddToggle />
-      {currentTab === 'agenda' && !isReordering ? <ExtraToggles /> : null}
-      <SuggestionOverlay
-        show={openSuggestion}
-        setShow={setOpenSuggestion}
-        meeting={meeting}
-        setMeeting={setMeeting}
-      />
+      {currentTab === Tabs.AGENDA && !isReordering ? <ExtraToggles /> : null}
     </div>
   );
 }
@@ -416,3 +420,9 @@ async function updateDatabase(meetingId, agendaItems) {
     );
   }
 }
+
+const Tabs = {
+  AGENDA: 'agenda',
+  PARTICIPANTS: 'participants',
+  SUGGESTIONS: 'suggestions',
+};

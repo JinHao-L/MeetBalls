@@ -8,12 +8,10 @@ export default function AgendaItemList({ meeting, setMeeting, isReordering }) {
 
   if (isReordering) {
     items.push(
-      <div className="d-grid gap-2" key={'Button'}>
-        <p className="Text__subsubheader">
-          Drag and drop items to reorder them. Once you are done, press on the
-          save icon below to save any changes that you have made.
-        </p>
-      </div>,
+      <p className="Text__subsubheader" key={'Header'}>
+        Drag and drop items to reorder them. Once you are done, press on the
+        save icon below to save any changes that you have made.
+      </p>,
     );
     items.push(<div className="Buffer--20px" key={'Buffer'} />);
   }
