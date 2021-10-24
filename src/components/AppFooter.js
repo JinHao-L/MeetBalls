@@ -1,6 +1,7 @@
 import { Container, Row, Col, Nav } from 'react-bootstrap';
 import { useHistory } from 'react-router-dom';
 import { Facebook, Instagram } from 'react-bootstrap-icons';
+import { FaTiktok } from 'react-icons/fa';
 
 export default function AppFooter() {
   const history = useHistory();
@@ -26,6 +27,15 @@ export default function AppFooter() {
               style={{ color: '8F6B58' }}
               onClick={() => {
                 window.open('https://www.instagram.com/meetballsapp/');
+              }}
+            />
+            <div className="Buffer--10px" />
+            <FaTiktok
+              size={24}
+              className="Clickable"
+              style={{ color: '8F6B58' }}
+              onClick={() => {
+                window.open('https://www.tiktok.com/@meetballsapp');
               }}
             />
             <div className="Buffer--20px" />
