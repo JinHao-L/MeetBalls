@@ -49,8 +49,8 @@ export default function AppFooter() {
               </Nav.Link>
             </Nav>
           </Col>
-          <div className="Buffer--20px" />
           <Col>
+            <div className="Buffer--20px" />
             <p style={{ color: '#8F6B58' }} className="Text__small">
               &copy; Copyright {new Date().getFullYear()}, MeetBalls
             </p>

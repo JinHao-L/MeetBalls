@@ -1,12 +1,11 @@
 import { Image, Row, Col } from 'react-bootstrap';
-import Banner from '../../assets/banner_privacy.jpg';
 import AppFooter from '../../components/AppFooter';
 
 export default function SupportPage() {
   return (
     <>
       <div className="Banner">
-        <Image src={Banner} className="Image__banner" />
+        <Image src={'/assets/banner_privacy.jpg'} className="Image__banner" />
         <div className="Container__center--vertical Banner__content">
           <p className="Text__header" style={{ color: 'white' }}>
             Support

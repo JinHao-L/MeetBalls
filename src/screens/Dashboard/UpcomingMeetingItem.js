@@ -63,7 +63,7 @@ export default function UpcomingMeetingItem({
           {dateInfo.date} {dateInfo.startTime}
         </Card.Subtitle>
         <div className="Buffer--20px" />
-        <Card.Text className="Text__elipsized--5-lines">
+        <Card.Text className="Text__elipsized--2-lines">
           {meeting.description}
         </Card.Text>
       </div>

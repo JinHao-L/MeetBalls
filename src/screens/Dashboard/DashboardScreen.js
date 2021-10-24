@@ -1,4 +1,9 @@
-import { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import {
+  useEffect,
+  useRef,
+  useState,
+  useContext,
+} from 'react';
 import {
   Container,
   Row,
@@ -17,6 +22,8 @@ import { extractError } from '../../utils/extractError';
 import { logEvent } from '@firebase/analytics';
 import { googleAnalytics } from '../../services/firebase';
 import { clearMeetingsCache, pullMeetings } from '../../utils/dashboardCache';
+import { UserContext } from '../../context/UserContext';
+import AppFooter from '../../components/AppFooter';
 
 export default function DashboardScreen() {
   const [upcoming, setUpcoming] = useState([]);
@@ -24,12 +31,10 @@ export default function DashboardScreen() {
   const [loading, setLoading] = useState(true);
   const [showOverlay, setShowOverlay] = useState(false);
   const [cloneMeeting, setCloneMeeting] = useState(null);
+  const [banner, setBanner] = useState('');
+  const user = useContext(UserContext);
 
   const mounted = useRef(true);
-
-  useLayoutEffect(() => {
-    getBanner();
-  }, []);
 
   useEffect(() => {
     logEvent(googleAnalytics, 'visit_dashboard');
@@ -38,6 +43,10 @@ export default function DashboardScreen() {
     return () => {
       mounted.current = false;
     };
+  }, []);
+
+  useEffect(() => {
+    setBanner(getBanner);
   }, []);
 
   function populateMeetings() {
@@ -103,10 +112,13 @@ export default function DashboardScreen() {
   return (
     <>
       <div className="Banner">
-        <Image src={getBanner().default} fluid className="Image__banner" />
+        <Image src={banner} fluid className="Image__banner" />
         <div className="Container__center--vertical Banner__content">
-          <p className="Text__header" style={{ color: 'white' }}>
-            Welcome Back!
+          <p
+            className="Text__header Text__elipsized--2-lines"
+            style={{ color: 'white' }}
+          >
+            Welcome back {user.firstName}!
           </p>
           <p className="Text__subsubheader" style={{ color: 'white' }}>
             You have {upcoming.length} upcoming meeting
@@ -115,12 +127,15 @@ export default function DashboardScreen() {
         </div>
       </div>
 
-      <Container className="Container__padding--vertical">
+      <Container
+        className="Container__padding--vertical"
+        style={{ minHeight: 'calc(100vh - 56px - 121px - 300px)' }}
+      >
         <Row>
           {upcomingList}
           {historyList}
         </Row>
-        <div className="Buffer--100px" />
+        <div className="Buffer--50px" />
       </Container>
       <AddMeetingOverlay
         show={showOverlay}
@@ -141,6 +156,7 @@ export default function DashboardScreen() {
         </div>
       </OverlayTrigger>
       <FeedbackToggle />
+      <AppFooter />
     </>
   );
 }
@@ -148,15 +164,15 @@ export default function DashboardScreen() {
 function getBanner() {
   const time = new Date().getHours();
   if (time < 6) {
-    return require('../../assets/banner_night.jpg');
+    return '/assets/banner_night.jpg';
   } else if (time < 10) {
-    return require('../../assets/banner_morning.jpg');
+    return '/assets/banner_morning.jpg';
   } else if (time < 16) {
-    return require('../../assets/banner_afternoon.jpg');
+    return '/assets/banner_afternoon.jpg';
   } else if (time < 20) {
-    return require('../../assets/banner_evening.jpg');
+    return '/assets/banner_evening.jpg';
   } else {
-    return require('../../assets/banner_night.jpg');
+    return '/assets/banner_night.jpg';
   }
 }
 
@@ -165,6 +181,7 @@ function FeedbackToggle() {
     <a
       href="https://docs.google.com/forms/d/e/1FAIpQLSfN7K-1RdMzzlIf-9DtvKxhlqMpYkUGV_w3cYMofNsehDw_qA/viewform?usp=sf_link"
       target="_blank"
+      rel="noreferrer"
     >
       <div className="Toggle__feedback">
         <p className="Text--rotated">Have Feedback?</p>
