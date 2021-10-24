@@ -1,7 +1,6 @@
 import { logEvent } from '@firebase/analytics';
 import { useEffect } from 'react';
 import { Image, Row, Col } from 'react-bootstrap';
-import Banner from '../../assets/banner_privacy.jpg';
 import AddAgendaImage from '../../assets/guide_add_agenda.jpg';
 import AgendaListImage from '../../assets/guide_agenda_list.jpg';
 import DashboardImage from '../../assets/guide_dashboard.jpg';
@@ -19,7 +18,7 @@ export default function DocumentationScreen() {
   return (
     <>
       <div className="Banner">
-        <Image src={Banner} className="Image__banner" />
+        <Image src={'/assets/banner_privacy.jpg'} className="Image__banner" />
         <div className="Container__center--vertical Banner__content">
           <p className="Text__header" style={{ color: 'white' }}>
             Zoom Integration Documentation
