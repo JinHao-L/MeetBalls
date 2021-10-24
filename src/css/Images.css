@@ -5,6 +5,7 @@
 }
 
 .Image__banner {
+  min-height: 200px;
   max-height: 300px;
   width: 100%;
   object-fit: cover;

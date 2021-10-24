@@ -1,4 +1,10 @@
-import { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import {
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+  useContext,
+} from 'react';
 import {
   Container,
   Row,
@@ -17,6 +23,7 @@ import { extractError } from '../../utils/extractError';
 import { logEvent } from '@firebase/analytics';
 import { googleAnalytics } from '../../services/firebase';
 import { clearMeetingsCache, pullMeetings } from '../../utils/dashboardCache';
+import { UserContext } from '../../context/UserContext';
 
 export default function DashboardScreen() {
   const [upcoming, setUpcoming] = useState([]);
@@ -24,6 +31,7 @@ export default function DashboardScreen() {
   const [loading, setLoading] = useState(true);
   const [showOverlay, setShowOverlay] = useState(false);
   const [cloneMeeting, setCloneMeeting] = useState(null);
+  const user = useContext(UserContext);
 
   const mounted = useRef(true);
 
@@ -105,8 +113,11 @@ export default function DashboardScreen() {
       <div className="Banner">
         <Image src={getBanner().default} fluid className="Image__banner" />
         <div className="Container__center--vertical Banner__content">
-          <p className="Text__header" style={{ color: 'white' }}>
-            Welcome Back!
+          <p
+            className="Text__header Text__elipsized--2-lines"
+            style={{ color: 'white' }}
+          >
+            Welcome back {user.firstName}!
           </p>
           <p className="Text__subsubheader" style={{ color: 'white' }}>
             You have {upcoming.length} upcoming meeting
