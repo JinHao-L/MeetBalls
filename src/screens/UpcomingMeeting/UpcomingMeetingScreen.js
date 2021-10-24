@@ -6,20 +6,13 @@ import {
   Container,
   Nav,
   Spinner,
-  Tooltip,
-  OverlayTrigger,
   Card,
 } from 'react-bootstrap';
 import { getFormattedDateTime } from '../../common/CommonFunctions';
 import AgendaItemList from './AgendaItemList';
 import ParticipantItemList from './ParticipantItemList';
 import SuggestionList from './SuggestionList';
-import {
-  PersonPlusFill,
-  CalendarPlusFill,
-  ArrowRepeat,
-  Save,
-} from 'react-bootstrap-icons';
+import { PersonPlusFill, CalendarPlusFill } from 'react-bootstrap-icons';
 import {
   blankAgenda,
   blankMeeting,
@@ -128,6 +121,7 @@ export default function UpcomingMeetingScreen() {
               meeting={meeting}
               setMeeting={setMeeting}
               isReordering={isReordering}
+              setReordering={setReordering}
             />
             <AddToggle />
           </>
@@ -192,29 +186,6 @@ export default function UpcomingMeetingScreen() {
       );
 
     return null;
-  }
-
-  function ExtraToggles() {
-    const renderTooltipFirst = (props) => (
-      <Tooltip id="button-tooltip" {...props}>
-        Reorder
-      </Tooltip>
-    );
-    return (
-      <>
-        <OverlayTrigger placement="top" overlay={renderTooltipFirst}>
-          <div
-            className="Fab-secondary-first"
-            onClick={() => {
-              removeEmpty(meeting, setMeeting);
-              setReordering(true);
-            }}
-          >
-            <ArrowRepeat size={25} color="white" />
-          </div>
-        </OverlayTrigger>
-      </>
-    );
   }
 
   if (!loading && !validId)
@@ -350,7 +321,6 @@ export default function UpcomingMeetingScreen() {
         inviteList={inviteList}
         setInviteList={setInviteList}
       />
-      {currentTab === Tabs.AGENDA && !isReordering ? <ExtraToggles /> : null}
     </div>
   );
 }
@@ -387,38 +357,6 @@ async function addAgenda(meeting, setMeeting) {
 async function scrollToBottom() {
   await new Promise((resolve) => setTimeout(resolve, 200));
   window.scrollTo(0, window.outerHeight);
-}
-
-function removeEmpty(meeting, setMeeting) {
-  const agenda = meeting.agendaItems;
-  if (agenda.length > 0 && agenda[agenda.length - 1]?.name?.length === 0) {
-    const newMeeting = Object.assign({}, meeting);
-    const newAgenda = Object.assign([], newMeeting.agendaItems);
-    newAgenda.splice(agenda.length - 1, 1);
-    newMeeting.agendaItems = newAgenda;
-    setMeeting(newMeeting);
-  }
-}
-
-async function updateDatabase(meetingId, agendaItems) {
-  const changes = [];
-  agendaItems.forEach((item) => {
-    changes.push({
-      oldPosition: item.prevPosition,
-      newPosition: item.position,
-    });
-    item.prevPosition = item.position;
-  });
-  if (changes.length > 0) {
-    await server.put(
-      '/agenda-item/positions',
-      {
-        positions: changes,
-        meetingId: meetingId,
-      },
-      defaultHeaders,
-    );
-  }
 }
 
 const Tabs = {

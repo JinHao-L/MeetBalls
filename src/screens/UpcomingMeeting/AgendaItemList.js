@@ -1,8 +1,16 @@
 import { DragDropContext, Droppable } from 'react-beautiful-dnd';
 import AgendaItem from './AgendaItem';
 import { useState } from 'react';
+import { Button } from 'react-bootstrap';
+import server from '../../services/server';
+import { defaultHeaders } from '../../utils/axiosConfig';
 
-export default function AgendaItemList({ meeting, setMeeting, isReordering }) {
+export default function AgendaItemList({
+  meeting,
+  setMeeting,
+  isReordering,
+  setReordering,
+}) {
   const [isDeleting, setDeleting] = useState(false);
   const items = [];
 
@@ -30,18 +38,42 @@ export default function AgendaItemList({ meeting, setMeeting, isReordering }) {
     );
   }
   return (
-    <DragDropContext
-      onDragEnd={(result) => onDragEnd(result, meeting, setMeeting)}
-    >
-      <Droppable droppableId="Agenda">
-        {(provided) => (
-          <div ref={provided.innerRef} {...provided.droppableProps}>
-            {items}
-            {provided.placeholder}
-          </div>
+    <>
+      <div className="d-grid gap-2">
+        {isReordering ? (
+          <Button
+            onClick={() => {
+              setReordering(false);
+              updateDatabase(meeting.id, meeting.agendaItems);
+            }}
+          >
+            Save
+          </Button>
+        ) : (
+          <Button
+            onClick={() => {
+              removeEmpty(meeting, setMeeting);
+              setReordering(true);
+            }}
+          >
+            Reorder
+          </Button>
         )}
-      </Droppable>
-    </DragDropContext>
+      </div>
+      <div className="Buffer--20px" />
+      <DragDropContext
+        onDragEnd={(result) => onDragEnd(result, meeting, setMeeting)}
+      >
+        <Droppable droppableId="Agenda">
+          {(provided) => (
+            <div ref={provided.innerRef} {...provided.droppableProps}>
+              {items}
+              {provided.placeholder}
+            </div>
+          )}
+        </Droppable>
+      </DragDropContext>
+    </>
   );
 }
 
@@ -61,5 +93,37 @@ function onDragEnd(result, meeting, setMeeting) {
   setMeeting(newMeeting);
   for (let i = 0; i < newAgenda.length; i++) {
     newAgenda[i].position = i;
+  }
+}
+
+function removeEmpty(meeting, setMeeting) {
+  const agenda = meeting.agendaItems;
+  if (agenda.length > 0 && agenda[agenda.length - 1]?.name?.length === 0) {
+    const newMeeting = Object.assign({}, meeting);
+    const newAgenda = Object.assign([], newMeeting.agendaItems);
+    newAgenda.splice(agenda.length - 1, 1);
+    newMeeting.agendaItems = newAgenda;
+    setMeeting(newMeeting);
+  }
+}
+
+async function updateDatabase(meetingId, agendaItems) {
+  const changes = [];
+  agendaItems.forEach((item) => {
+    changes.push({
+      oldPosition: item.prevPosition,
+      newPosition: item.position,
+    });
+    item.prevPosition = item.position;
+  });
+  if (changes.length > 0) {
+    await server.put(
+      '/agenda-item/positions',
+      {
+        positions: changes,
+        meetingId: meetingId,
+      },
+      defaultHeaders,
+    );
   }
 }
