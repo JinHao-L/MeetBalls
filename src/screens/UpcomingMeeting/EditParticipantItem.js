@@ -5,6 +5,7 @@ import { toast } from 'react-toastify';
 import server from '../../services/server';
 import { defaultHeaders } from '../../utils/axiosConfig';
 import { extractError } from '../../utils/extractError';
+import { SmallLoadingIndicator } from '../../components/SmallLoadingIndicator';
 
 export default function EditParticipantItem({
   setEditing,
@@ -93,11 +94,11 @@ export default function EditParticipantItem({
   return (
     <Col className="Container__padding--vertical-small">
       {loading ? (
-        <div className="d-flex justify-content-center">
-          <Spinner animation="border" role="status">
-            <span className="visually-hidden">Loading...</span>
-          </Spinner>
-        </div>
+        <Card>
+          <div className="Buffer--50px" />
+          <SmallLoadingIndicator />
+          <div className="Buffer--50px" />
+        </Card>
       ) : (
         <Card border="primary">
           <Card.Header style={{ backgroundColor: '#8F6B58', color: 'white' }}>

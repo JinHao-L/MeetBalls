@@ -14,7 +14,7 @@ export default function OngoingMeetingItem({ meeting }) {
         <div className="Buffer--10px" />
         <Card.Subtitle>Ongoing</Card.Subtitle>
         <div className="Buffer--20px" />
-        <Card.Text className="Text__elipsized--5-lines">
+        <Card.Text className="Text__elipsized--2-lines">
           {meeting.description}
         </Card.Text>
       </div>

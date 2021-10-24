@@ -41,7 +41,6 @@ export default function LandingScreen() {
                 <p>• Pace your meetings with intelligent agenda</p>
                 <p>• Mass email participants</p>
                 <p>• Analyse meeting statistics</p>
-                <p>• Save audio transcripts from zoom (Coming Soon)</p>
                 <div className="Buffer--20px" />
                 <Button
                   variant="outline-facebook"
@@ -99,7 +98,7 @@ export default function LandingScreen() {
                 lg={4}
                 className="Container__padding--vertical-small"
               >
-                <Card>
+                <Card style={{ height: '100%' }}>
                   <Card.Img variant="top" src={AgendaImage} />
                   <div className="Line--horizontal" />
                   <Card.Body>
@@ -117,7 +116,7 @@ export default function LandingScreen() {
                 lg={4}
                 className="Container__padding--vertical-small"
               >
-                <Card>
+                <Card style={{ height: '100%' }}>
                   <Card.Img variant="top" src={MeetingImage} />
                   <div className="Line--horizontal" />
                   <Card.Body>
@@ -135,7 +134,7 @@ export default function LandingScreen() {
                 lg={4}
                 className="Container__padding--vertical-small"
               >
-                <Card>
+                <Card style={{ height: '100%' }}>
                   <Card.Img variant="top" src={StatisticsImage} />
                   <div className="Line--horizontal" />
                   <Card.Body>
