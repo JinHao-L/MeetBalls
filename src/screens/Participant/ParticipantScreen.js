@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { getFormattedDateTime } from '../../common/CommonFunctions';
+import { agendaReviver, getFormattedDateTime } from '../../common/CommonFunctions';
 import { blankMeeting, blankSuggestion } from '../../common/ObjectTemplates';
 import { Container, Row, Col, Button } from 'react-bootstrap';
 import { Redirect, useLocation, useParams, useHistory } from 'react-router';
@@ -56,8 +56,11 @@ export default function ParticipantScreen() {
 
   useEffect(() => {
     if (!socket) return;
-    socket.on('meetingUpdated', function (_) {
-      history.replace('/ongoing/' + id);
+    socket.on('meetingUpdated', function (data) {
+      const newMeeting = JSON.parse(data, agendaReviver);
+      if (newMeeting.status !== 1) {
+        history.replace('/ongoing/' + id);
+      }
     });
   }, [socket]);
 
