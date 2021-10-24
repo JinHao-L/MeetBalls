@@ -292,6 +292,15 @@ export default function CustomBootstrapStyle() {
       color: white;
     }
 
+    .card .card-text {
+      white-space: pre-line;
+    }
+
+    .dropdown-menu {
+      max-height: 200px;
+      overflow-y: scroll;
+    }
+
     `}
     </style>
   );

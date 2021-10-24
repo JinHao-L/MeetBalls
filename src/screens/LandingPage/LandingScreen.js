@@ -60,7 +60,7 @@ export default function LandingScreen() {
                   }}
                 >
                   <Instagram size={23} style={{ marginRight: 10 }} />
-                  Find Us On Instgram
+                  Find Us On Instagram
                 </Button>
               </div>
             </div>
