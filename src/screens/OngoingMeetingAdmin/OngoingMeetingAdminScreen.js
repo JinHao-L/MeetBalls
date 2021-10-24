@@ -83,13 +83,23 @@ export default function OngoingMeetingAdminScreen() {
       const newMeeting = JSON.parse(data, agendaReviver);
       setMeeting((meeting) => updateMeeting({ ...meeting, ...newMeeting }));
     });
-    socket.on('participantUpdated', function (data) {
-      const update = JSON.parse(data);
-      setMeeting((meeting) => ({
-        ...meeting,
-        participants: updateParticipants(meeting.participants, update),
-      }));
-    });
+    if (isHost) {
+      socket.on('host_participantUpdated', function (data) {
+        const update = JSON.parse(data);
+        setMeeting((meeting) => ({
+          ...meeting,
+          participants: updateParticipants(meeting.participants, update),
+        }));
+      });
+    } else {
+      socket.on('participantUpdated', function (data) {
+        const update = JSON.parse(data);
+        setMeeting((meeting) => ({
+          ...meeting,
+          participants: updateParticipants(meeting.participants, update),
+        }));
+      });
+    }
     socket.on('agendaUpdated', function (_) {
       pullMeeting();
     });
@@ -431,7 +441,7 @@ function getEndTime(time, agenda, position, meeting) {
 function updateParticipants(participants, update) {
   let hasUpdate = false;
   participants = participants.map((ppl) => {
-    if (ppl.userEmail === update.userEmail) {
+    if (ppl.id === update.id) {
       hasUpdate = true;
       return update;
     } else {

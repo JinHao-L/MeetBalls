@@ -96,7 +96,7 @@ function ParticipantItem({ person }) {
       <Card>
         <Card.Body>
           <Card.Title>{displayName}</Card.Title>
-          <Card.Text>{person.userEmail}</Card.Text>
+          <Card.Text>{person?.userEmail}</Card.Text>
         </Card.Body>
         <Card.Footer>
           <Card.Text>{presence}</Card.Text>
