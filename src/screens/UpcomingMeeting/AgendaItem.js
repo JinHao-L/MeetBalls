@@ -103,11 +103,13 @@ export default function AgendaItem({
   return (
     <>
       {loading ? (
-        <Card>
-          <div className="Buffer--50px" />
-          <SmallLoadingIndicator />
-          <div className="Buffer--50px" />
-        </Card>
+        <div className="Container__padding--vertical-small">
+          <Card>
+            <div className="Buffer--50px" />
+            <SmallLoadingIndicator />
+            <div className="Buffer--50px" />
+          </Card>
+        </div>
       ) : (
         <Draggable
           draggableId={'Draggable' + item.position}

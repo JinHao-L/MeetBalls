@@ -5,13 +5,7 @@ import {
   useState,
   useContext,
 } from 'react';
-import {
-  Container,
-  Row,
-  Image,
-  OverlayTrigger,
-  Tooltip,
-} from 'react-bootstrap';
+import { Container, Row, Image, Card, Col } from 'react-bootstrap';
 import { CalendarPlusFill } from 'react-bootstrap-icons';
 import UpcomingMeetingItem from './UpcomingMeetingItem';
 import OngoingMeetingItem from './OngoingMeetingItem';
@@ -105,6 +99,33 @@ export default function DashboardScreen() {
     />
   ));
 
+  function CreateMeetingToggle() {
+    return (
+      <Col
+        xl={4}
+        lg={6}
+        md={6}
+        sm={12}
+        className="Container__padding--vertical-medium"
+      >
+        <Card
+          border="primary"
+          className="Card__dashboard Container__center--vertical Clickable"
+          onClick={() => {
+            setCloneMeeting(null);
+            setShowOverlay(true);
+          }}
+        >
+          <CalendarPlusFill size={22} color="#8F6B58" />
+          <div className="Buffer--10px" />
+          <p className="Text__subsubheader" style={{ color: '#8F6B58' }}>
+            Add Meeting
+          </p>
+        </Card>
+      </Col>
+    );
+  }
+
   if (loading) {
     return <FullLoadingIndicator />;
   }
@@ -132,6 +153,7 @@ export default function DashboardScreen() {
         style={{ minHeight: 'calc(100vh - 56px - 121px - 300px)' }}
       >
         <Row>
+          <CreateMeetingToggle />
           {upcomingList}
           {historyList}
         </Row>
@@ -144,17 +166,6 @@ export default function DashboardScreen() {
         checkIfExist={checkIfExist}
         cloneMeeting={cloneMeeting}
       />
-      <OverlayTrigger overlay={renderTooltip}>
-        <div
-          className="Fab"
-          onClick={() => {
-            setCloneMeeting(null);
-            setShowOverlay(true);
-          }}
-        >
-          <CalendarPlusFill size={22} color="white" />
-        </div>
-      </OverlayTrigger>
       <FeedbackToggle />
       <AppFooter />
     </>
@@ -188,9 +199,3 @@ function FeedbackToggle() {
     </a>
   );
 }
-
-const renderTooltip = (props) => (
-  <Tooltip id="button-tooltip" {...props}>
-    Add
-  </Tooltip>
-);

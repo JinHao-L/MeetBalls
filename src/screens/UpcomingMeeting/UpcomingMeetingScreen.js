@@ -8,6 +8,7 @@ import {
   Spinner,
   Tooltip,
   OverlayTrigger,
+  Card,
 } from 'react-bootstrap';
 import { getFormattedDateTime } from '../../common/CommonFunctions';
 import AgendaItemList from './AgendaItemList';
@@ -122,11 +123,14 @@ export default function UpcomingMeetingScreen() {
     switch (currentTab) {
       case Tabs.AGENDA:
         return (
-          <AgendaItemList
-            meeting={meeting}
-            setMeeting={setMeeting}
-            isReordering={isReordering}
-          />
+          <>
+            <AgendaItemList
+              meeting={meeting}
+              setMeeting={setMeeting}
+              isReordering={isReordering}
+            />
+            <AddToggle />
+          </>
         );
       case Tabs.SUGGESTIONS:
         return (
@@ -139,58 +143,55 @@ export default function UpcomingMeetingScreen() {
         );
       default:
         return (
-          <ParticipantItemList meeting={meeting} setMeeting={setMeeting} />
+          <>
+            <ParticipantItemList meeting={meeting} setMeeting={setMeeting} />
+            <AddToggle />
+          </>
         );
     }
   }
 
   function AddToggle() {
-    const renderTooltip = (props) => (
-      <Tooltip id="button-tooltip" {...props}>
-        {isReordering ? 'Save' : 'Add New'}
-      </Tooltip>
-    );
-
-    if (currentTab === Tabs.SUGGESTIONS) {
-      return null;
-    } else if (currentTab === Tabs.PARTICIPANTS) {
+    if (currentTab === Tabs.PARTICIPANTS) {
       return (
-        <OverlayTrigger placement="top" overlay={renderTooltip}>
-          <div
-            className="Fab"
+        <div className="Container__padding--vertical-small">
+          <Card
             onClick={() => addParticipant(meeting, setMeeting)}
+            border="primary"
+            className="Container__center--vertical Clickable"
           >
-            <PersonPlusFill size={25} color="white" />
-          </div>
-        </OverlayTrigger>
+            <div className="Buffer--20px" />
+            <PersonPlusFill size={26} color="#8F6B58" />
+            <div className="Buffer--10px" />
+            <p className="Text__subsubheader" style={{ color: '#8F6B58' }}>
+              Add Participant
+            </p>
+            <div className="Buffer--20px" />
+          </Card>
+        </div>
       );
-    } else if (isReordering)
+    } else if (!isReordering && currentTab === Tabs.AGENDA)
       return (
-        <OverlayTrigger placement="top" overlay={renderTooltip}>
-          <div
-            className="Fab"
+        <div className="Container__padding--vertical-small">
+          <Card
             onClick={() => {
-              setReordering(false);
-              updateDatabase(meeting.id, meeting.agendaItems);
+              addAgenda(meeting, setMeeting);
             }}
+            border="primary"
+            className="Container__center--vertical Clickable"
           >
-            <Save size={22} color="white" />
-          </div>
-        </OverlayTrigger>
+            <div className="Buffer--20px" />
+            <CalendarPlusFill size={22} color="#8F6B58" style={{ margin: 2 }} />
+            <div className="Buffer--10px" />
+            <p className="Text__subsubheader" style={{ color: '#8F6B58' }}>
+              Add Agenda Item
+            </p>
+            <div className="Buffer--20px" />
+          </Card>
+        </div>
       );
 
-    return (
-      <OverlayTrigger placement="top" overlay={renderTooltip}>
-        <div
-          className="Fab"
-          onClick={() => {
-            addAgenda(meeting, setMeeting);
-          }}
-        >
-          <CalendarPlusFill size={22} color="white" />
-        </div>
-      </OverlayTrigger>
-    );
+    return null;
   }
 
   function ExtraToggles() {
@@ -349,7 +350,6 @@ export default function UpcomingMeetingScreen() {
         inviteList={inviteList}
         setInviteList={setInviteList}
       />
-      <AddToggle />
       {currentTab === Tabs.AGENDA && !isReordering ? <ExtraToggles /> : null}
     </div>
   );
