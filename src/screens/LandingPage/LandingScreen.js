@@ -11,6 +11,7 @@ import AppFooter from '../../components/AppFooter';
 import { useEffect } from 'react';
 import { logEvent } from '@firebase/analytics';
 import { googleAnalytics } from '../../services/firebase';
+import { FaTiktok } from 'react-icons/fa';
 
 export default function LandingScreen() {
   const history = useHistory();
@@ -43,6 +44,7 @@ export default function LandingScreen() {
                 <p>• Analyse meeting statistics</p>
                 <div className="Buffer--20px" />
                 <Button
+                  className="social-link-btn"
                   variant="outline-facebook"
                   onClick={() => {
                     window.open('https://www.facebook.com/MeetBallsApp/');
@@ -53,6 +55,7 @@ export default function LandingScreen() {
                 </Button>
                 <div className="Buffer--20px" />
                 <Button
+                  className="social-link-btn"
                   variant="outline-primary"
                   onClick={() => {
                     window.open('https://www.instagram.com/meetballsapp/');
@@ -60,6 +63,17 @@ export default function LandingScreen() {
                 >
                   <Instagram size={23} style={{ marginRight: 10 }} />
                   Find Us On Instagram
+                </Button>
+                <div className="Buffer--20px" />
+                <Button
+                  className="social-link-btn"
+                  variant="outline-tiktok"
+                  onClick={() => {
+                    window.open('https://www.tiktok.com/@meetballsapp');
+                  }}
+                >
+                  <FaTiktok size={23} style={{ marginRight: 10 }} />
+                  Find Us On TikTok
                 </Button>
               </div>
             </div>
