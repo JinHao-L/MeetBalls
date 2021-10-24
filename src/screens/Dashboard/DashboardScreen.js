@@ -24,6 +24,7 @@ import { logEvent } from '@firebase/analytics';
 import { googleAnalytics } from '../../services/firebase';
 import { clearMeetingsCache, pullMeetings } from '../../utils/dashboardCache';
 import { UserContext } from '../../context/UserContext';
+import AppFooter from '../../components/AppFooter';
 
 export default function DashboardScreen() {
   const [upcoming, setUpcoming] = useState([]);
@@ -126,12 +127,15 @@ export default function DashboardScreen() {
         </div>
       </div>
 
-      <Container className="Container__padding--vertical">
+      <Container
+        className="Container__padding--vertical"
+        style={{ minHeight: 'calc(100vh - 56px - 121px - 300px)' }}
+      >
         <Row>
           {upcomingList}
           {historyList}
         </Row>
-        <div className="Buffer--100px" />
+        <div className="Buffer--50px" />
       </Container>
       <AddMeetingOverlay
         show={showOverlay}
@@ -152,6 +156,7 @@ export default function DashboardScreen() {
         </div>
       </OverlayTrigger>
       <FeedbackToggle />
+      <AppFooter />
     </>
   );
 }
