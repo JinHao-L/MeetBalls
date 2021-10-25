@@ -3,8 +3,10 @@ import {
   useRef,
   useState,
   useContext,
+  useCallback,
+  useMemo,
 } from 'react';
-import { Container, Row, Image, Card, Col } from 'react-bootstrap';
+import { Container, Row, Image, Card, Col, Pagination } from 'react-bootstrap';
 import { CalendarPlusFill } from 'react-bootstrap-icons';
 import UpcomingMeetingItem from './UpcomingMeetingItem';
 import OngoingMeetingItem from './OngoingMeetingItem';
@@ -21,18 +23,20 @@ import AppFooter from '../../components/AppFooter';
 
 export default function DashboardScreen() {
   const [upcoming, setUpcoming] = useState([]);
+  const [upcomingCount, setUpcomingCount] = useState(0);
   const [meetingHistory, setHistory] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showOverlay, setShowOverlay] = useState(false);
   const [cloneMeeting, setCloneMeeting] = useState(null);
   const [banner, setBanner] = useState('');
   const user = useContext(UserContext);
+  const [activePage, setActivePage] = useState(1);
+  const [totalPage, setTotalPage] = useState(1);
 
   const mounted = useRef(true);
 
   useEffect(() => {
     logEvent(googleAnalytics, 'visit_dashboard');
-    populateMeetings();
 
     return () => {
       mounted.current = false;
@@ -43,11 +47,20 @@ export default function DashboardScreen() {
     setBanner(getBanner);
   }, []);
 
-  function populateMeetings() {
-    return pullMeetings()
+  useEffect(() => {
+    populateMeetings();
+  }, [activePage]);
+
+  const populateMeetings = useCallback(() => {
+    // TODO: Modify the limit here to test out the pagination feature
+    const limit = 20;
+    return pullMeetings(activePage, limit)
       .then((meetings) => {
         if (!mounted.current) return;
+        console.log(meetings.count);
         setUpcoming(meetings.upcoming);
+        setUpcomingCount(meetings.count.upcoming);
+        setTotalPage(meetings.count.pages);
         setHistory(meetings.completed);
       })
       .catch((e) => toast(extractError(e)))
@@ -55,12 +68,7 @@ export default function DashboardScreen() {
         if (!mounted.current) return;
         setLoading(false);
       });
-  }
-
-  function onUpdate() {
-    clearMeetingsCache();
-    return populateMeetings();
-  }
+  }, [activePage]);
 
   function checkIfExist(id) {
     for (let i = 0; i < upcoming.length; i++) {
@@ -76,12 +84,39 @@ export default function DashboardScreen() {
     return false;
   }
 
+  const PaginationButtons = useCallback(() => {
+    let items = [];
+    for (let number = 1; number <= totalPage; number++) {
+      items.push(
+        <Pagination.Item
+          key={number}
+          active={number === activePage}
+          onClick={() => setActivePage(number)}
+          style={
+            number === activePage
+              ? {
+                  backgroundColor: '#8F6B58',
+                  color: 'white',
+                }
+              : { backgroundColor: 'white', color: '#8F6B58' }
+          }
+        >
+          {number}
+        </Pagination.Item>,
+      );
+    }
+    return <Pagination size="sm">{items}</Pagination>;
+  }, [activePage, totalPage]);
+
   const upcomingList = upcoming.map((meeting, idx) =>
     meeting.type === 1 ? (
       <UpcomingMeetingItem
         key={idx}
         meeting={meeting}
-        onUpdate={onUpdate}
+        onUpdate={() => {
+          clearMeetingsCache();
+          return populateMeetings();
+        }}
         setCloneMeeting={setCloneMeeting}
         setShowOverlay={setShowOverlay}
       />
@@ -142,8 +177,8 @@ export default function DashboardScreen() {
             Welcome back {user.firstName}!
           </p>
           <p className="Text__subsubheader" style={{ color: 'white' }}>
-            You have {upcoming.length} upcoming meeting
-            {upcoming.length > 1 ? 's' : null}.
+            You have {upcomingCount} upcoming meeting
+            {upcomingCount > 1 ? 's' : null}.
           </p>
         </div>
       </div>
@@ -152,6 +187,7 @@ export default function DashboardScreen() {
         className="Container__padding--vertical"
         style={{ minHeight: 'calc(100vh - 56px - 121px - 300px)' }}
       >
+        <PaginationButtons />
         <Row>
           <CreateMeetingToggle />
           {upcomingList}
@@ -162,7 +198,7 @@ export default function DashboardScreen() {
       <AddMeetingOverlay
         show={showOverlay}
         setShow={setShowOverlay}
-        onUpdate={onUpdate}
+        onUpdate={() => clearMeetingsCache()}
         checkIfExist={checkIfExist}
         cloneMeeting={cloneMeeting}
       />
