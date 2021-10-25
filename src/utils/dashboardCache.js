@@ -61,7 +61,7 @@ export function clearMeetingsCache() {
 
 async function pullUpcomingMeetings(page, limit) {
   const response = await server.get('/meeting', {
-    params: { type: 'upcoming', orderBy: 'desc', page, limit },
+    params: { type: 'upcoming', orderBy: 'asc', page, limit },
     ...defaultHeaders,
   });
   const paginatedMeetings = response.data;
@@ -71,7 +71,7 @@ async function pullUpcomingMeetings(page, limit) {
 
 async function pullPastMeetings(page, limit) {
   const response = await server.get('/meeting', {
-    params: { type: 'past', orderBy: 'asc', page, limit },
+    params: { type: 'past', orderBy: 'desc', page, limit },
     ...defaultHeaders,
   });
   const paginatedMeetings = response.data;
