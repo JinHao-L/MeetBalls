@@ -90,3 +90,9 @@
 .Toggle__feedback:hover {
   background-color: #725546;
 }
+
+.Pagination {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}

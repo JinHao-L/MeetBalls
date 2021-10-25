@@ -316,6 +316,25 @@ export default function CustomBootstrapStyle() {
       overflow-y: scroll;
     }
 
+    .pagination a {
+      color: #8F6B58;
+      outline: none !important;
+      outline-offset: none !important;
+      box-shadow: none !important;
+    }
+
+    .pagination a:hover {
+      background-color: #a88979;
+      border-radius: #a88979;
+      color: #FFFFFF;
+    }
+
+    .page-item.active .page-link {
+      background-color: transparent;
+      color: #FFFFFF;
+      border-color: transparent;
+    }
+
     `}
     </style>
   );

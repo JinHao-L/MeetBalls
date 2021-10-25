@@ -53,7 +53,7 @@ export default function DashboardScreen() {
 
   const populateMeetings = useCallback(() => {
     // TODO: Modify the limit here to test out the pagination feature
-    const limit = 20;
+    const limit = 12;
     return pullMeetings(activePage, limit)
       .then((meetings) => {
         if (!mounted.current) return;
@@ -105,7 +105,11 @@ export default function DashboardScreen() {
         </Pagination.Item>,
       );
     }
-    return <Pagination size="sm">{items}</Pagination>;
+    return (
+      <div className="Pagination">
+        <Pagination size="md">{items}</Pagination>
+      </div>
+    );
   }, [activePage, totalPage]);
 
   const upcomingList = upcoming.map((meeting, idx) =>
@@ -190,7 +194,7 @@ export default function DashboardScreen() {
       >
         {totalPage > 1 && <PaginationButtons />}
         <Row>
-          <CreateMeetingToggle />
+          {activePage === 1 ? <CreateMeetingToggle /> : null}
           {upcomingList}
           {historyList}
         </Row>
