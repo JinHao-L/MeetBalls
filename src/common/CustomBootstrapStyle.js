@@ -96,6 +96,21 @@ export default function CustomBootstrapStyle() {
       border-color: #3b5998;
     }
 
+    .btn-outline-tiktok {
+      color: #000000;
+      border-color: #000000;
+    }
+    .btn-outline-tiktok:hover {
+      background-color: #000000;
+      color: white;
+      border-color: #000000;
+    }
+
+    .social-link-btn {
+      text-align: left;
+      width: 220px;
+    }
+
     .btn-zoom {
       background-color: #2D8CFF;
       color: white;
