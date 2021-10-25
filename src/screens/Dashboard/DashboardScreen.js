@@ -188,7 +188,7 @@ export default function DashboardScreen() {
         className="Container__padding--vertical"
         style={{ minHeight: 'calc(100vh - 56px - 121px - 300px)' }}
       >
-        <PaginationButtons />
+        {totalPage > 1 && <PaginationButtons />}
         <Row>
           <CreateMeetingToggle />
           {upcomingList}
