@@ -1,24 +1,28 @@
 import { Container, Image, Button, Row, Col, Card } from 'react-bootstrap';
 import { Facebook, Instagram } from 'react-bootstrap-icons';
+import { FaTiktok } from 'react-icons/fa';
 import LandingImage from '../../assets/landing_image.png';
 import BackgroundImage from '../../assets/background_pattern.jpg';
 import PatternImage from '../../assets/pattern.png';
 import AgendaImage from '../../assets/guide_agenda_list.jpg';
 import MeetingImage from '../../assets/guide_ongoing_meeting.jpg';
 import StatisticsImage from '../../assets/guide_report.jpg';
-import { useHistory } from 'react-router';
+import { Redirect, useHistory } from 'react-router';
 import AppFooter from '../../components/AppFooter';
-import { useEffect } from 'react';
+import { useContext, useEffect } from 'react';
 import { logEvent } from '@firebase/analytics';
 import { googleAnalytics } from '../../services/firebase';
-import { FaTiktok } from 'react-icons/fa';
+import { UserContext } from '../../context/UserContext';
 
 export default function LandingScreen() {
   const history = useHistory();
+  const user = useContext(UserContext);
 
   useEffect(() => {
     logEvent(googleAnalytics, 'visit_landing_page');
   }, []);
+
+  if (user) return <Redirect to="/home" />;
 
   return (
     <div>
