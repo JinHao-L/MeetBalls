@@ -51,7 +51,7 @@ export const AppNavbar = () => {
             style={{ borderRadius: 50 }}
             href="/login"
           >
-            Login with Zoom
+            Login With Zoom
           </Button>
         ) : option.button === TOGGLES.CHOOSE ||
           (option.button === TOGGLES.DASHBOARD && user) ? (

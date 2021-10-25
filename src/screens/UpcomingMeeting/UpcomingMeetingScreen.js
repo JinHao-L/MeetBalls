@@ -1,23 +1,10 @@
 import { useState, useEffect, useContext } from 'react';
-import {
-  Button,
-  Row,
-  Col,
-  Container,
-  Nav,
-  Spinner,
-  Card,
-} from 'react-bootstrap';
+import { Button, Row, Col, Container, Nav, Spinner } from 'react-bootstrap';
 import { getFormattedDateTime } from '../../common/CommonFunctions';
 import AgendaItemList from './AgendaItemList';
 import ParticipantItemList from './ParticipantItemList';
 import SuggestionList from './SuggestionList';
-import { PersonPlusFill, CalendarPlusFill } from 'react-bootstrap-icons';
-import {
-  blankAgenda,
-  blankMeeting,
-  blankParticipant,
-} from '../../common/ObjectTemplates';
+import { blankMeeting } from '../../common/ObjectTemplates';
 import EditMeetingOverlay from './EditMeetingOverlay';
 import { useHistory, Redirect, useParams } from 'react-router';
 import server from '../../services/server';
@@ -25,6 +12,7 @@ import { defaultHeaders } from '../../utils/axiosConfig';
 import ConfirmInviteModel from './ConfirmInviteModel';
 import { toast } from 'react-toastify';
 import { extractError } from '../../utils/extractError';
+import AddToggle from './AddToggle';
 
 import RedirectionScreen, {
   BAD_MEETING_PERMS_MSG,
@@ -123,7 +111,12 @@ export default function UpcomingMeetingScreen() {
               isReordering={isReordering}
               setReordering={setReordering}
             />
-            <AddToggle />
+            <AddToggle
+              currentTab={currentTab}
+              meeting={meeting}
+              setMeeting={setMeeting}
+              isReordering={isReordering}
+            />
           </>
         );
       case Tabs.SUGGESTIONS:
@@ -133,59 +126,22 @@ export default function UpcomingMeetingScreen() {
             setSuggestions={setSuggestions}
             meeting={meeting}
             setMeeting={setMeeting}
+            isReordering={isReordering}
           />
         );
       default:
         return (
           <>
             <ParticipantItemList meeting={meeting} setMeeting={setMeeting} />
-            <AddToggle />
+            <AddToggle
+              currentTab={currentTab}
+              meeting={meeting}
+              setMeeting={setMeeting}
+              isReordering={isReordering}
+            />
           </>
         );
     }
-  }
-
-  function AddToggle() {
-    if (currentTab === Tabs.PARTICIPANTS) {
-      return (
-        <div className="Container__padding--vertical-small">
-          <Card
-            onClick={() => addParticipant(meeting, setMeeting)}
-            border="primary"
-            className="Container__center--vertical Clickable"
-          >
-            <div className="Buffer--20px" />
-            <PersonPlusFill size={26} color="#8F6B58" />
-            <div className="Buffer--10px" />
-            <p className="Text__subsubheader" style={{ color: '#8F6B58' }}>
-              Add Participant
-            </p>
-            <div className="Buffer--20px" />
-          </Card>
-        </div>
-      );
-    } else if (!isReordering && currentTab === Tabs.AGENDA)
-      return (
-        <div className="Container__padding--vertical-small">
-          <Card
-            onClick={() => {
-              addAgenda(meeting, setMeeting);
-            }}
-            border="primary"
-            className="Container__center--vertical Clickable"
-          >
-            <div className="Buffer--20px" />
-            <CalendarPlusFill size={22} color="#8F6B58" style={{ margin: 2 }} />
-            <div className="Buffer--10px" />
-            <p className="Text__subsubheader" style={{ color: '#8F6B58' }}>
-              Add Agenda Item
-            </p>
-            <div className="Buffer--20px" />
-          </Card>
-        </div>
-      );
-
-    return null;
   }
 
   if (!loading && !validId)
@@ -323,40 +279,6 @@ export default function UpcomingMeetingScreen() {
       />
     </div>
   );
-}
-
-function addParticipant(meeting, setMeeting) {
-  scrollToBottom();
-  if (meeting.participants.findIndex((item) => item.userEmail === '') >= 0)
-    return;
-  const newMeeting = Object.assign({}, meeting);
-  const newParticipant = Object.assign({}, blankParticipant);
-  newParticipant.meetingId = newMeeting.id;
-  newMeeting.participants = [...newMeeting.participants, newParticipant];
-  setMeeting(newMeeting);
-}
-
-async function addAgenda(meeting, setMeeting) {
-  scrollToBottom();
-  if (meeting.agendaItems.findIndex((item) => item.name === '') >= 0) return;
-  const newMeeting = Object.assign({}, meeting);
-  const newAgenda = Object.assign({}, blankAgenda);
-  newAgenda.meetingId = newMeeting.id;
-  const size = newMeeting.agendaItems.length;
-  if (size > 0) {
-    const lastItem = newMeeting.agendaItems[size - 1];
-    newAgenda.position = lastItem.position + 1;
-  } else {
-    newAgenda.position = 0;
-  }
-  newAgenda.prevPosition = newAgenda.position;
-  newMeeting.agendaItems = [...newMeeting.agendaItems, newAgenda];
-  setMeeting(newMeeting);
-}
-
-async function scrollToBottom() {
-  await new Promise((resolve) => setTimeout(resolve, 200));
-  window.scrollTo(0, window.outerHeight);
 }
 
 const Tabs = {
