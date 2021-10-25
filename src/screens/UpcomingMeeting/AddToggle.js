@@ -21,6 +21,7 @@ export default function AddToggle({
           onClick={() => addParticipant(meeting, setMeeting)}
           border="primary"
           className="Container__center--vertical Clickable"
+          style={{ borderStyle: 'dashed' }}
         >
           <div className="Buffer--20px" />
           <PersonPlusFill size={26} color="#8F6B58" />
@@ -45,6 +46,7 @@ export default function AddToggle({
           }}
           border="primary"
           className="Container__center--vertical Clickable"
+          style={{ borderStyle: 'dashed' }}
         >
           <div className="Buffer--20px" />
           <CalendarPlusFill size={22} color="#8F6B58" style={{ margin: 2 }} />

@@ -150,6 +150,7 @@ export default function DashboardScreen() {
             setCloneMeeting(null);
             setShowOverlay(true);
           }}
+          style={{ borderStyle: 'dashed' }}
         >
           <CalendarPlusFill size={22} color="#8F6B58" />
           <div className="Buffer--10px" />
