@@ -127,8 +127,8 @@ function toCsvString(person) {
 function exportToCsv(participants) {
   if (!participants) return '#';
   const sortedList = participants.sort(sortByPresence);
-  const csvString =
-    'data:text/csv;charset=utf-8,' + sortedList.map(toCsvString).join('\n');
+  const csvHeader = 'data:text/csv;charset=utf-8,Name,Email,Joined\n';
+  const csvString = csvHeader + sortedList.map(toCsvString).join('\n');
   return encodeURI(csvString);
 }
 
