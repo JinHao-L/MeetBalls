@@ -33,18 +33,15 @@ export default function Statistics({ meeting }) {
   function getDuration() {
     var actualDuration = 0;
     var expectedDuration = 0;
-    var durationItems = [
-      ['index', 'actual', 'expected'],
-      ['', 0, 0],
-    ];
+    var durationItems = [['name', 'actual', 'expected']];
     for (let i = 0; i < meeting.agendaItems.length; i++) {
       const item = meeting.agendaItems[i];
       actualDuration += item.actualDuration;
       expectedDuration += item.expectedDuration;
       durationItems.push([
-        ' ',
-        actualDuration / 60000,
-        expectedDuration / 60000,
+        item.name,
+        item.actualDuration / 60000,
+        item.expectedDuration / 60000,
       ]);
     }
     setTotalDuration([actualDuration, expectedDuration]);
@@ -109,16 +106,28 @@ export default function Statistics({ meeting }) {
         lg={12}
         className="Container__padding--vertical-small"
       >
-        <Card className="Card__statistics">
+        <Card>
           <Card.Header>Duration Comparison</Card.Header>
           <Card.Body>
+            <p className="Text__paragraph">
+              Hover over each bar to view more details.
+            </p>
             <Chart
-              chartType="AreaChart"
+              chartType="BarChart"
               data={durationComparison}
               rootProps={{ 'data-testid': '1' }}
               options={{
                 legend: { position: 'top', maxLines: 3 },
                 colors: ['8F6B58', 'f28f71'],
+                hAxis: {
+                  title: 'Duration (mins)',
+                  minValue: 0,
+                },
+                vAxis: {
+                  title: 'Agenda Item',
+                  textPosition: 'none',
+                },
+                height: durationComparison.length * 25,
               }}
             />
           </Card.Body>

@@ -96,6 +96,21 @@ export default function CustomBootstrapStyle() {
       border-color: #3b5998;
     }
 
+    .btn-outline-tiktok {
+      color: #000000;
+      border-color: #000000;
+    }
+    .btn-outline-tiktok:hover {
+      background-color: #000000;
+      color: white;
+      border-color: #000000;
+    }
+
+    .social-link-btn {
+      text-align: left;
+      width: 220px;
+    }
+
     .btn-zoom {
       background-color: #2D8CFF;
       color: white;
@@ -290,6 +305,34 @@ export default function CustomBootstrapStyle() {
       border-color: #725546;
       background-color: #725546;
       color: white;
+    }
+
+    .card .card-text {
+      white-space: pre-line;
+    }
+
+    .dropdown-menu {
+      max-height: 200px;
+      overflow-y: scroll;
+    }
+
+    .pagination a {
+      color: #8F6B58;
+      outline: none !important;
+      outline-offset: none !important;
+      box-shadow: none !important;
+    }
+
+    .pagination a:hover {
+      background-color: #a88979;
+      border-radius: #a88979;
+      color: #FFFFFF;
+    }
+
+    .page-item.active .page-link {
+      background-color: transparent;
+      color: #FFFFFF;
+      border-color: transparent;
     }
 
     `}

@@ -6,6 +6,7 @@
   font-size: 40px;
   font-weight: 600;
   color: var(--text);
+  word-break: break-word;
 }
 
 .Text__subheader {
@@ -56,6 +57,18 @@
   -webkit-box-orient: vertical;
   text-overflow: ellipsis;
   -webkit-line-clamp: 1;
+}
+
+.Text__elipsized--2-lines {
+  display: inline-block;
+  word-break: break-word;
+  overflow: hidden;
+  margin-left: 0px;
+  margin-right: 0px;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  text-overflow: ellipsis;
+  -webkit-line-clamp: 2;
 }
 
 .Text__elipsized--5-lines {

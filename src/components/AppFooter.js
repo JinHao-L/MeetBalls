@@ -1,6 +1,7 @@
 import { Container, Row, Col, Nav } from 'react-bootstrap';
 import { useHistory } from 'react-router-dom';
 import { Facebook, Instagram } from 'react-bootstrap-icons';
+import { FaTiktok } from 'react-icons/fa';
 
 export default function AppFooter() {
   const history = useHistory();
@@ -11,23 +12,32 @@ export default function AppFooter() {
       <Container className="Container__footer">
         <Row>
           <Col sm={12} md={12} lg={12} className="Container__row--center">
-            <Facebook
-              size={24}
-              className="Clickable"
-              style={{ color: '8F6B58' }}
-              onClick={() => {
-                window.open('https://www.facebook.com/MeetBallsApp/');
-              }}
-            />
+            <a
+              target="_blank"
+              rel="noreferrer"
+              href="https://www.facebook.com/MeetBallsApp/"
+              className="Container__row--center"
+            >
+              <Facebook size={24} style={{ color: '8F6B58' }} />
+            </a>
             <div className="Buffer--10px" />
-            <Instagram
-              size={24}
-              className="Clickable"
-              style={{ color: '8F6B58' }}
-              onClick={() => {
-                window.open('https://www.instagram.com/meetballsapp/');
-              }}
-            />
+            <a
+              target="_blank"
+              rel="noreferrer"
+              href="https://www.instagram.com/meetballsapp/"
+              className="Container__row--center"
+            >
+              <Instagram size={24} style={{ color: '8F6B58' }} />
+            </a>
+            <div className="Buffer--10px" />
+            <a
+              target="_blank"
+              rel="noreferrer"
+              href="https://www.tiktok.com/@meetballsapp"
+              className="Container__row--center"
+            >
+              <FaTiktok size={24} style={{ color: '8F6B58' }} />
+            </a>
             <div className="Buffer--20px" />
             <div className="Line--vertical" />
             <div className="Buffer--20px" />
@@ -49,8 +59,8 @@ export default function AppFooter() {
               </Nav.Link>
             </Nav>
           </Col>
-          <div className="Buffer--20px" />
           <Col>
+            <div className="Buffer--20px" />
             <p style={{ color: '#8F6B58' }} className="Text__small">
               &copy; Copyright {new Date().getFullYear()}, MeetBalls
             </p>

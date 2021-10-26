@@ -88,13 +88,16 @@ export default function EditAgendaItem({
         speaker,
         speakerMaterials,
       );
-      meeting.agendaItems[position].name = name;
-      meeting.agendaItems[position].expectedDuration = duration;
-      meeting.agendaItems[position].description = description;
-      if (speaker !== item.speaker)
-        meeting.agendaItems[position].speaker = speaker;
+      const newMeeting = Object.assign({}, meeting);
+      const newAgendaItems = Object.assign([], newMeeting.agendaItems);
+      newAgendaItems[position].name = name;
+      newAgendaItems[position].expectedDuration = duration;
+      newAgendaItems[position].description = description;
+      if (speaker !== item.speaker) newAgendaItems[position].speaker = speaker;
       if (speakerMaterials !== item.speakerMaterials)
-        meeting.agendaItems[position].speakerMaterials = speakerMaterials;
+        newAgendaItems[position].speakerMaterials = speakerMaterials;
+      newMeeting.agendaItems = newAgendaItems;
+      setMeeting(newMeeting);
       setEditing(false);
     } catch (err) {
       toast.error(extractError(err));

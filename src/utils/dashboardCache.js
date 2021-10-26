@@ -1,71 +1,80 @@
 import server from '../services/server';
 import { defaultHeaders } from './axiosConfig';
 
-const UPCOMING = 'UpcomingMeetings';
-const COMPLETED = 'CompletedMeetings';
+const MEETINGS = 'Meetings';
+const TTL = 'TTL';
+const REGEX_CHECK = new RegExp(`(${MEETINGS})`);
 
-const LIFESPAN = 15 * 60 * 1000;
+const LIFESPAN = 5 * 60 * 1000;
 
-function cacheUpcoming(data, type) {
-  if (type !== UPCOMING && type !== COMPLETED) throw Error('Invalid type');
-
+function cacheMeeting(data, page, limit) {
   const storageData = JSON.stringify(data);
-  sessionStorage.setItem(type, storageData);
+  sessionStorage.setItem([MEETINGS, page, limit].join('_'), storageData);
 
-  setTimeout(clearMeetingsCache, LIFESPAN);
+  const date = new Date();
+  date.setMilliseconds(date.getMilliseconds() + LIFESPAN);
+
+  sessionStorage.setItem(TTL, date.toISOString());
 }
 
-export async function pullMeetings() {
-  const upcomingStr = sessionStorage.getItem(UPCOMING);
-  const upcoming = upcomingStr
-    ? JSON.parse(upcomingStr)
-    : await pullUpcomingMeetings();
+export async function pullMeetings(page, limit) {
+  const validTTL = new Date(sessionStorage.getItem(TTL)) > Date.now();
+  const meetingStr =
+    validTTL && sessionStorage.getItem([MEETINGS, page, limit].join('_'));
+  if (validTTL && meetingStr) {
+    return JSON.parse(meetingStr);
+  }
 
-  const completedStr = sessionStorage.getItem(COMPLETED);
-  const completed = completedStr
-    ? JSON.parse(completedStr)
-    : await pullPastMeetings();
+  const upcoming = await pullUpcomingMeetings(page, limit);
 
-  return { upcoming, completed };
+  const completedLimit = limit - upcoming.meta.itemCount;
+  const skipAmount =
+    upcoming.meta.itemCount === 0 && upcoming.meta.totalItems % limit > 0
+      ? limit - (upcoming.meta.totalItems % limit)
+      : 0;
+  const completedPage = Math.max(page - upcoming.meta.totalPages, 1);
+
+  const completed = await pullPastMeetings(completedPage, completedLimit, skipAmount);
+
+  const totalUpcomingCount = upcoming.meta.totalItems;
+  const totalCompletedCount = completed.meta.totalItems;
+  const totalCount = totalCompletedCount + totalUpcomingCount;
+
+  const output = {
+    upcoming: upcoming.items,
+    completed: completed.items,
+    count: {
+      upcoming: totalUpcomingCount,
+      completed: totalCompletedCount,
+      total: totalCount,
+      pages: Math.ceil(totalCount / limit),
+    },
+  };
+  cacheMeeting(output, page, limit);
+  return output;
 }
 
 export function clearMeetingsCache() {
-  sessionStorage.removeItem(UPCOMING);
-  sessionStorage.removeItem(COMPLETED);
+  Object.keys(sessionStorage)
+    .filter((k) => REGEX_CHECK.test(k))
+    .forEach((k) => sessionStorage.removeItem(k));
+  sessionStorage.removeItem(TTL);
 }
 
-async function pullUpcomingMeetings() {
-  function sortMeetings(meetingA, meetingB) {
-    const startA = meetingA.startedAt;
-    const startB = meetingB.startedAt;
-    if (startA > startB) return 1;
-    else if (startA < startB) return -1;
-    else return 0;
-  }
-
+async function pullUpcomingMeetings(page, limit) {
   const response = await server.get('/meeting', {
-    params: { type: 'upcoming' },
+    params: { type: 'upcoming', orderBy: 'asc', page, limit },
     ...defaultHeaders,
   });
-  const meetings = response.data.sort(sortMeetings);
-  cacheUpcoming(meetings, UPCOMING);
-  return meetings;
+  const paginatedMeetings = response.data;
+  return paginatedMeetings;
 }
 
-async function pullPastMeetings() {
-  function sortMeetings(meetingA, meetingB) {
-    const startA = meetingA.startedAt;
-    const startB = meetingB.startedAt;
-    if (startA < startB) return 1;
-    else if (startA > startB) return -1;
-    else return 0;
-  }
-
+async function pullPastMeetings(page, limit, skip) {
   const response = await server.get('/meeting', {
-    params: { type: 'past' },
+    params: { type: 'past', orderBy: 'desc', page, limit, skip },
     ...defaultHeaders,
   });
-  const meetings = response.data.sort(sortMeetings);
-  cacheUpcoming(meetings, COMPLETED);
-  return meetings;
+  const paginatedMeetings = response.data;
+  return paginatedMeetings;
 }

@@ -1,11 +1,5 @@
-import { useEffect, useLayoutEffect, useRef, useState } from 'react';
-import {
-  Container,
-  Row,
-  Image,
-  OverlayTrigger,
-  Tooltip,
-} from 'react-bootstrap';
+import { useEffect, useRef, useState, useContext, useCallback } from 'react';
+import { Container, Row, Image, Card, Col, Pagination } from 'react-bootstrap';
 import { CalendarPlusFill } from 'react-bootstrap-icons';
 import UpcomingMeetingItem from './UpcomingMeetingItem';
 import OngoingMeetingItem from './OngoingMeetingItem';
@@ -17,34 +11,51 @@ import { extractError } from '../../utils/extractError';
 import { logEvent } from '@firebase/analytics';
 import { googleAnalytics } from '../../services/firebase';
 import { clearMeetingsCache, pullMeetings } from '../../utils/dashboardCache';
+import { UserContext } from '../../context/UserContext';
+import AppFooter from '../../components/AppFooter';
+import { LoadingIndicator } from '../../components/LoadingIndicator';
 
 export default function DashboardScreen() {
   const [upcoming, setUpcoming] = useState([]);
+  const [upcomingCount, setUpcomingCount] = useState(0);
   const [meetingHistory, setHistory] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showOverlay, setShowOverlay] = useState(false);
   const [cloneMeeting, setCloneMeeting] = useState(null);
+  const [banner, setBanner] = useState('');
+  const user = useContext(UserContext);
+  const [activePage, setActivePage] = useState(1);
+  const [totalPage, setTotalPage] = useState(1);
 
   const mounted = useRef(true);
 
-  useLayoutEffect(() => {
-    getBanner();
-  }, []);
-
   useEffect(() => {
     logEvent(googleAnalytics, 'visit_dashboard');
-    populateMeetings();
 
     return () => {
       mounted.current = false;
     };
   }, []);
 
-  function populateMeetings() {
-    return pullMeetings()
+  useEffect(() => {
+    setBanner(getBanner);
+  }, []);
+
+  useEffect(() => {
+    setLoading(true);
+    populateMeetings();
+  }, [activePage]);
+
+  const populateMeetings = useCallback(() => {
+    // TODO: Modify the limit here to test out the pagination feature
+    const limit = 12;
+    return pullMeetings(activePage, limit)
       .then((meetings) => {
         if (!mounted.current) return;
+        console.log(meetings.count);
         setUpcoming(meetings.upcoming);
+        setUpcomingCount(meetings.count.upcoming);
+        setTotalPage(meetings.count.pages);
         setHistory(meetings.completed);
       })
       .catch((e) => toast(extractError(e)))
@@ -52,12 +63,7 @@ export default function DashboardScreen() {
         if (!mounted.current) return;
         setLoading(false);
       });
-  }
-
-  function onUpdate() {
-    clearMeetingsCache();
-    return populateMeetings();
-  }
+  }, [activePage]);
 
   function checkIfExist(id) {
     for (let i = 0; i < upcoming.length; i++) {
@@ -73,12 +79,43 @@ export default function DashboardScreen() {
     return false;
   }
 
+  const PaginationButtons = useCallback(() => {
+    let items = [];
+    for (let number = 1; number <= totalPage; number++) {
+      items.push(
+        <Pagination.Item
+          key={number}
+          active={number === activePage}
+          onClick={() => setActivePage(number)}
+          style={
+            number === activePage
+              ? {
+                  backgroundColor: '#8F6B58',
+                  color: 'white',
+                }
+              : { backgroundColor: 'white', color: '#8F6B58' }
+          }
+        >
+          {number}
+        </Pagination.Item>,
+      );
+    }
+    return (
+      <div className="Pagination">
+        <Pagination size="md">{items}</Pagination>
+      </div>
+    );
+  }, [activePage, totalPage]);
+
   const upcomingList = upcoming.map((meeting, idx) =>
     meeting.type === 1 ? (
       <UpcomingMeetingItem
         key={idx}
         meeting={meeting}
-        onUpdate={onUpdate}
+        onUpdate={() => {
+          clearMeetingsCache();
+          return populateMeetings();
+        }}
         setCloneMeeting={setCloneMeeting}
         setShowOverlay={setShowOverlay}
       />
@@ -96,51 +133,79 @@ export default function DashboardScreen() {
     />
   ));
 
-  if (loading) {
-    return <FullLoadingIndicator />;
+  function CreateMeetingToggle() {
+    return (
+      <Col
+        xl={4}
+        lg={6}
+        md={6}
+        sm={12}
+        className="Container__padding--vertical-medium"
+      >
+        <Card
+          border="primary"
+          className="Card__dashboard Container__center--vertical Clickable"
+          onClick={() => {
+            setCloneMeeting(null);
+            setShowOverlay(true);
+          }}
+          style={{ borderStyle: 'dashed' }}
+        >
+          <CalendarPlusFill size={22} color="#8F6B58" />
+          <div className="Buffer--10px" />
+          <p className="Text__subsubheader" style={{ color: '#8F6B58' }}>
+            Add Meeting
+          </p>
+        </Card>
+      </Col>
+    );
   }
 
   return (
     <>
       <div className="Banner">
-        <Image src={getBanner().default} fluid className="Image__banner" />
+        <Image src={banner} fluid className="Image__banner" />
         <div className="Container__center--vertical Banner__content">
-          <p className="Text__header" style={{ color: 'white' }}>
-            Welcome Back!
+          <p
+            className="Text__header Text__elipsized--2-lines"
+            style={{ color: 'white' }}
+          >
+            Welcome back {user.firstName}!
           </p>
           <p className="Text__subsubheader" style={{ color: 'white' }}>
-            You have {upcoming.length} upcoming meeting
-            {upcoming.length > 1 ? 's' : null}.
+            You have {upcomingCount} upcoming meeting
+            {upcomingCount > 1 ? 's' : null}.
           </p>
         </div>
       </div>
-
-      <Container className="Container__padding--vertical">
-        <Row>
-          {upcomingList}
-          {historyList}
-        </Row>
-        <div className="Buffer--100px" />
+      <Container
+        className="Container__padding--vertical"
+        style={{ minHeight: 'calc(100vh - 56px - 121px - 300px)' }}
+      >
+        {totalPage > 1 && <PaginationButtons />}
+        {loading ? (
+          <Container className="d-flex justify-content-center align-items-center Card__mini-loading">
+            <LoadingIndicator />
+          </Container>
+        ) : (
+          <Row>
+            {activePage === 1 ? <CreateMeetingToggle /> : null}
+            {upcomingList}
+            {historyList}
+          </Row>
+        )}
+        <div className="Buffer--50px" />
       </Container>
+      )
       <AddMeetingOverlay
         show={showOverlay}
         setShow={setShowOverlay}
-        onUpdate={onUpdate}
+        onUpdate={() => clearMeetingsCache()}
         checkIfExist={checkIfExist}
         cloneMeeting={cloneMeeting}
       />
-      <OverlayTrigger overlay={renderTooltip}>
-        <div
-          className="Fab"
-          onClick={() => {
-            setCloneMeeting(null);
-            setShowOverlay(true);
-          }}
-        >
-          <CalendarPlusFill size={22} color="white" />
-        </div>
-      </OverlayTrigger>
       <FeedbackToggle />
+      <AppFooter />
     </>
   );
 }
@@ -148,15 +213,15 @@ export default function DashboardScreen() {
 function getBanner() {
   const time = new Date().getHours();
   if (time < 6) {
-    return require('../../assets/banner_night.jpg');
+    return '/assets/banner_night.jpg';
   } else if (time < 10) {
-    return require('../../assets/banner_morning.jpg');
+    return '/assets/banner_morning.jpg';
   } else if (time < 16) {
-    return require('../../assets/banner_afternoon.jpg');
+    return '/assets/banner_afternoon.jpg';
   } else if (time < 20) {
-    return require('../../assets/banner_evening.jpg');
+    return '/assets/banner_evening.jpg';
   } else {
-    return require('../../assets/banner_night.jpg');
+    return '/assets/banner_night.jpg';
   }
 }
 
@@ -165,6 +230,7 @@ function FeedbackToggle() {
     <a
       href="https://docs.google.com/forms/d/e/1FAIpQLSfN7K-1RdMzzlIf-9DtvKxhlqMpYkUGV_w3cYMofNsehDw_qA/viewform?usp=sf_link"
       target="_blank"
+      rel="noreferrer"
     >
       <div className="Toggle__feedback">
         <p className="Text--rotated">Have Feedback?</p>
@@ -172,9 +238,3 @@ function FeedbackToggle() {
     </a>
   );
 }
-
-const renderTooltip = (props) => (
-  <Tooltip id="button-tooltip" {...props}>
-    Add
-  </Tooltip>
-);

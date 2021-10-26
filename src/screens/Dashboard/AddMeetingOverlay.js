@@ -73,7 +73,7 @@ export default function AddMeetingOverlay({
   }) {
     const newMeeting = {
       name: name,
-      description: desc,
+      description: desc ? desc : null,
       startedAt: date.toISOString(),
       duration: 1800000,
       meetingId: `${meetingId}`,
@@ -162,9 +162,6 @@ export default function AddMeetingOverlay({
             isValid={touched.desc && !errors.desc}
             isInvalid={touched.desc && errors.desc}
           />
-          <Form.Control.Feedback type="invalid">
-            {touched.desc && errors.desc}
-          </Form.Control.Feedback>
           <Form.Label column>Meeting ID</Form.Label>
           <Form.Control
             required
@@ -357,9 +354,10 @@ export default function AddMeetingOverlay({
 
 const schema = yup.object().shape({
   name: yup.string().required('Meeting name is required'),
-  desc: yup.string().required('Meeting description is required'),
+  desc: yup.string(),
   meetingId: yup
-    .number('Meeting ID is must be a number')
+    .number()
+    .typeError('Meeting ID is must be a number')
     .required('Meeting ID is required'),
   meetingPassword: yup.string().required('Meeting password is required'),
   link: yup
@@ -389,6 +387,10 @@ async function fillItems(newMeeting, cloneMeeting) {
   if (response.status !== 200) return;
   const result = response.data;
   if (result.agendaItems.length > 0) {
+    result.agendaItems.forEach((item) => {
+      item.speaker = null;
+      item.speakerMaterials = '';
+    });
     newMeeting.agendaItems = result.agendaItems;
   }
   if (result.participants.length > 0) {

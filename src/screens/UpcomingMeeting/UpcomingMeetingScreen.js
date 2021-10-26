@@ -1,34 +1,18 @@
 import { useState, useEffect, useContext } from 'react';
-import {
-  Button,
-  Row,
-  Col,
-  Container,
-  Nav,
-  Spinner,
-  Tooltip,
-  OverlayTrigger,
-} from 'react-bootstrap';
+import { Button, Row, Col, Container, Nav, Spinner } from 'react-bootstrap';
 import { getFormattedDateTime } from '../../common/CommonFunctions';
 import AgendaItemList from './AgendaItemList';
 import ParticipantItemList from './ParticipantItemList';
-import {
-  PersonPlusFill,
-  CalendarPlusFill,
-  ArrowRepeat,
-  ChatSquareText,
-  Save,
-} from 'react-bootstrap-icons';
-import {
-  blankAgenda,
-  blankMeeting,
-  blankParticipant,
-} from '../../common/ObjectTemplates';
+import SuggestionList from './SuggestionList';
+import { blankMeeting } from '../../common/ObjectTemplates';
 import EditMeetingOverlay from './EditMeetingOverlay';
 import { useHistory, Redirect, useParams } from 'react-router';
 import server from '../../services/server';
 import { defaultHeaders } from '../../utils/axiosConfig';
 import ConfirmInviteModel from './ConfirmInviteModel';
+import { toast } from 'react-toastify';
+import { extractError } from '../../utils/extractError';
+import AddToggle from './AddToggle';
 
 import RedirectionScreen, {
   BAD_MEETING_PERMS_MSG,
@@ -38,13 +22,14 @@ import { UserContext } from '../../context/UserContext';
 import BackgroundPattern from '../../assets/background_pattern2.jpg';
 import { logEvent } from '@firebase/analytics';
 import { googleAnalytics } from '../../services/firebase';
-import SuggestionOverlay from './SuggestionOverlay';
 import { FullLoadingIndicator } from '../../components/FullLoadingIndicator';
 
 export default function UpcomingMeetingScreen() {
   const [meeting, setMeeting] = useState(blankMeeting);
+  const [suggestions, setSuggestions] = useState([]);
+
   const [restrictDescription, setRestrictDescription] = useState(true);
-  const [currentTab, setCurrentTab] = useState('participants');
+  const [currentTab, setCurrentTab] = useState(Tabs.PARTICIPANTS);
   const [showEditMeeting, setShowEditMeeting] = useState(false);
   const [showInviteModal, setShowInviteModal] = useState(false);
   const [inviteLoading, setInviteLoading] = useState(false);
@@ -53,7 +38,6 @@ export default function UpcomingMeetingScreen() {
 
   const [loading, setLoading] = useState(true);
   const [validId, setValidId] = useState(true);
-  const [openSuggestion, setOpenSuggestion] = useState(false);
 
   const history = useHistory();
   const user = useContext(UserContext);
@@ -70,16 +54,19 @@ export default function UpcomingMeetingScreen() {
       .finally(() => setLoading(false));
   }, []);
 
-  useEffect(() => {
-    if (!openSuggestion && meeting.agendaItems.length > 1) {
-      const newMeeting = Object.assign({}, meeting);
-      newMeeting.agendaItems.sort((p1, p2) => {
-        return p1.position - p2.position;
+  async function getSuggestions(meetingId) {
+    try {
+      const response = await server.get(`/suggestion/${meetingId}`, {
+        ...defaultHeaders.headers,
+        'X-Participant': sessionStorage.getItem(meetingId) || '',
       });
-      setMeeting(newMeeting);
-      console.log('working');
+      if (response.status !== 200) return;
+      const result = response.data;
+      setSuggestions(result.filter((item) => !item?.accepted));
+    } catch (err) {
+      toast.error(extractError(err));
     }
-  }, [openSuggestion]);
+  }
 
   async function pullMeeting() {
     const response = await server.get(`/meeting/${id}`, {
@@ -105,6 +92,7 @@ export default function UpcomingMeetingScreen() {
           return p1.userName.localeCompare(p2.userName);
         });
     }
+    getSuggestions(result?.id);
     setMeeting(result);
   }
 
@@ -113,100 +101,47 @@ export default function UpcomingMeetingScreen() {
   }
 
   function Content() {
-    if (currentTab === 'agenda') {
-      return (
-        <AgendaItemList
-          meeting={meeting}
-          setMeeting={setMeeting}
-          isReordering={isReordering}
-        />
-      );
-    } else {
-      return <ParticipantItemList meeting={meeting} setMeeting={setMeeting} />;
+    switch (currentTab) {
+      case Tabs.AGENDA:
+        return (
+          <>
+            <AgendaItemList
+              meeting={meeting}
+              setMeeting={setMeeting}
+              isReordering={isReordering}
+              setReordering={setReordering}
+            />
+            <AddToggle
+              currentTab={currentTab}
+              meeting={meeting}
+              setMeeting={setMeeting}
+              isReordering={isReordering}
+            />
+          </>
+        );
+      case Tabs.SUGGESTIONS:
+        return (
+          <SuggestionList
+            suggestions={suggestions}
+            setSuggestions={setSuggestions}
+            meeting={meeting}
+            setMeeting={setMeeting}
+            isReordering={isReordering}
+          />
+        );
+      default:
+        return (
+          <>
+            <ParticipantItemList meeting={meeting} setMeeting={setMeeting} />
+            <AddToggle
+              currentTab={currentTab}
+              meeting={meeting}
+              setMeeting={setMeeting}
+              isReordering={isReordering}
+            />
+          </>
+        );
     }
-  }
-
-  function AddToggle() {
-    const renderTooltip = (props) => (
-      <Tooltip id="button-tooltip" {...props}>
-        {isReordering ? 'Save' : 'Add New'}
-      </Tooltip>
-    );
-
-    if (currentTab === 'participants') {
-      return (
-        <OverlayTrigger placement="top" overlay={renderTooltip}>
-          <div
-            className="Fab"
-            onClick={() => addParticipant(meeting, setMeeting)}
-          >
-            <PersonPlusFill size={25} color="white" />
-          </div>
-        </OverlayTrigger>
-      );
-    } else if (isReordering)
-      return (
-        <OverlayTrigger placement="top" overlay={renderTooltip}>
-          <div
-            className="Fab"
-            onClick={() => {
-              setReordering(false);
-              updateDatabase(meeting.id, meeting.agendaItems);
-            }}
-          >
-            <Save size={22} color="white" />
-          </div>
-        </OverlayTrigger>
-      );
-
-    return (
-      <OverlayTrigger placement="top" overlay={renderTooltip}>
-        <div
-          className="Fab"
-          onClick={() => {
-            addAgenda(meeting, setMeeting);
-          }}
-        >
-          <CalendarPlusFill size={22} color="white" />
-        </div>
-      </OverlayTrigger>
-    );
-  }
-
-  function ExtraToggles() {
-    const renderTooltipFirst = (props) => (
-      <Tooltip id="button-tooltip" {...props}>
-        Reorder
-      </Tooltip>
-    );
-    const renderTooltipSecond = (props) => (
-      <Tooltip id="button-tooltip" {...props}>
-        Suggestions
-      </Tooltip>
-    );
-    return (
-      <>
-        <OverlayTrigger placement="top" overlay={renderTooltipFirst}>
-          <div
-            className="Fab-secondary-first"
-            onClick={() => {
-              removeEmpty(meeting, setMeeting);
-              setReordering(true);
-            }}
-          >
-            <ArrowRepeat size={25} color="white" />
-          </div>
-        </OverlayTrigger>
-        <OverlayTrigger placement="top" overlay={renderTooltipSecond}>
-          <div
-            className="Fab-secondary-second"
-            onClick={() => setOpenSuggestion(true)}
-          >
-            <ChatSquareText size={20} color="white" />
-          </div>
-        </OverlayTrigger>
-      </>
-    );
   }
 
   if (!loading && !validId)
@@ -304,15 +239,18 @@ export default function UpcomingMeetingScreen() {
             <div className="Buffer--50px" />
             <Nav
               variant="tabs"
-              defaultActiveKey="participants"
+              defaultActiveKey={Tabs.PARTICIPANTS}
               onSelect={(selectedKey) => setCurrentTab(selectedKey)}
               style={{ marginLeft: 20, marginRight: 20 }}
             >
               <Nav.Item>
-                <Nav.Link eventKey="participants">Participants</Nav.Link>
+                <Nav.Link eventKey={Tabs.PARTICIPANTS}>Participants</Nav.Link>
               </Nav.Item>
               <Nav.Item>
-                <Nav.Link eventKey="agenda">Agenda</Nav.Link>
+                <Nav.Link eventKey={Tabs.AGENDA}>Agenda</Nav.Link>
+              </Nav.Item>
+              <Nav.Item>
+                <Nav.Link eventKey={Tabs.SUGGESTIONS}>Suggestions</Nav.Link>
               </Nav.Item>
             </Nav>
             <div className="Buffer--20px" />
@@ -339,80 +277,12 @@ export default function UpcomingMeetingScreen() {
         inviteList={inviteList}
         setInviteList={setInviteList}
       />
-      <AddToggle />
-      {currentTab === 'agenda' && !isReordering ? <ExtraToggles /> : null}
-      <SuggestionOverlay
-        show={openSuggestion}
-        setShow={setOpenSuggestion}
-        meeting={meeting}
-        setMeeting={setMeeting}
-      />
     </div>
   );
 }
 
-function addParticipant(meeting, setMeeting) {
-  scrollToBottom();
-  if (meeting.participants.findIndex((item) => item.userEmail === '') >= 0)
-    return;
-  const newMeeting = Object.assign({}, meeting);
-  const newParticipant = Object.assign({}, blankParticipant);
-  newParticipant.meetingId = newMeeting.id;
-  newMeeting.participants = [...newMeeting.participants, newParticipant];
-  setMeeting(newMeeting);
-}
-
-async function addAgenda(meeting, setMeeting) {
-  scrollToBottom();
-  if (meeting.agendaItems.findIndex((item) => item.name === '') >= 0) return;
-  const newMeeting = Object.assign({}, meeting);
-  const newAgenda = Object.assign({}, blankAgenda);
-  newAgenda.meetingId = newMeeting.id;
-  const size = newMeeting.agendaItems.length;
-  if (size > 0) {
-    const lastItem = newMeeting.agendaItems[size - 1];
-    newAgenda.position = lastItem.position + 1;
-  } else {
-    newAgenda.position = 0;
-  }
-  newAgenda.prevPosition = newAgenda.position;
-  newMeeting.agendaItems = [...newMeeting.agendaItems, newAgenda];
-  setMeeting(newMeeting);
-}
-
-async function scrollToBottom() {
-  await new Promise((resolve) => setTimeout(resolve, 200));
-  window.scrollTo(0, window.outerHeight);
-}
-
-function removeEmpty(meeting, setMeeting) {
-  const agenda = meeting.agendaItems;
-  if (agenda.length > 0 && agenda[agenda.length - 1]?.name?.length === 0) {
-    const newMeeting = Object.assign({}, meeting);
-    const newAgenda = Object.assign([], newMeeting.agendaItems);
-    newAgenda.splice(agenda.length - 1, 1);
-    newMeeting.agendaItems = newAgenda;
-    setMeeting(newMeeting);
-  }
-}
-
-async function updateDatabase(meetingId, agendaItems) {
-  const changes = [];
-  agendaItems.forEach((item) => {
-    changes.push({
-      oldPosition: item.prevPosition,
-      newPosition: item.position,
-    });
-    item.prevPosition = item.position;
-  });
-  if (changes.length > 0) {
-    await server.put(
-      '/agenda-item/positions',
-      {
-        positions: changes,
-        meetingId: meetingId,
-      },
-      defaultHeaders,
-    );
-  }
-}
+const Tabs = {
+  AGENDA: 'agenda',
+  PARTICIPANTS: 'participants',
+  SUGGESTIONS: 'suggestions',
+};

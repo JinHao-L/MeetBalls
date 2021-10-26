@@ -1,23 +1,28 @@
 import { Container, Image, Button, Row, Col, Card } from 'react-bootstrap';
 import { Facebook, Instagram } from 'react-bootstrap-icons';
+import { FaTiktok } from 'react-icons/fa';
 import LandingImage from '../../assets/landing_image.png';
 import BackgroundImage from '../../assets/background_pattern.jpg';
 import PatternImage from '../../assets/pattern.png';
 import AgendaImage from '../../assets/guide_agenda_list.jpg';
 import MeetingImage from '../../assets/guide_ongoing_meeting.jpg';
 import StatisticsImage from '../../assets/guide_report.jpg';
-import { useHistory } from 'react-router';
+import { Redirect, useHistory } from 'react-router';
 import AppFooter from '../../components/AppFooter';
-import { useEffect } from 'react';
+import { useContext, useEffect } from 'react';
 import { logEvent } from '@firebase/analytics';
 import { googleAnalytics } from '../../services/firebase';
+import { UserContext } from '../../context/UserContext';
 
 export default function LandingScreen() {
   const history = useHistory();
+  const user = useContext(UserContext);
 
   useEffect(() => {
     logEvent(googleAnalytics, 'visit_landing_page');
   }, []);
+
+  if (user) return <Redirect to="/home" />;
 
   return (
     <div>
@@ -41,26 +46,38 @@ export default function LandingScreen() {
                 <p>• Pace your meetings with intelligent agenda</p>
                 <p>• Mass email participants</p>
                 <p>• Analyse meeting statistics</p>
-                <p>• Save audio transcripts from zoom (Coming Soon)</p>
                 <div className="Buffer--20px" />
                 <Button
+                  className="social-link-btn"
                   variant="outline-facebook"
-                  onClick={() => {
-                    window.open('https://www.facebook.com/MeetBallsApp/');
-                  }}
+                  href="https://www.facebook.com/MeetBallsApp/"
+                  target="_blank"
+                  rel="noreferrer"
                 >
                   <Facebook size={23} style={{ marginRight: 10 }} />
                   Find Us On Facebook
                 </Button>
                 <div className="Buffer--20px" />
                 <Button
+                  className="social-link-btn"
                   variant="outline-primary"
-                  onClick={() => {
-                    window.open('https://www.instagram.com/meetballsapp/');
-                  }}
+                  href='https://www.instagram.com/meetballsapp/'
+                  target="_blank"
+                  rel="noreferrer"
                 >
                   <Instagram size={23} style={{ marginRight: 10 }} />
-                  Find Us On Instgram
+                  Find Us On Instagram
+                </Button>
+                <div className="Buffer--20px" />
+                <Button
+                  className="social-link-btn"
+                  variant="outline-tiktok"
+                  href='https://www.tiktok.com/@meetballsapp'
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  <FaTiktok size={23} style={{ marginRight: 10 }} />
+                  Find Us On TikTok
                 </Button>
               </div>
             </div>
@@ -99,7 +116,7 @@ export default function LandingScreen() {
                 lg={4}
                 className="Container__padding--vertical-small"
               >
-                <Card>
+                <Card style={{ height: '100%' }}>
                   <Card.Img variant="top" src={AgendaImage} />
                   <div className="Line--horizontal" />
                   <Card.Body>
@@ -117,7 +134,7 @@ export default function LandingScreen() {
                 lg={4}
                 className="Container__padding--vertical-small"
               >
-                <Card>
+                <Card style={{ height: '100%' }}>
                   <Card.Img variant="top" src={MeetingImage} />
                   <div className="Line--horizontal" />
                   <Card.Body>
@@ -135,7 +152,7 @@ export default function LandingScreen() {
                 lg={4}
                 className="Container__padding--vertical-small"
               >
-                <Card>
+                <Card style={{ height: '100%' }}>
                   <Card.Img variant="top" src={StatisticsImage} />
                   <div className="Line--horizontal" />
                   <Card.Body>
