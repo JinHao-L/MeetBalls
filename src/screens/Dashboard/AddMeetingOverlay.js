@@ -356,7 +356,8 @@ const schema = yup.object().shape({
   name: yup.string().required('Meeting name is required'),
   desc: yup.string(),
   meetingId: yup
-    .number('Meeting ID is must be a number')
+    .number()
+    .typeError('Meeting ID is must be a number')
     .required('Meeting ID is required'),
   meetingPassword: yup.string().required('Meeting password is required'),
   link: yup
