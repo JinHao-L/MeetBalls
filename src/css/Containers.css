@@ -116,6 +116,10 @@
   height: 150px;
 }
 
+.Card__mini-loading {
+  height: 350px;
+}
+
 .Card__invite {
   min-height: 100px;
   max-height: 200px;

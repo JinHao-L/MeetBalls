@@ -50,9 +50,9 @@ export default function LandingScreen() {
                 <Button
                   className="social-link-btn"
                   variant="outline-facebook"
-                  onClick={() => {
-                    window.open('https://www.facebook.com/MeetBallsApp/');
-                  }}
+                  href="https://www.facebook.com/MeetBallsApp/"
+                  target="_blank"
+                  rel="noreferrer"
                 >
                   <Facebook size={23} style={{ marginRight: 10 }} />
                   Find Us On Facebook
@@ -61,9 +61,9 @@ export default function LandingScreen() {
                 <Button
                   className="social-link-btn"
                   variant="outline-primary"
-                  onClick={() => {
-                    window.open('https://www.instagram.com/meetballsapp/');
-                  }}
+                  href='https://www.instagram.com/meetballsapp/'
+                  target="_blank"
+                  rel="noreferrer"
                 >
                   <Instagram size={23} style={{ marginRight: 10 }} />
                   Find Us On Instagram
@@ -72,9 +72,9 @@ export default function LandingScreen() {
                 <Button
                   className="social-link-btn"
                   variant="outline-tiktok"
-                  onClick={() => {
-                    window.open('https://www.tiktok.com/@meetballsapp');
-                  }}
+                  href='https://www.tiktok.com/@meetballsapp'
+                  target="_blank"
+                  rel="noreferrer"
                 >
                   <FaTiktok size={23} style={{ marginRight: 10 }} />
                   Find Us On TikTok
