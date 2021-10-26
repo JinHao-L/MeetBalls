@@ -386,6 +386,10 @@ async function fillItems(newMeeting, cloneMeeting) {
   if (response.status !== 200) return;
   const result = response.data;
   if (result.agendaItems.length > 0) {
+    result.agendaItems.forEach((item) => {
+      item.speaker = null;
+      item.speakerMaterials = '';
+    });
     newMeeting.agendaItems = result.agendaItems;
   }
   if (result.participants.length > 0) {
