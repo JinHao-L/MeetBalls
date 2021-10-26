@@ -1,11 +1,12 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { isNil } from 'lodash';
-import { Button, Row, Col, Card, Form, Spinner } from 'react-bootstrap';
+import { Button, Row, Col, Card, Form } from 'react-bootstrap';
 import { toast } from 'react-toastify';
 import server from '../../services/server';
 import { defaultHeaders } from '../../utils/axiosConfig';
 import { extractError } from '../../utils/extractError';
 import { SmallLoadingIndicator } from '../../components/SmallLoadingIndicator';
+import unmount from '../../utils/unmount';
 
 export default function EditParticipantItem({
   setEditing,
@@ -17,6 +18,12 @@ export default function EditParticipantItem({
   const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState(participant.userEmail);
   const [username, setUsername] = useState(participant.userName);
+  const mounted = useRef(true);
+
+  useEffect(() => {
+    mounted.current = true;
+    return unmount(mounted, 'EditParticipantItem');
+  }, []);
 
   const checkForDuplicate = () => {
     return !isNil(
@@ -70,11 +77,12 @@ export default function EditParticipantItem({
       );
       meeting.participants[position] = newParticipant;
       syncAgenda(oldId, newParticipant);
-      setEditing(false);
+      if (mounted.current) setEditing(false);
     } catch (err) {
       toast.error(extractError(err));
     } finally {
-      setLoading(false);
+      console.log(`EditParticipantItem still mounted? ${mounted.current}`)
+      if (mounted.current) setLoading(false);
     }
   }
 

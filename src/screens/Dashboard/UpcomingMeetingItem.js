@@ -8,6 +8,7 @@ import PropTypes from 'prop-types';
 import { Trash, CameraVideo, Pen, Front } from 'react-bootstrap-icons';
 import { toast } from 'react-toastify';
 import { SmallLoadingIndicator } from '../../components/SmallLoadingIndicator';
+import unmount from '../../utils/unmount';
 
 export default function UpcomingMeetingItem({
   meeting,
@@ -23,9 +24,7 @@ export default function UpcomingMeetingItem({
   const mounted = useRef(true);
 
   useEffect(() => {
-    return () => {
-      mounted.current = false;
-    };
+    return unmount(mounted);
   }, []);
 
   function editMeeting() {
@@ -141,7 +140,7 @@ UpcomingMeetingItem.propTypes = {
   meeting: PropTypes.shape({
     id: PropTypes.string.isRequired,
     name: PropTypes.string.isRequired,
-    description: PropTypes.string.isRequired,
+    description: PropTypes.string,
     type: PropTypes.number.isRequired,
     joinUrl: PropTypes.string.isRequired,
     startedAt: PropTypes.string.isRequired,

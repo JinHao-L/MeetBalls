@@ -4,7 +4,6 @@ import { CalendarPlusFill } from 'react-bootstrap-icons';
 import UpcomingMeetingItem from './UpcomingMeetingItem';
 import OngoingMeetingItem from './OngoingMeetingItem';
 import AddMeetingOverlay from './AddMeetingOverlay';
-import { FullLoadingIndicator } from '../../components/FullLoadingIndicator';
 import CompletedMeetingItem from './CompletedMeetingItem';
 import { toast } from 'react-toastify';
 import { extractError } from '../../utils/extractError';
@@ -14,6 +13,7 @@ import { clearMeetingsCache, pullMeetings } from '../../utils/dashboardCache';
 import { UserContext } from '../../context/UserContext';
 import AppFooter from '../../components/AppFooter';
 import { LoadingIndicator } from '../../components/LoadingIndicator';
+import unmount from '../../utils/unmount';
 
 export default function DashboardScreen() {
   const [upcoming, setUpcoming] = useState([]);
@@ -31,10 +31,6 @@ export default function DashboardScreen() {
 
   useEffect(() => {
     logEvent(googleAnalytics, 'visit_dashboard');
-
-    return () => {
-      mounted.current = false;
-    };
   }, []);
 
   useEffect(() => {
@@ -42,8 +38,11 @@ export default function DashboardScreen() {
   }, []);
 
   useEffect(() => {
+    mounted.current = true;
     setLoading(true);
     populateMeetings();
+
+    return unmount(mounted, 'DashboardScreen');
   }, [activePage]);
 
   const populateMeetings = useCallback(() => {

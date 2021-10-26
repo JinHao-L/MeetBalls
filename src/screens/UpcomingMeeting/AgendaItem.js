@@ -7,7 +7,7 @@ import {
   Tooltip,
 } from 'react-bootstrap';
 import { Draggable } from 'react-beautiful-dnd';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { getFormattedDuration } from '../../common/CommonFunctions';
 import EditAgendaItem from './EditAgendaItem';
 import server from '../../services/server';
@@ -17,6 +17,7 @@ import { toast } from 'react-toastify';
 import { Link45deg } from 'react-bootstrap-icons';
 import { extractError } from '../../utils/extractError';
 import { openFile } from '../../services/files';
+import unmount from '../../utils/unmount';
 
 export default function AgendaItem({
   meeting,
@@ -29,6 +30,12 @@ export default function AgendaItem({
   const [loading, setLoading] = useState(false);
   const [editing, setEditing] = useState(false);
   const item = meeting.agendaItems[position];
+  const mounted = useRef(true);
+
+  useEffect(() => {
+    mounted.current = true;
+    return unmount(mounted, 'AgendaItem');
+  }, []);
 
   if (!editing && item?.name?.length === 0) {
     setEditing(true);
@@ -53,7 +60,7 @@ export default function AgendaItem({
       toast.error(extractError(err));
       setLoading(false);
     }
-    setDeleting(false);
+    if (mounted.current) setDeleting(false);
   }
 
   if (isReordering && editing) {

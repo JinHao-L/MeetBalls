@@ -1,9 +1,10 @@
 import { DragDropContext, Droppable } from 'react-beautiful-dnd';
 import AgendaItem from './AgendaItem';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Button } from 'react-bootstrap';
 import server from '../../services/server';
 import { defaultHeaders } from '../../utils/axiosConfig';
+import unmount from '../../utils/unmount';
 
 export default function AgendaItemList({
   meeting,
@@ -13,6 +14,12 @@ export default function AgendaItemList({
 }) {
   const [isDeleting, setDeleting] = useState(false);
   const items = [];
+  const mounted = useRef(true);
+
+  useEffect(() => {
+    mounted.current = true;
+    return unmount(mounted, 'AgendaItemList');
+  }, []);
 
   if (isReordering) {
     items.push(
@@ -24,6 +31,11 @@ export default function AgendaItemList({
     items.push(<div className="Buffer--20px" key={'Buffer'} />);
   }
 
+  function setDeleteCleanUp(deleting) {
+    console.log(`AgendaItemList still mounted? ${mounted.current}`);
+    if (mounted.current) setDeleting(deleting);
+  }
+
   for (let i = 0; i < meeting.agendaItems.length; i++) {
     items.push(
       <AgendaItem
@@ -33,7 +45,7 @@ export default function AgendaItemList({
         position={i}
         isReordering={isReordering}
         isDeleting={isDeleting}
-        setDeleting={setDeleting}
+        setDeleting={setDeleteCleanUp}
       />,
     );
   }
@@ -110,6 +122,7 @@ function removeEmpty(meeting, setMeeting) {
 async function updateDatabase(meetingId, agendaItems) {
   const changes = [];
   agendaItems.forEach((item) => {
+    if (!item.prevPosition) return;
     changes.push({
       oldPosition: item.prevPosition,
       newPosition: item.position,
