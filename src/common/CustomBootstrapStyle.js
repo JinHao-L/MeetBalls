@@ -263,6 +263,10 @@ export default function CustomBootstrapStyle() {
       color: white;
     }
 
+    .bg-landing {
+      background-color: #fffbfa!important;
+    }
+
     .border-primary {
       border-color: #8F6B58!important;
       border-width: 1px;

@@ -48,7 +48,7 @@ export default function DashboardScreen() {
 
   const populateMeetings = useCallback(() => {
     // TODO: Modify the limit here to test out the pagination feature
-    const limit = 12;
+    const limit = 11;
     return pullMeetings(activePage, limit)
       .then((meetings) => {
         if (!mounted.current) return;
@@ -182,19 +182,20 @@ export default function DashboardScreen() {
         className="Container__padding--vertical"
         style={{ minHeight: 'calc(100vh - 56px - 121px - 300px)' }}
       >
-        {totalPage > 1 && <PaginationButtons />}
         {loading ? (
           <Container className="d-flex justify-content-center align-items-center Card__mini-loading">
             <LoadingIndicator />
           </Container>
         ) : (
           <Row>
-            {activePage === 1 ? <CreateMeetingToggle /> : null}
+            <CreateMeetingToggle />
             {upcomingList}
             {historyList}
           </Row>
         )}
-        <div className="Buffer--50px" />
+        <div className="Buffer--20px" />
+        {totalPage > 1 && <PaginationButtons />}
+        <div className="Buffer--30px" />
       </Container>
       )
       <AddMeetingOverlay
