@@ -1,11 +1,4 @@
-import {
-  useEffect,
-  useRef,
-  useState,
-  useContext,
-  useCallback,
-  useMemo,
-} from 'react';
+import { useEffect, useRef, useState, useContext, useCallback } from 'react';
 import { Container, Row, Image, Card, Col, Pagination } from 'react-bootstrap';
 import { CalendarPlusFill } from 'react-bootstrap-icons';
 import UpcomingMeetingItem from './UpcomingMeetingItem';
@@ -20,6 +13,7 @@ import { googleAnalytics } from '../../services/firebase';
 import { clearMeetingsCache, pullMeetings } from '../../utils/dashboardCache';
 import { UserContext } from '../../context/UserContext';
 import AppFooter from '../../components/AppFooter';
+import { LoadingIndicator } from '../../components/LoadingIndicator';
 
 export default function DashboardScreen() {
   const [upcoming, setUpcoming] = useState([]);
@@ -48,6 +42,7 @@ export default function DashboardScreen() {
   }, []);
 
   useEffect(() => {
+    setLoading(true);
     populateMeetings();
   }, [activePage]);
 
@@ -166,10 +161,6 @@ export default function DashboardScreen() {
     );
   }
 
-  if (loading) {
-    return <FullLoadingIndicator />;
-  }
-
   return (
     <>
       <div className="Banner">
@@ -187,19 +178,25 @@ export default function DashboardScreen() {
           </p>
         </div>
       </div>
-
       <Container
         className="Container__padding--vertical"
         style={{ minHeight: 'calc(100vh - 56px - 121px - 300px)' }}
       >
         {totalPage > 1 && <PaginationButtons />}
-        <Row>
-          {activePage === 1 ? <CreateMeetingToggle /> : null}
-          {upcomingList}
-          {historyList}
-        </Row>
+        {loading ? (
+          <Container className="d-flex justify-content-center align-items-center Card__mini-loading">
+            <LoadingIndicator />
+          </Container>
+        ) : (
+          <Row>
+            {activePage === 1 ? <CreateMeetingToggle /> : null}
+            {upcomingList}
+            {historyList}
+          </Row>
+        )}
         <div className="Buffer--50px" />
       </Container>
+      )
       <AddMeetingOverlay
         show={showOverlay}
         setShow={setShowOverlay}
