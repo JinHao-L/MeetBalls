@@ -1,18 +1,15 @@
 import server from '../services/server';
 import { defaultHeaders } from './axiosConfig';
 
-const UPCOMING = 'UpcomingMeetings';
-const COMPLETED = 'CompletedMeetings';
+const MEETINGS = 'Meetings';
 const TTL = 'TTL';
-const REGEX_CHECK = new RegExp(`(${UPCOMING}|${COMPLETED})`);
+const REGEX_CHECK = new RegExp(`(${MEETINGS})`);
 
-const LIFESPAN = 15 * 60 * 1000;
+const LIFESPAN = 5 * 60 * 1000;
 
-function cacheUpcoming(data, type, page, limit) {
-  if (type !== UPCOMING && type !== COMPLETED) throw Error('Invalid type');
-
-  const storageData = JSON.stringify({ items: data.items, meta: data.meta });
-  sessionStorage.setItem(type + '_' + limit + '_' + page, storageData);
+function cacheMeeting(data, page, limit) {
+  const storageData = JSON.stringify(data);
+  sessionStorage.setItem([MEETINGS, page, limit].join('_'), storageData);
 
   const date = new Date();
   date.setMilliseconds(date.getMilliseconds() + LIFESPAN);
@@ -22,25 +19,28 @@ function cacheUpcoming(data, type, page, limit) {
 
 export async function pullMeetings(page, limit) {
   const validTTL = new Date(sessionStorage.getItem(TTL)) > Date.now();
-  const upcomingStr =
-    validTTL && sessionStorage.getItem(UPCOMING + '_' + limit + '_' + page);
-  const upcoming = upcomingStr
-    ? JSON.parse(upcomingStr)
-    : await pullUpcomingMeetings(page, limit);
+  const meetingStr =
+    validTTL && sessionStorage.getItem([MEETINGS, page, limit].join('_'));
+  if (validTTL && meetingStr) {
+    return JSON.parse(meetingStr);
+  }
+
+  const upcoming = await pullUpcomingMeetings(page, limit);
 
   const completedLimit = limit - upcoming.meta.itemCount;
-  const completedStr =
-    validTTL &&
-    sessionStorage.getItem(COMPLETED + '_' + completedLimit + '_' + page);
-  const completed = completedStr
-    ? JSON.parse(completedStr)
-    : await pullPastMeetings(page, completedLimit);
+  const skipAmount =
+    upcoming.meta.itemCount === 0 && upcoming.meta.totalItems % limit > 0
+      ? limit - (upcoming.meta.totalItems % limit)
+      : 0;
+  const completedPage = Math.max(page - upcoming.meta.totalPages, 1);
+
+  const completed = await pullPastMeetings(completedPage, completedLimit, skipAmount);
 
   const totalUpcomingCount = upcoming.meta.totalItems;
   const totalCompletedCount = completed.meta.totalItems;
   const totalCount = totalCompletedCount + totalUpcomingCount;
 
-  return {
+  const output = {
     upcoming: upcoming.items,
     completed: completed.items,
     count: {
@@ -50,6 +50,8 @@ export async function pullMeetings(page, limit) {
       pages: Math.ceil(totalCount / limit),
     },
   };
+  cacheMeeting(output, page, limit);
+  return output;
 }
 
 export function clearMeetingsCache() {
@@ -65,16 +67,14 @@ async function pullUpcomingMeetings(page, limit) {
     ...defaultHeaders,
   });
   const paginatedMeetings = response.data;
-  cacheUpcoming(paginatedMeetings, UPCOMING, page, limit);
   return paginatedMeetings;
 }
 
-async function pullPastMeetings(page, limit) {
+async function pullPastMeetings(page, limit, skip) {
   const response = await server.get('/meeting', {
-    params: { type: 'past', orderBy: 'desc', page, limit },
+    params: { type: 'past', orderBy: 'desc', page, limit, skip },
     ...defaultHeaders,
   });
   const paginatedMeetings = response.data;
-  cacheUpcoming(paginatedMeetings, COMPLETED, page, limit);
   return paginatedMeetings;
 }

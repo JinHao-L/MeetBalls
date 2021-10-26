@@ -12,32 +12,32 @@ export default function AppFooter() {
       <Container className="Container__footer">
         <Row>
           <Col sm={12} md={12} lg={12} className="Container__row--center">
-            <Facebook
-              size={24}
-              className="Clickable"
-              style={{ color: '8F6B58' }}
-              onClick={() => {
-                window.open('https://www.facebook.com/MeetBallsApp/');
-              }}
-            />
+            <a
+              target="_blank"
+              rel="noreferrer"
+              href="https://www.facebook.com/MeetBallsApp/"
+              className="Container__row--center"
+            >
+              <Facebook size={24} style={{ color: '8F6B58' }} />
+            </a>
             <div className="Buffer--10px" />
-            <Instagram
-              size={24}
-              className="Clickable"
-              style={{ color: '8F6B58' }}
-              onClick={() => {
-                window.open('https://www.instagram.com/meetballsapp/');
-              }}
-            />
+            <a
+              target="_blank"
+              rel="noreferrer"
+              href="https://www.instagram.com/meetballsapp/"
+              className="Container__row--center"
+            >
+              <Instagram size={24} style={{ color: '8F6B58' }} />
+            </a>
             <div className="Buffer--10px" />
-            <FaTiktok
-              size={24}
-              className="Clickable"
-              style={{ color: '8F6B58' }}
-              onClick={() => {
-                window.open('https://www.tiktok.com/@meetballsapp');
-              }}
-            />
+            <a
+              target="_blank"
+              rel="noreferrer"
+              href="https://www.tiktok.com/@meetballsapp"
+              className="Container__row--center"
+            >
+              <FaTiktok size={24} style={{ color: '8F6B58' }} />
+            </a>
             <div className="Buffer--20px" />
             <div className="Line--vertical" />
             <div className="Buffer--20px" />
