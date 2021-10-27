@@ -2,7 +2,7 @@ import { Button } from 'react-bootstrap'
 import { useRef } from 'react'
 import { toast } from 'react-toastify';
 
-export default function ImportParticipantsButton({ handleFile }) {
+export default function ImportParticipantsButton({ loading, handleFile }) {
   const fileRef = useRef(null);
 
   function handleChange(event) {
@@ -16,9 +16,10 @@ export default function ImportParticipantsButton({ handleFile }) {
   }
   
   return (
-    <>
+    <div className="d-grid gap-2" key="btn">
       <Button
         className="d-grid gap-2 Text--no-decoration"
+        disabled={loading}
         onClick={() => fileRef.current.click()}
         block="true"
       >
@@ -31,6 +32,6 @@ export default function ImportParticipantsButton({ handleFile }) {
         onChange={handleChange}
         accept=".csv"
       />
-    </>
+    </div>
   );
 }

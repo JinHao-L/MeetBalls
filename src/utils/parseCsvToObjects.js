@@ -18,7 +18,6 @@ function errorHandler(err, _) {
 function successHandler(headers, callback, headerErrMsg = '') {
   function handleSuccess(response, _) {
     const fields = response.meta.fields;
-    console.log(response);
     if (!fields) throw new Error('Headers should have been enabled!');
 
     const validFields = headers.every(e => fields.includes(e));
