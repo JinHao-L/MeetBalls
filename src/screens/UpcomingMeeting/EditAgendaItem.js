@@ -53,6 +53,7 @@ export default function EditAgendaItem({
       toast.error('Name must not be empty.');
       return;
     }
+    lock.current = true;
     const linkSubmitted = materials !== '';
     let speakerMaterials = materials;
     if (speaker && isUpload && file) {
@@ -104,6 +105,7 @@ export default function EditAgendaItem({
       setMeeting(newMeeting);
       setEditing(false);
     } catch (err) {
+      lock.current = false;
       toast.error(extractError(err));
     } finally {
       setLoading(false);
@@ -142,6 +144,7 @@ export default function EditAgendaItem({
     if (lock.current) {
       return;
     }
+    lock.current = true;
     const oldName = item.name;
     if (oldName === '') {
       const newMeeting = Object.assign({}, meeting);
@@ -151,6 +154,7 @@ export default function EditAgendaItem({
       setMeeting(newMeeting);
     } else {
       setEditing(false);
+      lock.current = false;
     }
   }
 

@@ -44,20 +44,23 @@ export default function AgendaItem({
 
   async function removeAgendaItem() {
     if (isDeleting || lock.current) return;
+    lock.current = true;
     try {
       setDeleting(true);
       setLoading(true);
       const newMeeting = Object.assign({}, meeting);
       const newAgenda = Object.assign([], newMeeting.agendaItems);
       const actualPosition = newAgenda[position].position;
+      await removeFromDatabase(meeting.id, actualPosition);
       newAgenda.splice(position, 1);
       newMeeting.agendaItems = newAgenda;
-      await removeFromDatabase(meeting.id, actualPosition);
-      setMeeting(newMeeting);
       for (let i = 0; i < newAgenda.length; i++) {
         newAgenda[i].position = i;
+        newAgenda[i].prevPosition = i;
       }
+      setMeeting(newMeeting);
     } catch (err) {
+      lock.current = false;
       toast.error(extractError(err));
       setLoading(false);
     }
