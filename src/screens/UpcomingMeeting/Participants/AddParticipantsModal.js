@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Card, Button, Form, Modal, ListGroup, Col, Row } from "react-bootstrap";
+import { Card, Button, Form, Modal, ListGroup } from "react-bootstrap";
 import { toast } from "react-toastify";
 import { extractError } from "../../../utils/extractError";
 import { createParticipants } from "../../../services/participants";
