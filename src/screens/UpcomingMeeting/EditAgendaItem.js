@@ -21,6 +21,7 @@ export default function EditAgendaItem({
   meeting,
   position,
   setMeeting,
+  lock
 }) {
   const item = meeting.agendaItems[position];
   const [duration, setDuration] = useState(item.expectedDuration);
@@ -45,6 +46,9 @@ export default function EditAgendaItem({
   }
 
   async function updateChanges() {
+    if (lock.current) {
+      return;
+    }
     if (name.length === 0) {
       toast.error('Name must not be empty.');
       return;
@@ -135,6 +139,9 @@ export default function EditAgendaItem({
   }
 
   function close() {
+    if (lock.current) {
+      return;
+    }
     const oldName = item.name;
     if (oldName === '') {
       const newMeeting = Object.assign({}, meeting);

@@ -26,6 +26,7 @@ export default function AgendaItem({
   isReordering,
   isDeleting,
   setDeleting,
+  lock,
 }) {
   const [loading, setLoading] = useState(false);
   const [editing, setEditing] = useState(false);
@@ -42,7 +43,7 @@ export default function AgendaItem({
   }
 
   async function removeAgendaItem() {
-    if (isDeleting) return;
+    if (isDeleting || lock.current) return;
     try {
       setDeleting(true);
       setLoading(true);
@@ -97,6 +98,7 @@ export default function AgendaItem({
                   setMeeting={setMeeting}
                   meeting={meeting}
                   position={position}
+                  lock={lock}
                 />
               </div>
             )}

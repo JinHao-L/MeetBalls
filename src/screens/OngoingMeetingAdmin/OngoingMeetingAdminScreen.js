@@ -66,6 +66,7 @@ export default function OngoingMeetingAdminScreen() {
       syncMeetingWithZoom(meeting)
         .then((newZoomUuid) => {
           if (newZoomUuid) {
+            clearMeetingsCache()
             setMeeting((meeting) => ({ ...meeting, zoomUuid: newZoomUuid }));
           }
         })
