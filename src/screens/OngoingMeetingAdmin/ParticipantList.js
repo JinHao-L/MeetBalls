@@ -8,7 +8,7 @@ import { toast } from 'react-toastify';
 import { extractError } from '../../utils/extractError';
 import { useMemo, useState } from 'react';
 import ConfirmDupeModal from './ConfirmDupeModal';
-import { Trash } from 'react-bootstrap-icons';
+import { FaTrash } from 'react-icons/fa';
 
 export default function ParticipantList({
   meeting,
@@ -158,7 +158,7 @@ function MarkDuplicateButton({ meeting, setMeeting, position, variant }) {
         onClick={() => setShowModal(true)}
         style={{ width: 50 }}
       >
-        <Trash />
+        <FaTrash />
       </Button>
       <ConfirmDupeModal
         participant={participant}

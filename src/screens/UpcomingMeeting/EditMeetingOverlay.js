@@ -9,6 +9,7 @@ import { FullLoadingIndicator } from '../../components/FullLoadingIndicator';
 import { extractError } from '../../utils/extractError';
 import { clearMeetingsCache } from '../../utils/dashboardCache';
 import { useEffect } from 'react';
+import unmount from '../../utils/unmount';
 
 export default function EditMeetingOverlay({
   show,
@@ -21,13 +22,16 @@ export default function EditMeetingOverlay({
   const descriptionRef = useRef();
   const [date, setDate] = useState(new Date());
   const history = useHistory();
+  const mounted = useRef(true);
 
   useEffect(() => {
     if (!show) return;
 
+    mounted.current = true;
     const startDate = new Date(meeting.startedAt);
-    console.log(`date is now ${startDate}`);
     setDate(startDate);
+
+    return unmount(mounted, 'EditMeetingOverlay');
   }, [show]);
 
   async function update() {
@@ -61,7 +65,8 @@ export default function EditMeetingOverlay({
     } catch (err) {
       toast.error(extractError(err));
     } finally {
-      setLoading(false);
+      console.log(`EditMeetingOverlay still mounted? ${mounted.current}`);
+      if (mounted.current) setLoading(false);
     }
   }
 

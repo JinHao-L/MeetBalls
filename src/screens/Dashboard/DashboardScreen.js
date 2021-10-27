@@ -1,10 +1,9 @@
 import { useEffect, useRef, useState, useContext, useCallback } from 'react';
 import { Container, Row, Image, Card, Col, Pagination } from 'react-bootstrap';
-import { CalendarPlusFill } from 'react-bootstrap-icons';
+import { FaRegCalendarPlus } from 'react-icons/fa';
 import UpcomingMeetingItem from './UpcomingMeetingItem';
 import OngoingMeetingItem from './OngoingMeetingItem';
 import AddMeetingOverlay from './AddMeetingOverlay';
-import { FullLoadingIndicator } from '../../components/FullLoadingIndicator';
 import CompletedMeetingItem from './CompletedMeetingItem';
 import { toast } from 'react-toastify';
 import { extractError } from '../../utils/extractError';
@@ -14,6 +13,7 @@ import { clearMeetingsCache, pullMeetings } from '../../utils/dashboardCache';
 import { UserContext } from '../../context/UserContext';
 import AppFooter from '../../components/AppFooter';
 import { LoadingIndicator } from '../../components/LoadingIndicator';
+import unmount from '../../utils/unmount';
 
 export default function DashboardScreen() {
   const [upcoming, setUpcoming] = useState([]);
@@ -31,10 +31,6 @@ export default function DashboardScreen() {
 
   useEffect(() => {
     logEvent(googleAnalytics, 'visit_dashboard');
-
-    return () => {
-      mounted.current = false;
-    };
   }, []);
 
   useEffect(() => {
@@ -42,13 +38,16 @@ export default function DashboardScreen() {
   }, []);
 
   useEffect(() => {
+    mounted.current = true;
     setLoading(true);
     populateMeetings();
+
+    return unmount(mounted, 'DashboardScreen');
   }, [activePage]);
 
   const populateMeetings = useCallback(() => {
     // TODO: Modify the limit here to test out the pagination feature
-    const limit = 12;
+    const limit = 11;
     return pullMeetings(activePage, limit)
       .then((meetings) => {
         if (!mounted.current) return;
@@ -151,7 +150,7 @@ export default function DashboardScreen() {
           }}
           style={{ borderStyle: 'dashed' }}
         >
-          <CalendarPlusFill size={22} color="#8F6B58" />
+          <FaRegCalendarPlus size={22} color="#8F6B58" />
           <div className="Buffer--10px" />
           <p className="Text__subsubheader" style={{ color: '#8F6B58' }}>
             Add Meeting
@@ -182,19 +181,20 @@ export default function DashboardScreen() {
         className="Container__padding--vertical"
         style={{ minHeight: 'calc(100vh - 56px - 121px - 300px)' }}
       >
-        {totalPage > 1 && <PaginationButtons />}
         {loading ? (
           <Container className="d-flex justify-content-center align-items-center Card__mini-loading">
             <LoadingIndicator />
           </Container>
         ) : (
           <Row>
-            {activePage === 1 ? <CreateMeetingToggle /> : null}
+            <CreateMeetingToggle />
             {upcomingList}
             {historyList}
           </Row>
         )}
-        <div className="Buffer--50px" />
+        <div className="Buffer--20px" />
+        {totalPage > 1 && <PaginationButtons />}
+        <div className="Buffer--30px" />
       </Container>
       )
       <AddMeetingOverlay

@@ -12,9 +12,9 @@ function cacheMeeting(data, page, limit) {
   sessionStorage.setItem([MEETINGS, page, limit].join('_'), storageData);
 
   const date = new Date();
-  date.setMilliseconds(date.getMilliseconds() + LIFESPAN);
+  const timestamp = date.getTime() + LIFESPAN;
 
-  sessionStorage.setItem(TTL, date.toISOString());
+  sessionStorage.setItem(TTL, timestamp);
 }
 
 export async function pullMeetings(page, limit) {

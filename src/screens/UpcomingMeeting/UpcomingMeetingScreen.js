@@ -23,6 +23,7 @@ import BackgroundPattern from '../../assets/background_pattern2.jpg';
 import { logEvent } from '@firebase/analytics';
 import { googleAnalytics } from '../../services/firebase';
 import { FullLoadingIndicator } from '../../components/FullLoadingIndicator';
+import { useAddToCalendar } from '../../hooks/useAddToCalendar';
 
 export default function UpcomingMeetingScreen() {
   const [meeting, setMeeting] = useState(blankMeeting);
@@ -38,6 +39,7 @@ export default function UpcomingMeetingScreen() {
 
   const [loading, setLoading] = useState(true);
   const [validId, setValidId] = useState(true);
+  const AddToCalendarComponent = useAddToCalendar(meeting);
 
   const history = useHistory();
   const user = useContext(UserContext);
@@ -185,6 +187,7 @@ export default function UpcomingMeetingScreen() {
             </p>
             <div className="d-grid gap-2">
               <Button onClick={startZoom}>Start Zoom Meeting</Button>
+              <AddToCalendarComponent />
               <Button
                 variant="outline-primary"
                 onClick={() => {
@@ -250,7 +253,9 @@ export default function UpcomingMeetingScreen() {
                 <Nav.Link eventKey={Tabs.AGENDA}>Agenda</Nav.Link>
               </Nav.Item>
               <Nav.Item>
-                <Nav.Link eventKey={Tabs.SUGGESTIONS}>Suggestions</Nav.Link>
+                <Nav.Link eventKey={Tabs.SUGGESTIONS}>
+                  Suggestions ({suggestions?.length})
+                </Nav.Link>
               </Nav.Item>
             </Nav>
             <div className="Buffer--20px" />

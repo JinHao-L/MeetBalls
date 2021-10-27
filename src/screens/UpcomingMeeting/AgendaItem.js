@@ -7,16 +7,17 @@ import {
   Tooltip,
 } from 'react-bootstrap';
 import { Draggable } from 'react-beautiful-dnd';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { getFormattedDuration } from '../../common/CommonFunctions';
 import EditAgendaItem from './EditAgendaItem';
 import server from '../../services/server';
 import { defaultHeaders } from '../../utils/axiosConfig';
 import { SmallLoadingIndicator } from '../../components/SmallLoadingIndicator';
 import { toast } from 'react-toastify';
-import { Link45deg } from 'react-bootstrap-icons';
+import { FaLink } from 'react-icons/fa';
 import { extractError } from '../../utils/extractError';
 import { openFile } from '../../services/files';
+import unmount from '../../utils/unmount';
 
 export default function AgendaItem({
   meeting,
@@ -25,17 +26,24 @@ export default function AgendaItem({
   isReordering,
   isDeleting,
   setDeleting,
+  lock,
 }) {
   const [loading, setLoading] = useState(false);
   const [editing, setEditing] = useState(false);
   const item = meeting.agendaItems[position];
+  const mounted = useRef(true);
+
+  useEffect(() => {
+    mounted.current = true;
+    return unmount(mounted, 'AgendaItem');
+  }, []);
 
   if (!editing && item?.name?.length === 0) {
     setEditing(true);
   }
 
   async function removeAgendaItem() {
-    if (isDeleting) return;
+    if (isDeleting || lock.current) return;
     try {
       setDeleting(true);
       setLoading(true);
@@ -53,7 +61,7 @@ export default function AgendaItem({
       toast.error(extractError(err));
       setLoading(false);
     }
-    setDeleting(false);
+    if (mounted.current) setDeleting(false);
   }
 
   if (isReordering && editing) {
@@ -90,6 +98,7 @@ export default function AgendaItem({
                   setMeeting={setMeeting}
                   meeting={meeting}
                   position={position}
+                  lock={lock}
                 />
               </div>
             )}
@@ -128,8 +137,8 @@ export default function AgendaItem({
                     {getFormattedDuration(item.expectedDuration)}
                     {item.speakerMaterials && item.speaker ? (
                       <OverlayTrigger placement="top" overlay={renderTooltip}>
-                        <Link45deg
-                          size={24}
+                        <FaLink
+                          size={20}
                           className="Clickable"
                           onClick={() =>
                             openFile(

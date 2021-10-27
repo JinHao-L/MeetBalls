@@ -1,10 +1,8 @@
 import PropTypes from 'prop-types';
-import {
-  getFormattedDateTime,
-  getFormattedDate,
-} from '../../common/CommonFunctions';
-import { Button, Card, Col, Collapse } from 'react-bootstrap';
+import { getFormattedDate } from '../../common/CommonFunctions';
+import { Button, Collapse } from 'react-bootstrap';
 import { useState } from 'react';
+import ParticipantItem, { participantProp } from './ParticipantItem'
 
 export default function AttendanceList({ participants, date }) {
   const [showPresent, setShowPresent] = useState(true);
@@ -27,15 +25,13 @@ export default function AttendanceList({ participants, date }) {
 
   function DownloadButton() {
     return (
-      <a
-        href={exportToCsv(filteredParticipants)}
+      <Button
         className="d-grid gap-2 Text--no-decoration"
-        download={fileName}
+        onClick={() => downloadAsCsv(participants, fileName)}
+        block="true"
       >
-        <div className="d-grid gap-2">
-          <Button block="true">Export to CSV</Button>
-        </div>
-      </a>
+        Export to CSV
+      </Button>
     );
   }
 
@@ -73,41 +69,8 @@ export default function AttendanceList({ participants, date }) {
   );
 }
 
-const participantProp = PropTypes.shape({
-  userEmail: PropTypes.string.isRequired,
-  userName: PropTypes.string.isRequired,
-  timeJoined: PropTypes.string,
-  role: PropTypes.number,
-});
-
 AttendanceList.propTypes = {
   participants: PropTypes.arrayOf(participantProp),
-};
-
-function ParticipantItem({ person }) {
-  const displayName = person.userName;
-  const joinedTime = person.timeJoined;
-  const presence = joinedTime
-    ? `Joined: ${getFormattedDateTime(joinedTime)}`
-    : 'Absent';
-
-  return (
-    <Col className="Container__padding--vertical-small">
-      <Card>
-        <Card.Body>
-          <Card.Title>{displayName}</Card.Title>
-          <Card.Text>{person?.userEmail}</Card.Text>
-        </Card.Body>
-        <Card.Footer>
-          <Card.Text>{presence}</Card.Text>
-        </Card.Footer>
-      </Card>
-    </Col>
-  );
-}
-
-ParticipantItem.propTypes = {
-  person: participantProp,
 };
 
 function sortByPresence(first, second) {
@@ -130,6 +93,18 @@ function exportToCsv(participants) {
   const csvHeader = 'data:text/csv;charset=utf-8,Name,Email,Joined\n';
   const csvString = csvHeader + sortedList.map(toCsvString).join('\n');
   return encodeURI(csvString);
+}
+
+function downloadAsCsv(participants, fileName) {
+  const csvString = exportToCsv(participants);
+  const link = document.createElement('a');
+  link.style.display = 'none';
+  link.setAttribute('target', '_blank');
+  link.setAttribute('href', csvString);
+  link.setAttribute('download', fileName);
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
 }
 
 function CollapseToggle({ show, setShow }) {

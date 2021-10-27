@@ -1,0 +1,79 @@
+:root {
+  --chq-primary: #8f6b58;
+  --chq-offwhite: #fffaf5;
+}
+
+.chq-atc {
+  position: relative;
+  display: inherit;
+  height: 38px;
+}
+
+.chq-atc--button {
+  background: transparent;
+  border: 0;
+  border-radius: 0.25rem;
+  box-sizing: border-box;
+  color: var(--chq-primary);
+  cursor: pointer;
+  display: inline;
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
+  margin: 0;
+  outline: none;
+  padding: 4px 10px;
+  border: 1px solid var(--chq-primary);
+}
+
+.chq-atc--button:active {
+  background-color: var(--chq-primary);
+  color: white;
+}
+
+.chq-atc--button:active path {
+  fill: white;
+}
+
+.chq-atc--button:hover {
+  background-color: var(--chq-primary);
+  color: white;
+}
+
+.chq-atc--button:hover path {
+  fill: white;
+}
+
+.chq-atc--button svg {
+  vertical-align: text-bottom;
+}
+
+.chq-atc--button path {
+  fill: var(--chq-primary);
+}
+
+.chq-atc--dropdown {
+  background-color: white;
+  border-radius: 0.25rem;
+  border: 1px solid #eaeaea;
+  box-shadow: 0.5px 0.5px 3px rgba(0, 0, 0, 0.2);
+  box-sizing: border-box;
+  position: absolute;
+  text-align: left;
+  white-space: nowrap;
+  width: 100%;
+  z-index: 1;
+  top: 38px;
+}
+
+.chq-atc--dropdown a {
+  color: var(--chq-primary);
+  display: block;
+  padding: 8px 15px;
+  text-decoration: none;
+}
+
+.chq-atc--dropdown a:hover {
+  background-color: #eaeaea;
+  color: var(--offwhite);
+}

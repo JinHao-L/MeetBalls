@@ -5,9 +5,10 @@ import { useHistory } from 'react-router';
 import ConfirmDeleteModal from './ConfirmDeleteModal';
 import server from '../../services/server';
 import PropTypes from 'prop-types';
-import { Trash, CameraVideo, Pen, Front } from 'react-bootstrap-icons';
 import { toast } from 'react-toastify';
 import { SmallLoadingIndicator } from '../../components/SmallLoadingIndicator';
+import unmount from '../../utils/unmount';
+import { FaTrash, FaClone, FaEdit, FaVideo } from 'react-icons/fa';
 
 export default function UpcomingMeetingItem({
   meeting,
@@ -23,9 +24,7 @@ export default function UpcomingMeetingItem({
   const mounted = useRef(true);
 
   useEffect(() => {
-    return () => {
-      mounted.current = false;
-    };
+    return unmount(mounted);
   }, []);
 
   function editMeeting() {
@@ -74,11 +73,11 @@ export default function UpcomingMeetingItem({
     return (
       <Row>
         <Col onClick={startMeeting} className="Toggle__card">
-          <CameraVideo />
+          <FaVideo />
           Start
         </Col>
         <Col onClick={editMeeting} className="Toggle__card">
-          <Pen />
+          <FaEdit />
           Edit
         </Col>
         <Col
@@ -88,14 +87,14 @@ export default function UpcomingMeetingItem({
           }}
           className="Toggle__card"
         >
-          <Front />
+          <FaClone />
           Clone
         </Col>
         <Col
           onClick={() => setShowConfirmDelete(true)}
           className="Toggle__card"
         >
-          <Trash />
+          <FaTrash />
           Delete
         </Col>
       </Row>
@@ -141,7 +140,7 @@ UpcomingMeetingItem.propTypes = {
   meeting: PropTypes.shape({
     id: PropTypes.string.isRequired,
     name: PropTypes.string.isRequired,
-    description: PropTypes.string.isRequired,
+    description: PropTypes.string,
     type: PropTypes.number.isRequired,
     joinUrl: PropTypes.string.isRequired,
     startedAt: PropTypes.string.isRequired,

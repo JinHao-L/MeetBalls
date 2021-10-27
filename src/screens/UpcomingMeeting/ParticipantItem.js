@@ -6,19 +6,26 @@ import {
   OverlayTrigger,
   Tooltip,
 } from 'react-bootstrap';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import EditParticipantItem from './EditParticipantItem';
 import server from '../../services/server';
 import { defaultHeaders } from '../../utils/axiosConfig';
 import { toast } from 'react-toastify';
 import { SmallLoadingIndicator } from '../../components/SmallLoadingIndicator';
 import { extractError } from '../../utils/extractError';
-import { Envelope } from 'react-bootstrap-icons';
+import { FaRegEnvelope } from 'react-icons/fa';
+import unmount from '../../utils/unmount';
 
 export default function ParticipantItem({ setMeeting, meeting, position }) {
   const [removing, setRemoving] = useState(false);
   const [editing, setEditing] = useState(false);
   const participant = meeting.participants[position];
+  const mounted = useRef(true);
+
+  useEffect(() => {
+    mounted.current = true;
+    return unmount(mounted, 'ParticipantItem');
+  }, []);
 
   if (!editing && participant?.userEmail?.length === 0) {
     setEditing(true);
@@ -39,7 +46,8 @@ export default function ParticipantItem({ setMeeting, meeting, position }) {
     } catch (err) {
       toast.error(extractError(err));
     } finally {
-      setRemoving(false);
+      console.log(`ParticipantItem still mounted? ${mounted.current}`);
+      if (mounted.current) setRemoving(false);
     }
   }
 
@@ -103,7 +111,7 @@ export default function ParticipantItem({ setMeeting, meeting, position }) {
             {participant?.role === 2 ? 'Host' : 'Participant'}
             {participant?.role !== 2 && participant.invited ? (
               <OverlayTrigger placement="top" overlay={renderTooltip}>
-                <Envelope size={20} />
+                <FaRegEnvelope size={20} />
               </OverlayTrigger>
             ) : null}
           </Card.Header>
