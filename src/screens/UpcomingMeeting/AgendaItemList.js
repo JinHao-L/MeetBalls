@@ -112,6 +112,7 @@ function onDragEnd(result, meeting, setMeeting) {
   newMeeting.agendaItems = newAgenda;
   for (let i = 0; i < newAgenda.length; i++) {
     newAgenda[i].position = i;
+    newAgenda[i].prevPosition = i;
   }
   setMeeting(newMeeting);
 }
@@ -130,7 +131,7 @@ function removeEmpty(meeting, setMeeting) {
 async function updateDatabase(meetingId, agendaItems) {
   const changes = [];
   agendaItems.forEach((item) => {
-    if (!item.prevPosition) return;
+    if (item.prevPosition === null) return;
     changes.push({
       oldPosition: item.prevPosition,
       newPosition: item.position,
