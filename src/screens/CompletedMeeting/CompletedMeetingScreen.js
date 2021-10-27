@@ -33,10 +33,15 @@ export default function CompletedMeetingScreen() {
         },
       })
       .then((res) => {
-        const participants = res.data?.participants?.filter(
-          (x) => !x.isDuplicate,
-        );
-        setMeeting({ ...res.data, participants });
+        const participants = res.data?.participants
+          ?.filter((x) => !x.isDuplicate)
+          .sort((p1, p2) => {
+            return p1.userName.localeCompare(p2.userName);
+          });
+        const agendaItems = res.data?.agendaItems?.sort((p1, p2) => {
+          return p1.position - p2.position;
+        });
+        setMeeting({ ...res.data, participants, agendaItems });
         logEvent(googleAnalytics, 'visit_completed_screen', { meetingId: id });
         setValidId(true);
       })
@@ -98,7 +103,7 @@ export default function CompletedMeetingScreen() {
   const startTimeIso = meeting.startedAt;
   const { date, startTime, endTime } = getDateInfo(
     startTimeIso,
-    meeting.duration,
+    meeting.agendaItems.reduce((prev, curr) => curr.actualDuration + prev, 0),
   );
 
   if (loading) {

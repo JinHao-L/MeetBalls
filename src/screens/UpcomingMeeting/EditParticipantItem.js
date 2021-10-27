@@ -81,7 +81,7 @@ export default function EditParticipantItem({
     } catch (err) {
       toast.error(extractError(err));
     } finally {
-      console.log(`EditParticipantItem still mounted? ${mounted.current}`)
+      console.log(`EditParticipantItem still mounted? ${mounted.current}`);
       if (mounted.current) setLoading(false);
     }
   }
