@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { Form, Modal, Button } from 'react-bootstrap';
-import { StarFill, Star } from 'react-bootstrap-icons';
 import server from '../../services/server';
 import { defaultHeaders } from '../../utils/axiosConfig';
+import { FaStar, FaRegStar } from 'react-icons/fa';
 
 export default function FeedbackOverlay({
   showModal,
@@ -17,7 +17,7 @@ export default function FeedbackOverlay({
     for (let i = 1; i <= 5; i++) {
       if (rating >= i) {
         items.push(
-          <StarFill
+          <FaStar
             color="orange"
             size={24}
             onClick={() => setRating(i)}
@@ -27,7 +27,7 @@ export default function FeedbackOverlay({
         );
       } else {
         items.push(
-          <Star
+          <FaRegStar
             color="orange"
             size={24}
             onClick={() => setRating(i)}
@@ -66,7 +66,9 @@ export default function FeedbackOverlay({
         </div>
         <div className="Buffer--20px" />
         <p className="Text__subsubheader">Share Your Experience</p>
-        <p className="Text__hint">*optional</p>
+        <p className="Text__hint" style={{ justifyContent: 'start' }}>
+          *optional
+        </p>
         <Form.Control
           as="textarea"
           onChange={(event) => setTextFeedback(event.target.value)}

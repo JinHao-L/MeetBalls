@@ -14,7 +14,7 @@ import server from '../../services/server';
 import { defaultHeaders } from '../../utils/axiosConfig';
 import { SmallLoadingIndicator } from '../../components/SmallLoadingIndicator';
 import { toast } from 'react-toastify';
-import { Link45deg } from 'react-bootstrap-icons';
+import { FaLink } from 'react-icons/fa';
 import { extractError } from '../../utils/extractError';
 import { openFile } from '../../services/files';
 import unmount from '../../utils/unmount';
@@ -137,8 +137,8 @@ export default function AgendaItem({
                     {getFormattedDuration(item.expectedDuration)}
                     {item.speakerMaterials && item.speaker ? (
                       <OverlayTrigger placement="top" overlay={renderTooltip}>
-                        <Link45deg
-                          size={24}
+                        <FaLink
+                          size={20}
                           className="Clickable"
                           onClick={() =>
                             openFile(

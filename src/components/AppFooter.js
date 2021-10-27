@@ -1,7 +1,6 @@
 import { Container, Row, Col, Nav } from 'react-bootstrap';
 import { useHistory } from 'react-router-dom';
-import { Facebook, Instagram } from 'react-bootstrap-icons';
-import { FaTiktok } from 'react-icons/fa';
+import { FaTiktok, FaFacebook, FaInstagram } from 'react-icons/fa';
 
 export default function AppFooter() {
   const history = useHistory();
@@ -18,7 +17,7 @@ export default function AppFooter() {
               href="https://www.facebook.com/MeetBallsApp/"
               className="Container__row--center"
             >
-              <Facebook size={24} style={{ color: '8F6B58' }} />
+              <FaFacebook size={24} style={{ color: '8F6B58' }} />
             </a>
             <div className="Buffer--10px" />
             <a
@@ -27,7 +26,7 @@ export default function AppFooter() {
               href="https://www.instagram.com/meetballsapp/"
               className="Container__row--center"
             >
-              <Instagram size={24} style={{ color: '8F6B58' }} />
+              <FaInstagram size={24} style={{ color: '8F6B58' }} />
             </a>
             <div className="Buffer--10px" />
             <a

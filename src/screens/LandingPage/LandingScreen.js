@@ -1,5 +1,5 @@
 import { Container, Image, Button, Row, Col, Card } from 'react-bootstrap';
-import { Facebook, Instagram } from 'react-bootstrap-icons';
+import { FaFacebook, FaInstagram } from 'react-icons/fa';
 import { FaTiktok } from 'react-icons/fa';
 import LandingImage from '../../assets/landing_image.png';
 import BackgroundImage from '../../assets/background_pattern.jpg';
@@ -63,7 +63,7 @@ export default function LandingScreen() {
                   target="_blank"
                   rel="noreferrer"
                 >
-                  <Facebook size={23} style={{ marginRight: 10 }} />
+                  <FaFacebook size={23} style={{ marginRight: 10 }} />
                   Find Us On Facebook
                 </Button>
                 <div className="Buffer--20px" />
@@ -74,7 +74,7 @@ export default function LandingScreen() {
                   target="_blank"
                   rel="noreferrer"
                 >
-                  <Instagram size={23} style={{ marginRight: 10 }} />
+                  <FaInstagram size={23} style={{ marginRight: 10 }} />
                   Find Us On Instagram
                 </Button>
                 <div className="Buffer--20px" />

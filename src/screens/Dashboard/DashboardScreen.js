@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, useContext, useCallback } from 'react';
 import { Container, Row, Image, Card, Col, Pagination } from 'react-bootstrap';
-import { CalendarPlusFill } from 'react-bootstrap-icons';
+import { FaRegCalendarPlus } from 'react-icons/fa';
 import UpcomingMeetingItem from './UpcomingMeetingItem';
 import OngoingMeetingItem from './OngoingMeetingItem';
 import AddMeetingOverlay from './AddMeetingOverlay';
@@ -150,7 +150,7 @@ export default function DashboardScreen() {
           }}
           style={{ borderStyle: 'dashed' }}
         >
-          <CalendarPlusFill size={22} color="#8F6B58" />
+          <FaRegCalendarPlus size={22} color="#8F6B58" />
           <div className="Buffer--10px" />
           <p className="Text__subsubheader" style={{ color: '#8F6B58' }}>
             Add Meeting
