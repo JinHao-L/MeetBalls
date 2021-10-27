@@ -44,6 +44,7 @@ export default function AgendaItem({
 
   async function removeAgendaItem() {
     if (isDeleting || lock.current) return;
+    lock.current = true;
     try {
       setDeleting(true);
       setLoading(true);
@@ -58,6 +59,7 @@ export default function AgendaItem({
       }
       setMeeting(newMeeting);
     } catch (err) {
+      lock.current = false;
       toast.error(extractError(err));
       setLoading(false);
     }
