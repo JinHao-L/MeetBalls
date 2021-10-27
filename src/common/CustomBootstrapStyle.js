@@ -263,8 +263,28 @@ export default function CustomBootstrapStyle() {
       color: white;
     }
 
-    .bg-landing {
-      background-color: #fffbfa!important;
+    .bg-landing1 {
+      background-color: #9CA5B7!important;
+    }
+
+    .bg-landing-content1 {
+      background-color: #e9edf2!important;
+    }
+
+    .bg-landing2 {
+      background-color: #A6B4B3!important;
+    }
+
+    .bg-landing-content2 {
+      background-color: #edf7f5!important;
+    }
+
+    .bg-landing3 {
+      background-color: #B8A4A6!important;
+    }
+
+    .bg-landing-content3 {
+      background-color: #fcf5f6!important;
     }
 
     .border-primary {
@@ -288,6 +308,7 @@ export default function CustomBootstrapStyle() {
       width: 120px;
       text-align: center;
       margin-right: 10px;
+      margin-bottom: 10px;
       padding: 5px;
     }
 
@@ -298,6 +319,7 @@ export default function CustomBootstrapStyle() {
       width: 120px;
       text-align: center;
       margin-right: 10px;
+      margin-bottom: 10px;
       padding: 5px;
     }
 
