@@ -4,7 +4,7 @@ import { Button, Collapse } from 'react-bootstrap';
 import { useState } from 'react';
 import ParticipantItem, { participantProp } from './ParticipantItem'
 
-export default function AttendanceList({ participants, date }) {
+export default function AttendanceList({ participants, name }) {
   const [showPresent, setShowPresent] = useState(true);
   const [showAbsent, setShowAbsent] = useState(true);
   const filteredParticipants = participants.filter((x) => !x.isDuplicate);
@@ -20,8 +20,7 @@ export default function AttendanceList({ participants, date }) {
     .map((person, idx) => <ParticipantItem person={person} key={idx} />);
   const numAbsent = absentees.length;
 
-  const dateStr = getFormattedDate(date);
-  const fileName = `attendance_list_${dateStr}.csv`;
+  const fileName = `attendance_list_${name}.csv`;
 
   function DownloadButton() {
     return (
