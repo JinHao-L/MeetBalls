@@ -305,22 +305,22 @@ export default function CustomBootstrapStyle() {
       background-color: #8F6B58;
       color: white;
       border-radius: 20px;
-      width: 120px;
       text-align: center;
       margin-right: 10px;
       margin-bottom: 10px;
-      padding: 5px;
+      padding-left: 20px;
+      padding-right: 20px;
     }
 
     .nav-tabs .nav-link {
       color: #8F6B58;
       border-radius: 20px;
       border-color: #8F6B58;
-      width: 120px;
       text-align: center;
       margin-right: 10px;
       margin-bottom: 10px;
-      padding: 5px;
+      padding-left: 20px;
+      padding-right: 20px;
     }
 
     .nav-tabs {
