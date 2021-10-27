@@ -12,6 +12,8 @@ export default function ImportParticipantsButton({ loading, handleFile }) {
       handleFile(file);
     } catch (error) {
       toast.error(error.message);
+    } finally {
+      event.target.value = null;
     }
   }
   

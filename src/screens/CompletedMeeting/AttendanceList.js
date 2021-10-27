@@ -1,5 +1,4 @@
 import PropTypes from 'prop-types';
-import { getFormattedDate } from '../../common/CommonFunctions';
 import { Button, Collapse } from 'react-bootstrap';
 import { useState } from 'react';
 import ParticipantItem, { participantProp } from './ParticipantItem'

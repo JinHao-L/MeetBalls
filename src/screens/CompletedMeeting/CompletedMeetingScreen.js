@@ -72,7 +72,6 @@ export default function CompletedMeetingScreen() {
         ));
       }
       default: {
-        const date = meeting.startedAt;
         return (
           <AttendanceList participants={meeting.participants} name={meeting.name} />
         );

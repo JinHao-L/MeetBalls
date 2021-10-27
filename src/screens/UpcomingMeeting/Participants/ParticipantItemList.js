@@ -8,7 +8,6 @@ import AddParticipantsModal from './AddParticipantsModal';
 const PARTICIPANTS_HEADER_ERROR = 'Invalid header row! Columns should be labeled "Name" and "Email" (case-specific)!';
 
 export default function ParticipantItemList({ meeting, setMeeting }) {
-  const handleFile = (file) => uploadParticipants(file, meeting.id, setMeeting);
   const [loading, setLoading] = useState(false);
   const [showAddModal, setShowAddModal] = useState(false);
   const [newParticipants, setNewParticipants] = useState([])
@@ -40,7 +39,7 @@ export default function ParticipantItemList({ meeting, setMeeting }) {
   
   const items = [];
   items.push(
-    <ImportParticipantButton loading={loading} key="btn" handleFile={handleFile}/>
+    <ImportParticipantButton loading={loading} key="btn" handleFile={uploadParticipants}/>
   );
   items.push(
     <AddParticipantsModal
