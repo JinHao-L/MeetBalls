@@ -1,9 +1,9 @@
 import { useState, useEffect, useContext } from 'react';
 import { Button, Row, Col, Container, Nav, Spinner } from 'react-bootstrap';
 import { getFormattedDateTime } from '../../common/CommonFunctions';
-import AgendaItemList from './AgendaItemList';
-import ParticipantItemList from './ParticipantItemList';
-import SuggestionList from './SuggestionList';
+import AgendaItemList from './Agenda/AgendaItemList';
+import ParticipantItemList from './Participants/ParticipantItemList';
+import SuggestionList from './Suggestions/SuggestionList';
 import { blankMeeting } from '../../common/ObjectTemplates';
 import EditMeetingOverlay from './EditMeetingOverlay';
 import { useHistory, Redirect, useParams } from 'react-router';

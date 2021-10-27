@@ -7,14 +7,14 @@ import {
   Tooltip,
 } from 'react-bootstrap';
 import { useEffect, useRef, useState } from 'react';
-import EditParticipantItem from './EditParticipantItem';
-import server from '../../services/server';
-import { defaultHeaders } from '../../utils/axiosConfig';
 import { toast } from 'react-toastify';
-import { SmallLoadingIndicator } from '../../components/SmallLoadingIndicator';
-import { extractError } from '../../utils/extractError';
 import { FaRegEnvelope } from 'react-icons/fa';
-import unmount from '../../utils/unmount';
+import server from '../../../services/server';
+import { defaultHeaders } from '../../../utils/axiosConfig';
+import { SmallLoadingIndicator } from '../../../components/SmallLoadingIndicator';
+import { extractError } from '../../../utils/extractError';
+import unmount from '../../../utils/unmount';
+import EditParticipantItem from './EditParticipantItem';
 
 export default function ParticipantItem({ setMeeting, meeting, position }) {
   const [removing, setRemoving] = useState(false);

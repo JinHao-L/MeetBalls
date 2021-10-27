@@ -2,11 +2,11 @@ import { useEffect, useRef, useState } from 'react';
 import { isNil } from 'lodash';
 import { Button, Row, Col, Card, Form } from 'react-bootstrap';
 import { toast } from 'react-toastify';
-import server from '../../services/server';
-import { defaultHeaders } from '../../utils/axiosConfig';
-import { extractError } from '../../utils/extractError';
-import { SmallLoadingIndicator } from '../../components/SmallLoadingIndicator';
-import unmount from '../../utils/unmount';
+import server from '../../../services/server';
+import { defaultHeaders } from '../../../utils/axiosConfig';
+import { extractError } from '../../../utils/extractError';
+import { SmallLoadingIndicator } from '../../../components/SmallLoadingIndicator';
+import unmount from '../../../utils/unmount';
 
 export default function EditParticipantItem({
   setEditing,

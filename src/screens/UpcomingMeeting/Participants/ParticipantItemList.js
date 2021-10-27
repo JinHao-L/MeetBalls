@@ -1,17 +1,17 @@
-import { toast } from 'react-toastify';
 import ParticipantItem from './ParticipantItem';
 import ImportParticipantButton from './ImportParticipantsButton'
-import parseCsvToObjects from '../../utils/parseCsvToObjects';
-import { createParticipants } from '../../services/participants'
+import parseCsvToObjects from '../../../utils/parseCsvToObjects';
 import { useEffect, useRef, useState } from 'react';
-import { extractError } from '../../utils/extractError';
-import unmount from '../../utils/unmount';
+import unmount from '../../../utils/unmount';
+import AddParticipantsModal from './AddParticipantsModal';
 
 const PARTICIPANTS_HEADER_ERROR = 'Invalid header row! Columns should be labeled "Name" and "Email" (case-specific)!';
 
 export default function ParticipantItemList({ meeting, setMeeting }) {
   const handleFile = (file) => uploadParticipants(file, meeting.id, setMeeting);
   const [loading, setLoading] = useState(false);
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [newParticipants, setNewParticipants] = useState([])
   const mounted = useRef(true);
 
   useEffect(() => {
@@ -28,28 +28,28 @@ export default function ParticipantItemList({ meeting, setMeeting }) {
       throw new Error('Invalid file type!');
     }
   
-    parseCsvToObjects(file, ['Name', 'Email'], updateDataBase, PARTICIPANTS_HEADER_ERROR);
+    parseCsvToObjects(file, ['Name', 'Email'], presentModal, PARTICIPANTS_HEADER_ERROR);
+  }
+
+  function presentModal(fileContents) {
+    const participants = convertToParticipants(meeting.id, fileContents);
+    setNewParticipants(participants);
+    setLoading(false);
+    setShowAddModal(true);
   }
   
-  async function updateDataBase(fileContents) {
-    const participants = convertToParticipants(meeting.id, fileContents);
-    try {
-      const response = await createParticipants(participants);
-      const newParticipants = response?.data;
-      const newMeeting = Object.assign({}, meeting);
-
-      newMeeting.participants.concat(newParticipants);
-      setMeeting(newMeeting);
-    } catch (e) {
-      toast.error(extractError(e));
-    } finally {
-      if (mounted.current) setLoading(false);
-    }
-  }
-
   const items = [];
   items.push(
     <ImportParticipantButton loading={loading} key="btn" handleFile={handleFile}/>
+  );
+  items.push(
+    <AddParticipantsModal
+      show={showAddModal}
+      setShow={setShowAddModal}
+      candidates={newParticipants}
+      meeting={meeting}
+      setMeeting={setMeeting}
+    />
   );
 
   for (let i = 0; i < meeting.participants.length; i++) {
