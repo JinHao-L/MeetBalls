@@ -93,7 +93,7 @@ async function addAgenda(meeting, setMeeting) {
 
 async function scrollToBottom() {
   await new Promise((resolve) => setTimeout(resolve, 200));
-  window.scrollTo(0, window.outerHeight);
+  window.scrollTo(0, document.body.scrollHeight || document.documentElement.scrollHeight);
 }
 
 const Tabs = {

@@ -18,7 +18,7 @@ function cacheMeeting(data, page, limit) {
 }
 
 export async function pullMeetings(page, limit) {
-  const validTTL = new Date(sessionStorage.getItem(TTL)) > Date.now();
+  const validTTL = sessionStorage.getItem(TTL) > Date.now();
   const meetingStr =
     validTTL && sessionStorage.getItem([MEETINGS, page, limit].join('_'));
   if (validTTL && meetingStr) {
