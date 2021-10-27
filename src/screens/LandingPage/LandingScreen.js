@@ -134,6 +134,7 @@ export default function LandingScreen() {
               }}
             >
               <iframe
+                title="MeetBalls Teaser"
                 style={{
                   width: '100%',
                   height: '100%',
@@ -186,7 +187,7 @@ export default function LandingScreen() {
                   className="Container__padding--vertical-medium"
                 >
                   <Card style={{ height: '100%' }} bg="landing-content1">
-                    <Card.Img src={ImageAddParticipant} />
+                    {withZoom(<Card.Img src={ImageAddParticipant} />)}
                     <div className="Line--horizontal" />
                     <Card.Body>
                       <Card.Title>Add participants to the meeting.</Card.Title>
@@ -224,7 +225,7 @@ export default function LandingScreen() {
                   className="Container__padding--vertical-medium"
                 >
                   <Card style={{ height: '100%' }} bg="landing-content1">
-                    <Card.Img src={ImageEmailInvite} />
+                    {withZoom(<Card.Img src={ImageEmailInvite} />)}
                     <div className="Line--horizontal" />
                     <Card.Body>
                       <Card.Title>
@@ -253,7 +254,7 @@ export default function LandingScreen() {
                   className="Container__padding--vertical-medium"
                 >
                   <Card style={{ height: '100%' }} bg="landing-content2">
-                    <Card.Img src={ImageUploadFile} />
+                    {withZoom(<Card.Img src={ImageUploadFile} />)}
                     <div className="Line--horizontal" />
                     <Card.Body>
                       <Card.Title>
@@ -274,7 +275,7 @@ export default function LandingScreen() {
                   className="Container__padding--vertical-medium"
                 >
                   <Card style={{ height: '100%' }} bg="landing-content2">
-                    <Card.Img src={ImageSuggestion} />
+                    {withZoom(<Card.Img src={ImageSuggestion} />)}
                     <div className="Line--horizontal" />
                     <Card.Body>
                       <Card.Title>
@@ -315,7 +316,7 @@ export default function LandingScreen() {
                   className="Container__padding--vertical-medium"
                 >
                   <Card style={{ height: '100%' }} bg="landing-content2">
-                    <Card.Img src={ImageEndTime} />
+                    {withZoom(<Card.Img src={ImageEndTime} />)}
                     <div className="Line--horizontal" />
                     <Card.Body>
                       <Card.Title>
@@ -344,7 +345,7 @@ export default function LandingScreen() {
                   className="Container__padding--vertical-medium"
                 >
                   <Card style={{ height: '100%' }} bg="landing-content3">
-                    <Card.Img src={ImageAttendance} />
+                    {withZoom(<Card.Img src={ImageAttendance} />)}
                     <div className="Line--horizontal" />
                     <Card.Body>
                       <Card.Title>Take attendance automatically.</Card.Title>
@@ -363,7 +364,7 @@ export default function LandingScreen() {
                   className="Container__padding--vertical-medium"
                 >
                   <Card style={{ height: '100%' }} bg="landing-content3">
-                    <Card.Img src={ImageAlarm} />
+                    {withZoom(<Card.Img src={ImageAlarm} />)}
                     <div className="Line--horizontal" />
                     <Card.Body>
                       <Card.Title>
@@ -404,7 +405,7 @@ export default function LandingScreen() {
                   className="Container__padding--vertical-medium"
                 >
                   <Card style={{ height: '100%' }} bg="landing-content3">
-                    <Card.Img src={ImageMassEmail} />
+                    {withZoom(<Card.Img src={ImageMassEmail} />)}
                     <div className="Line--horizontal" />
                     <Card.Body>
                       <Card.Title>
