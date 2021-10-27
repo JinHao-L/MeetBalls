@@ -22,8 +22,8 @@ export const useAddToCalendar = (meeting) => {
             : `https://meetballsapp.com/ongoing/${meeting.id}`,
           startsAt: new Date(meeting.startedAt).toISOString(),
           endsAt: new Date(endTimestamp).toISOString(),
-          filename: 'meetballs',
         }}
+        filename={'meeting'}
       >
         Add to Calendar
       </AddToCalendar>
