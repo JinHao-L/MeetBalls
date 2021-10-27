@@ -253,7 +253,9 @@ export default function UpcomingMeetingScreen() {
                 <Nav.Link eventKey={Tabs.AGENDA}>Agenda</Nav.Link>
               </Nav.Item>
               <Nav.Item>
-                <Nav.Link eventKey={Tabs.SUGGESTIONS}>Suggestions</Nav.Link>
+                <Nav.Link eventKey={Tabs.SUGGESTIONS}>
+                  Suggestions ({suggestions?.length})
+                </Nav.Link>
               </Nav.Item>
             </Nav>
             <div className="Buffer--20px" />

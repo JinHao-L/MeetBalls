@@ -13,7 +13,7 @@ import { defaultHeaders } from '../../utils/axiosConfig';
 import { toast } from 'react-toastify';
 import { SmallLoadingIndicator } from '../../components/SmallLoadingIndicator';
 import { extractError } from '../../utils/extractError';
-import { Envelope } from 'react-bootstrap-icons';
+import { FaRegEnvelope } from 'react-icons/fa';
 import unmount from '../../utils/unmount';
 
 export default function ParticipantItem({ setMeeting, meeting, position }) {
@@ -111,7 +111,7 @@ export default function ParticipantItem({ setMeeting, meeting, position }) {
             {participant?.role === 2 ? 'Host' : 'Participant'}
             {participant?.role !== 2 && participant.invited ? (
               <OverlayTrigger placement="top" overlay={renderTooltip}>
-                <Envelope size={20} />
+                <FaRegEnvelope size={20} />
               </OverlayTrigger>
             ) : null}
           </Card.Header>

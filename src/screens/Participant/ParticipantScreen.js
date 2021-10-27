@@ -180,10 +180,10 @@ export default function ParticipantScreen() {
                   {getFormattedDateTime(meeting?.startedAt)}.
                 </p>
                 <div className="d-grid gap-2">
-                  <AddToCalendarComponent />
                   <Button onClick={() => history.push('/ongoing/' + id)}>
                     Go to Meeting
                   </Button>
+                  <AddToCalendarComponent />
                 </div>
                 <div className="Buffer--50px" />
               </Col>

@@ -1,5 +1,5 @@
 import { Container, Image, Button, Row, Col, Card } from 'react-bootstrap';
-import { Facebook, Instagram } from 'react-bootstrap-icons';
+import { FaFacebook, FaInstagram } from 'react-icons/fa';
 import { FaTiktok } from 'react-icons/fa';
 import LandingImage from '../../assets/landing_image.png';
 import BackgroundImage from '../../assets/background_pattern.jpg';
@@ -53,7 +53,7 @@ export default function LandingScreen() {
                 </p>
                 <p>• Keep track of attendance</p>
                 <p>• Pace your meetings with intelligent agenda</p>
-                <p>• Mass email participants</p>
+                <p>• Invite participants to join</p>
                 <p>• Analyse meeting statistics</p>
                 <div className="Buffer--20px" />
                 <Button
@@ -63,7 +63,7 @@ export default function LandingScreen() {
                   target="_blank"
                   rel="noreferrer"
                 >
-                  <Facebook size={23} style={{ marginRight: 10 }} />
+                  <FaFacebook size={23} style={{ marginRight: 10 }} />
                   Find Us On Facebook
                 </Button>
                 <div className="Buffer--20px" />
@@ -74,7 +74,7 @@ export default function LandingScreen() {
                   target="_blank"
                   rel="noreferrer"
                 >
-                  <Instagram size={23} style={{ marginRight: 10 }} />
+                  <FaInstagram size={23} style={{ marginRight: 10 }} />
                   Find Us On Instagram
                 </Button>
                 <div className="Buffer--20px" />
@@ -143,8 +143,10 @@ export default function LandingScreen() {
         <Container>
           <div className="Buffer--50px" />
           <Container>
-            <Card style={{ padding: 20 }} bg="landing">
-              <p className="Text__header">Plan Meetings</p>
+            <Card style={{ padding: 20 }} bg="landing1">
+              <p className="Text__header" style={{ color: 'white' }}>
+                Plan Meetings
+              </p>
               <Row>
                 <Col
                   sm={12}
@@ -152,7 +154,7 @@ export default function LandingScreen() {
                   lg={3}
                   className="Container__padding--vertical-medium"
                 >
-                  <Card style={{ height: '100%' }}>
+                  <Card style={{ height: '100%' }} bg="landing-content1">
                     <Card.Img src={ImageAddMeeting} />
                     <div className="Line--horizontal" />
                     <Card.Body>
@@ -173,7 +175,7 @@ export default function LandingScreen() {
                   lg={3}
                   className="Container__padding--vertical-medium"
                 >
-                  <Card style={{ height: '100%' }}>
+                  <Card style={{ height: '100%' }} bg="landing-content1">
                     <Card.Img src={ImageAddParticipant} />
                     <div className="Line--horizontal" />
                     <Card.Body>
@@ -192,7 +194,7 @@ export default function LandingScreen() {
                   lg={3}
                   className="Container__padding--vertical-medium"
                 >
-                  <Card style={{ height: '100%' }}>
+                  <Card style={{ height: '100%' }} bg="landing-content1">
                     <Card.Img src={ImageAddAgenda} />
                     <div className="Line--horizontal" />
                     <Card.Body>
@@ -211,7 +213,7 @@ export default function LandingScreen() {
                   lg={3}
                   className="Container__padding--vertical-medium"
                 >
-                  <Card style={{ height: '100%' }}>
+                  <Card style={{ height: '100%' }} bg="landing-content1">
                     <Card.Img src={ImageEmailInvite} />
                     <div className="Line--horizontal" />
                     <Card.Body>
@@ -228,104 +230,19 @@ export default function LandingScreen() {
                 </Col>
               </Row>
             </Card>
-            <div className="Buffer--50px" />
-            <Card style={{ padding: 20 }} bg="landing">
+            <div className="Buffer--20px" />
+            <Card style={{ padding: 20 }} bg="landing2">
               <Row>
-                <p className="Text__header">Track Meetings</p>
+                <p className="Text__header" style={{ color: 'white' }}>
+                  Join Meetings
+                </p>
                 <Col
                   sm={12}
                   md={6}
                   lg={3}
                   className="Container__padding--vertical-medium"
                 >
-                  <Card style={{ height: '100%' }}>
-                    <Card.Img src={ImageAttendance} />
-                    <div className="Line--horizontal" />
-                    <Card.Body>
-                      <Card.Title>Take attendance automatically.</Card.Title>
-                      <Card.Text>
-                        Thanks to integration with Zoom, MeetBalls is able to
-                        automatically update the attendance list when the
-                        participant enters the Zoom meeting.
-                      </Card.Text>
-                    </Card.Body>
-                  </Card>
-                </Col>
-                <Col
-                  sm={12}
-                  md={6}
-                  lg={3}
-                  className="Container__padding--vertical-medium"
-                >
-                  <Card style={{ height: '100%' }}>
-                    <Card.Img src={ImageAlarm} />
-                    <div className="Line--horizontal" />
-                    <Card.Body>
-                      <Card.Title>
-                        Be alerted when you exceed the time limit.
-                      </Card.Title>
-                      <Card.Text>
-                        Stay on track of your schedule with MeetBalls. When time
-                        is up for an item, the bell will go off to alert you to
-                        move on to the next item.
-                      </Card.Text>
-                    </Card.Body>
-                  </Card>
-                </Col>
-                <Col
-                  sm={12}
-                  md={6}
-                  lg={3}
-                  className="Container__padding--vertical-medium"
-                >
-                  <Card style={{ height: '100%' }}>
-                    <Card.Img src={ImageStats} />
-                    <div className="Line--horizontal" />
-                    <Card.Body>
-                      <Card.Title>
-                        Analyse and learn from past meeting.
-                      </Card.Title>
-                      <Card.Text>
-                        View meeting statistics, attendance and duration of each
-                        agenda item from past meetings.
-                      </Card.Text>
-                    </Card.Body>
-                  </Card>
-                </Col>
-                <Col
-                  sm={12}
-                  md={6}
-                  lg={3}
-                  className="Container__padding--vertical-medium"
-                >
-                  <Card style={{ height: '100%' }}>
-                    <Card.Img src={ImageMassEmail} />
-                    <div className="Line--horizontal" />
-                    <Card.Body>
-                      <Card.Title>
-                        Mass email to participants after the meeting.
-                      </Card.Title>
-                      <Card.Text>
-                        Need to send out meeting minutes? Include all
-                        participants in your email with just a click of a button
-                        from any completed meeting.
-                      </Card.Text>
-                    </Card.Body>
-                  </Card>
-                </Col>
-              </Row>
-            </Card>
-            <div className="Buffer--50px" />
-            <Card style={{ padding: 20 }} bg="landing">
-              <Row>
-                <p className="Text__header">Join Meetings</p>
-                <Col
-                  sm={12}
-                  md={6}
-                  lg={3}
-                  className="Container__padding--vertical-medium"
-                >
-                  <Card style={{ height: '100%' }}>
+                  <Card style={{ height: '100%' }} bg="landing-content2">
                     <Card.Img src={ImageUploadFile} />
                     <div className="Line--horizontal" />
                     <Card.Body>
@@ -346,7 +263,7 @@ export default function LandingScreen() {
                   lg={3}
                   className="Container__padding--vertical-medium"
                 >
-                  <Card style={{ height: '100%' }}>
+                  <Card style={{ height: '100%' }} bg="landing-content2">
                     <Card.Img src={ImageSuggestion} />
                     <div className="Line--horizontal" />
                     <Card.Body>
@@ -367,7 +284,7 @@ export default function LandingScreen() {
                   lg={3}
                   className="Container__padding--vertical-medium"
                 >
-                  <Card style={{ height: '100%' }}>
+                  <Card style={{ height: '100%' }} bg="landing-content2">
                     <Card.Img src={ImageAccessFile} />
                     <div className="Line--horizontal" />
                     <Card.Body>
@@ -387,7 +304,7 @@ export default function LandingScreen() {
                   lg={3}
                   className="Container__padding--vertical-medium"
                 >
-                  <Card style={{ height: '100%' }}>
+                  <Card style={{ height: '100%' }} bg="landing-content2">
                     <Card.Img src={ImageEndTime} />
                     <div className="Line--horizontal" />
                     <Card.Body>
@@ -398,6 +315,95 @@ export default function LandingScreen() {
                         Your time is precious. MeetBalls provides an estimated
                         end time of the meeting based on the items remaining in
                         the agenda.
+                      </Card.Text>
+                    </Card.Body>
+                  </Card>
+                </Col>
+              </Row>
+            </Card>
+            <div className="Buffer--20px" />
+            <Card style={{ padding: 20 }} bg="landing3">
+              <Row>
+                <p className="Text__header" style={{ color: 'white' }}>
+                  Track Meetings
+                </p>
+                <Col
+                  sm={12}
+                  md={6}
+                  lg={3}
+                  className="Container__padding--vertical-medium"
+                >
+                  <Card style={{ height: '100%' }} bg="landing-content3">
+                    <Card.Img src={ImageAttendance} />
+                    <div className="Line--horizontal" />
+                    <Card.Body>
+                      <Card.Title>Take attendance automatically.</Card.Title>
+                      <Card.Text>
+                        Thanks to integration with Zoom, MeetBalls is able to
+                        automatically update the attendance list when the
+                        participant enters the Zoom meeting.
+                      </Card.Text>
+                    </Card.Body>
+                  </Card>
+                </Col>
+                <Col
+                  sm={12}
+                  md={6}
+                  lg={3}
+                  className="Container__padding--vertical-medium"
+                >
+                  <Card style={{ height: '100%' }} bg="landing-content3">
+                    <Card.Img src={ImageAlarm} />
+                    <div className="Line--horizontal" />
+                    <Card.Body>
+                      <Card.Title>
+                        Be alerted when you exceed the time limit.
+                      </Card.Title>
+                      <Card.Text>
+                        Stay on track of your schedule with MeetBalls. When time
+                        is up for an item, the bell will go off to alert you to
+                        move on to the next item.
+                      </Card.Text>
+                    </Card.Body>
+                  </Card>
+                </Col>
+                <Col
+                  sm={12}
+                  md={6}
+                  lg={3}
+                  className="Container__padding--vertical-medium"
+                >
+                  <Card style={{ height: '100%' }} bg="landing-content3">
+                    <Card.Img src={ImageStats} />
+                    <div className="Line--horizontal" />
+                    <Card.Body>
+                      <Card.Title>
+                        Analyse and learn from past meeting.
+                      </Card.Title>
+                      <Card.Text>
+                        View meeting statistics, attendance and duration of each
+                        agenda item from past meetings.
+                      </Card.Text>
+                    </Card.Body>
+                  </Card>
+                </Col>
+                <Col
+                  sm={12}
+                  md={6}
+                  lg={3}
+                  className="Container__padding--vertical-medium"
+                >
+                  <Card style={{ height: '100%' }} bg="landing-content3">
+                    <Card.Img src={ImageMassEmail} />
+                    <div className="Line--horizontal" />
+                    <Card.Body>
+                      <Card.Title>
+                        Mass email to participants after the meeting.
+                      </Card.Title>
+                      <Card.Text>
+                        Need to send out meeting minutes? Include all
+                        participants in your email with just a click of a button
+                        from any completed meeting.
                       </Card.Text>
                     </Card.Body>
                   </Card>

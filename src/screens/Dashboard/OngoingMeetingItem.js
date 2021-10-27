@@ -1,6 +1,6 @@
 import { Card, Col, Row } from 'react-bootstrap';
 import { useHistory } from 'react-router';
-import { Eye } from 'react-bootstrap-icons';
+import { FaEye } from 'react-icons/fa';
 
 export default function OngoingMeetingItem({ meeting }) {
   const history = useHistory();
@@ -28,7 +28,7 @@ export default function OngoingMeetingItem({ meeting }) {
           className="Toggle__card"
           onClick={() => history.push('/ongoing/' + meeting.id)}
         >
-          <Eye />
+          <FaEye />
           View
         </Col>
       </Row>

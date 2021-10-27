@@ -1,6 +1,6 @@
-import { PersonPlusFill, CalendarPlusFill } from 'react-bootstrap-icons';
 import { Card } from 'react-bootstrap';
 import { blankAgenda, blankParticipant } from '../../common/ObjectTemplates';
+import { FaUserPlus, FaRegPlusSquare } from 'react-icons/fa';
 
 export default function AddToggle({
   currentTab,
@@ -24,7 +24,7 @@ export default function AddToggle({
           style={{ borderStyle: 'dashed' }}
         >
           <div className="Buffer--20px" />
-          <PersonPlusFill size={26} color="#8F6B58" />
+          <FaUserPlus size={24} color="#8F6B58" />
           <div className="Buffer--10px" />
           <p className="Text__subsubheader" style={{ color: '#8F6B58' }}>
             Add Participant
@@ -49,7 +49,7 @@ export default function AddToggle({
           style={{ borderStyle: 'dashed' }}
         >
           <div className="Buffer--20px" />
-          <CalendarPlusFill size={22} color="#8F6B58" style={{ margin: 2 }} />
+          <FaRegPlusSquare size={24} color="#8F6B58" style={{ margin: 2 }} />
           <div className="Buffer--10px" />
           <p className="Text__subsubheader" style={{ color: '#8F6B58' }}>
             Add Agenda Item

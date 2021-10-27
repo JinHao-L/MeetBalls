@@ -1,7 +1,7 @@
 import { Card, Col, Row } from 'react-bootstrap';
 import { getDateInfo } from '../../common/CommonFunctions';
 import { useHistory } from 'react-router';
-import { Eye, Front } from 'react-bootstrap-icons';
+import { FaEye, FaClone } from 'react-icons/fa';
 
 export default function CompletedMeetingItem({
   meeting,
@@ -37,7 +37,7 @@ export default function CompletedMeetingItem({
     return (
       <Row>
         <Col onClick={viewMeeting} className="Toggle__card">
-          <Eye />
+          <FaEye />
           View
         </Col>
         <Col
@@ -47,7 +47,7 @@ export default function CompletedMeetingItem({
           }}
           className="Toggle__card"
         >
-          <Front />
+          <FaClone />
           Clone
         </Col>
       </Row>
