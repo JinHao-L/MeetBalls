@@ -30,6 +30,7 @@ import { logEvent } from '@firebase/analytics';
 import { googleAnalytics } from '../../services/firebase';
 import { clearMeetingsCache } from '../../utils/dashboardCache';
 import { FullLoadingIndicator } from '../../components/FullLoadingIndicator';
+import { useAddToCalendar } from '../../hooks/useAddToCalendar';
 
 export default function OngoingMeetingAdminScreen() {
   const [position, setPosition] = useState(-1);
@@ -44,6 +45,7 @@ export default function OngoingMeetingAdminScreen() {
   const [loading, setLoading] = useState(true);
   const [validId, setIsValidId] = useState(false);
   const [once, setOnce] = useState(false);
+  const AddToCalendarComponent = useAddToCalendar(meeting);
 
   const { id } = useParams();
   const { socket } = useSocket(id);
@@ -66,7 +68,7 @@ export default function OngoingMeetingAdminScreen() {
       syncMeetingWithZoom(meeting)
         .then((newZoomUuid) => {
           if (newZoomUuid) {
-            clearMeetingsCache()
+            clearMeetingsCache();
             setMeeting((meeting) => ({ ...meeting, zoomUuid: newZoomUuid }));
           }
         })
@@ -83,6 +85,7 @@ export default function OngoingMeetingAdminScreen() {
     socket.on('meetingUpdated', function (data) {
       const newMeeting = JSON.parse(data, agendaReviver);
       setMeeting((meeting) => updateMeeting({ ...meeting, ...newMeeting }));
+      setMeetingStatus(newMeeting.type);
     });
     if (isHost) {
       socket.on('host_participantUpdated', function (data) {
@@ -249,7 +252,12 @@ export default function OngoingMeetingAdminScreen() {
             </p>
             <div className="d-grid gap-2">
               <LaunchZoomButton />
-              {meetingStatus === 1 ? <ReturnToEditPageButton /> : null}
+              {meetingStatus === 1 ? (
+                <>
+                  <AddToCalendarComponent />
+                  <ReturnToEditPageButton />
+                </>
+              ) : null}
             </div>
             <div className="Buffer--20px" />
             <div className="Line--horizontal" />

@@ -1,5 +1,8 @@
 import { useState, useEffect } from 'react';
-import { agendaReviver, getFormattedDateTime } from '../../common/CommonFunctions';
+import {
+  agendaReviver,
+  getFormattedDateTime,
+} from '../../common/CommonFunctions';
 import { blankMeeting, blankSuggestion } from '../../common/ObjectTemplates';
 import { Container, Row, Col, Button } from 'react-bootstrap';
 import { Redirect, useLocation, useParams, useHistory } from 'react-router';
@@ -15,6 +18,7 @@ import { logEvent } from '@firebase/analytics';
 import { googleAnalytics } from '../../services/firebase';
 import SuggestionItem from './SuggestionItem';
 import { FullLoadingIndicator } from '../../components/FullLoadingIndicator';
+import { useAddToCalendar } from '../../hooks/useAddToCalendar';
 
 const JOINER_KEY = 'joiner';
 const NAME_KEY = 'name';
@@ -34,6 +38,7 @@ export default function ParticipantScreen() {
   const joinerId = params.get(JOINER_KEY);
   const name = params.get(NAME_KEY);
   const history = useHistory();
+  const AddToCalendarComponent = useAddToCalendar(meeting);
 
   useEffect(() => {
     if (!joinerId) {
@@ -174,9 +179,12 @@ export default function ParticipantScreen() {
                   You have a meeting <b>{meeting?.name}</b> scheduled on{' '}
                   {getFormattedDateTime(meeting?.startedAt)}.
                 </p>
-                <Button onClick={() => history.push('/ongoing/' + id)}>
-                  Go to Meeting
-                </Button>
+                <div className="d-grid gap-2">
+                  <AddToCalendarComponent />
+                  <Button onClick={() => history.push('/ongoing/' + id)}>
+                    Go to Meeting
+                  </Button>
+                </div>
                 <div className="Buffer--50px" />
               </Col>
               <Col lg={1} md={12} sm={12} />
