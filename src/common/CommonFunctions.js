@@ -65,8 +65,8 @@ export function getDateInfo(isoDate, durationInMilli) {
     minute: 'numeric',
   };
   const startTime = date.toLocaleString('en-US', options);
-  date.setMilliseconds(date.getMilliseconds() + durationInMilli);
-  const endTime = date.toLocaleString('en-US', options);
+  const endDate = new Date(date.getTime() + durationInMilli);
+  const endTime = endDate.toLocaleString('en-US', options);
 
   const durationStr = getFormattedDuration(durationInMilli);
 

@@ -3,6 +3,7 @@ import './css/Images.css';
 import './css/Toggles.css';
 import './css/Text.css';
 import './css/Others.css';
+import './css/AddToCalendar.css';
 import 'react-toastify/dist/ReactToastify.css';
 
 import React, { useEffect, useContext } from 'react';
