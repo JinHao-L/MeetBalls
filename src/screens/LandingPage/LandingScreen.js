@@ -8,6 +8,7 @@ import { Redirect } from 'react-router';
 import AppFooter from '../../components/AppFooter';
 import { useContext, useEffect } from 'react';
 import { logEvent } from '@firebase/analytics';
+import Zoom from 'react-medium-image-zoom';
 import { googleAnalytics } from '../../services/firebase';
 import { UserContext } from '../../context/UserContext';
 
@@ -23,6 +24,7 @@ import ImageUploadFile from '../../assets/Landing/upload_file.png';
 import ImageSuggestion from '../../assets/Landing/suggestion.png';
 import ImageAccessFile from '../../assets/Landing/view_materials.png';
 import ImageEndTime from '../../assets/Landing/end_time.png';
+import 'react-medium-image-zoom/dist/styles.css';
 
 export default function LandingScreen() {
   const user = useContext(UserContext);
@@ -30,6 +32,14 @@ export default function LandingScreen() {
   useEffect(() => {
     logEvent(googleAnalytics, 'visit_landing_page');
   }, []);
+
+  const withZoom = (component) => {
+    return (
+      <Zoom zoomMargin={40} overlayBgColorEnd={'rgba(255, 255, 255, 0.6)'}>
+        {component}
+      </Zoom>
+    );
+  };
 
   if (user) return <Redirect to="/home" />;
 
@@ -155,7 +165,7 @@ export default function LandingScreen() {
                   className="Container__padding--vertical-medium"
                 >
                   <Card style={{ height: '100%' }} bg="landing-content1">
-                    <Card.Img src={ImageAddMeeting} />
+                    {withZoom(<Card.Img src={ImageAddMeeting} />)}
                     <div className="Line--horizontal" />
                     <Card.Body>
                       <Card.Title>
@@ -195,7 +205,7 @@ export default function LandingScreen() {
                   className="Container__padding--vertical-medium"
                 >
                   <Card style={{ height: '100%' }} bg="landing-content1">
-                    <Card.Img src={ImageAddAgenda} />
+                    {withZoom(<Card.Img src={ImageAddAgenda} />)}
                     <div className="Line--horizontal" />
                     <Card.Body>
                       <Card.Title>Plan the agenda for the meeting.</Card.Title>
@@ -285,7 +295,7 @@ export default function LandingScreen() {
                   className="Container__padding--vertical-medium"
                 >
                   <Card style={{ height: '100%' }} bg="landing-content2">
-                    <Card.Img src={ImageAccessFile} />
+                    {withZoom(<Card.Img src={ImageAccessFile} />)}
                     <div className="Line--horizontal" />
                     <Card.Body>
                       <Card.Title>
@@ -374,7 +384,7 @@ export default function LandingScreen() {
                   className="Container__padding--vertical-medium"
                 >
                   <Card style={{ height: '100%' }} bg="landing-content3">
-                    <Card.Img src={ImageStats} />
+                    {withZoom(<Card.Img src={ImageStats} />)}
                     <div className="Line--horizontal" />
                     <Card.Body>
                       <Card.Title>
