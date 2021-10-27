@@ -63,6 +63,7 @@ export default function AgendaItemList({
         {isReordering ? (
           <Button
             onClick={() => {
+              if (lock.current) return;
               setReordering(false);
               updateDatabase(meeting.id, meeting.agendaItems);
             }}
@@ -72,6 +73,7 @@ export default function AgendaItemList({
         ) : (
           <Button
             onClick={() => {
+              if (lock.current) return;
               removeEmpty(meeting, setMeeting);
               setReordering(true);
             }}
@@ -110,10 +112,10 @@ function onDragEnd(result, meeting, setMeeting) {
   const item = newAgenda.splice(source.index, 1);
   newAgenda.splice(destination.index, 0, item[0]);
   newMeeting.agendaItems = newAgenda;
-  setMeeting(newMeeting);
   for (let i = 0; i < newAgenda.length; i++) {
     newAgenda[i].position = i;
   }
+  setMeeting(newMeeting);
 }
 
 function removeEmpty(meeting, setMeeting) {
