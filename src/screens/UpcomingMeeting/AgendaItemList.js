@@ -12,6 +12,7 @@ export default function AgendaItemList({
   isReordering,
   setReordering,
 }) {
+  const lock = useRef(false);
   const [isDeleting, setDeleting] = useState(false);
   const items = [];
   const mounted = useRef(true);
@@ -20,6 +21,12 @@ export default function AgendaItemList({
     mounted.current = true;
     return unmount(mounted, 'AgendaItemList');
   }, []);
+
+  // lock the 
+  useEffect(() => {
+    lock.current = false;
+    return () => lock.current = true;
+  }, [meeting]);
 
   if (isReordering) {
     items.push(
@@ -46,6 +53,7 @@ export default function AgendaItemList({
         isReordering={isReordering}
         isDeleting={isDeleting}
         setDeleting={setDeleteCleanUp}
+        lock={lock}
       />,
     );
   }
