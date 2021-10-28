@@ -52,7 +52,7 @@ export default function DashboardScreen() {
       setShowOverlay(true);
       history.replace('/home');
     }
-    
+
     function onInvalidCloneId() {
       toast.error(INVALID_CLONE_ID_ERR);
       history.replace('/home');
