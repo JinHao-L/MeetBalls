@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react';
 import { Card, Button, Modal, ListGroup } from 'react-bootstrap';
 import { toast } from 'react-toastify';
 import { createParticipants } from '../../../services/participants';
-import { SmallLoadingIndicator } from '../../../components/SmallLoadingIndicator';
 
 export default function AddParticipantsModal({
   show,
@@ -14,7 +13,6 @@ export default function AddParticipantsModal({
   const [emailSet, setEmailSet] = useState(new Set());
   const [newCandidates, setNewCandidates] = useState([]);
   const [dupeCandidates, setDupeCandidates] = useState([]);
-  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const existingEmails = meeting.participants.map((p) => p.userEmail);
@@ -47,7 +45,7 @@ export default function AddParticipantsModal({
   });
 
   async function addParticipants(participants) {
-    setLoading(true);
+    setShow(false);
     try {
       const response = await createParticipants(participants);
       const newParticipants = response?.data;
@@ -61,10 +59,8 @@ export default function AddParticipantsModal({
       } else {
         toast.warning('Some participants could not be added.');
       }
-      setShow(false);
     } catch (e) {
       toast.error('Error in data. Please check that all emails are valid.');
-      setLoading(false);
     }
   }
 
@@ -101,9 +97,9 @@ export default function AddParticipantsModal({
           onClick={() => {
             addParticipants(newCandidates);
           }}
-          disabled={newCandidates.length === 0 || loading}
+          disabled={newCandidates.length === 0}
         >
-          {loading ? <SmallLoadingIndicator /> : 'Confirm'}
+          Confirm
         </Button>
       </Modal.Footer>
     </Modal>
