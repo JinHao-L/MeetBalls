@@ -65,7 +65,7 @@ const PARTICIPANTS_HEADER_ERROR =
   }
   return (
     <>
-      <div className="d-grid gap-2" key="btn">
+      <div className="d-grid gap-2">
         <Button onClick={() => setShowImportModal(true)}>
           Import From CSV
         </Button>
@@ -75,7 +75,6 @@ const PARTICIPANTS_HEADER_ERROR =
         show={showImportModal}
         setShow={setShowImportModal}
         parseFile={uploadParticipants}
-        loading={loading}
       />
       <AddParticipantsModal
         key={'add_participant_modal'}
