@@ -96,3 +96,12 @@ export function isValidUrl(url) {
     return false;
   }
 }
+
+export function isValidEmail(email) {
+  let validator = document.createElement('input');
+  validator.type = 'email';
+  validator.value = email;
+  const success = validator.checkValidity();
+  validator.remove();
+  return success;
+}

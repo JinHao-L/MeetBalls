@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Card, Button, Modal, ListGroup } from 'react-bootstrap';
 import { toast } from 'react-toastify';
 import { createParticipants } from '../../../services/participants';
+import { extractError } from '../../../utils/extractError';
 
 export default function AddParticipantsModal({
   show,
@@ -60,7 +61,7 @@ export default function AddParticipantsModal({
         toast.warning('Some participants could not be added.');
       }
     } catch (e) {
-      toast.error('Error in data. Please check that all emails are valid.');
+      toast.error(extractError(e));
     }
   }
 
