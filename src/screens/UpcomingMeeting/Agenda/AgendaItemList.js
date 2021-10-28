@@ -56,6 +56,7 @@ export default function AgendaItemList({
       <div className="d-grid gap-2">
         {isReordering ? (
           <Button
+            variant="outline-primary"
             onClick={() => {
               if (lock.current) {
                 return;

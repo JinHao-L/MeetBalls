@@ -3,6 +3,11 @@ import { Card, Button, Modal, ListGroup } from 'react-bootstrap';
 import { toast } from 'react-toastify';
 import { createParticipants } from '../../../services/participants';
 import { extractError } from '../../../utils/extractError';
+import { isValidEmail } from '../../../common/CommonFunctions';
+
+const INVALID_EMAIL_WARNING = 'Found entries with invalid emails.';
+const DUPLICATE_ENTRY_WARNING =
+  'Found duplicate emails in the CSV. Only the first instance will be added.';
 
 export default function AddParticipantsModal({
   show,
@@ -22,9 +27,48 @@ export default function AddParticipantsModal({
 
     const eligibleUsers = candidates.filter((p) => !emailSet.has(p.userEmail));
     const ineligibleUsers = candidates.filter((p) => emailSet.has(p.userEmail));
-    setNewCandidates(eligibleUsers);
     setDupeCandidates(ineligibleUsers);
+    filterInvalidEntries(eligibleUsers);
+
   }, [candidates]);
+
+  function filterInvalidEntries(eligibleUsers) {
+    let invalidEmailFound = false;
+    let duplicateEmailFound = false;
+
+    const finalList = [];
+    const dupeList = [];
+    const invalidList = [];
+    const emailSet = new Set();
+    console.log(eligibleUsers);
+
+    for (const person of eligibleUsers) {
+      console.log(person);
+      const email = person.userEmail;
+      const alreadyExists = emailSet.has(email);
+      const invalid = !isValidEmail(email);
+
+      if (alreadyExists) {
+        duplicateEmailFound = true;
+        dupeList.push(person);
+      }
+      if (invalid) {
+        invalidEmailFound = true;
+        invalidList.push(person);
+      }
+      if (alreadyExists || invalid) continue;
+
+      emailSet.add(email);
+      person.userEmail = email.toLocaleLowerCase();
+      finalList.push(person);
+    }
+
+    if (invalidEmailFound) toast.warning(INVALID_EMAIL_WARNING);
+    if (duplicateEmailFound) toast.warning(DUPLICATE_ENTRY_WARNING);
+
+    setDupeCandidates((prev) => [...prev, ...dupeList, ...invalidList]);
+    setNewCandidates(finalList);
+  }
 
   function CandidateItem({ candidate }) {
     return (
@@ -55,11 +99,7 @@ export default function AddParticipantsModal({
         .sort((p1, p2) => p1.userName.localeCompare(p2.userName));
       setMeeting((prev) => ({ ...prev, participants: newList }));
 
-      if (newParticipants.length === participants.length) {
-        toast.success('All new participants have been added!');
-      } else {
-        toast.warning('Some participants could not be added.');
-      }
+      toast.success('All new participants have been added!');
     } catch (e) {
       toast.error(extractError(e));
     }
@@ -80,7 +120,7 @@ export default function AddParticipantsModal({
           </Card>
           <div className="Buffer--10px" />
           <p className="Text__paragraph">
-            The following participants has been identified as duplicates.
+            The following participants either have duplicate or invalid emails.
           </p>
           <Card className="Card__invite">
             <ListGroup variant="flush">{existingCandidates}</ListGroup>
