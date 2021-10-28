@@ -8,16 +8,16 @@ import {
 } from 'react-bootstrap';
 import { Draggable } from 'react-beautiful-dnd';
 import { useEffect, useRef, useState } from 'react';
-import { getFormattedDuration } from '../../common/CommonFunctions';
-import EditAgendaItem from './EditAgendaItem';
-import server from '../../services/server';
-import { defaultHeaders } from '../../utils/axiosConfig';
-import { SmallLoadingIndicator } from '../../components/SmallLoadingIndicator';
 import { toast } from 'react-toastify';
 import { FaLink } from 'react-icons/fa';
-import { extractError } from '../../utils/extractError';
-import { openFile } from '../../services/files';
-import unmount from '../../utils/unmount';
+import { getFormattedDuration } from '../../../common/CommonFunctions';
+import server from '../../../services/server';
+import { defaultHeaders } from '../../../utils/axiosConfig';
+import { SmallLoadingIndicator } from '../../../components/SmallLoadingIndicator';
+import { extractError } from '../../../utils/extractError';
+import { openFile } from '../../../services/files';
+import unmount from '../../../utils/unmount';
+import EditAgendaItem from './EditAgendaItem';
 
 export default function AgendaItem({
   meeting,
@@ -44,20 +44,23 @@ export default function AgendaItem({
 
   async function removeAgendaItem() {
     if (isDeleting || lock.current) return;
+    lock.current = true;
     try {
       setDeleting(true);
       setLoading(true);
       const newMeeting = Object.assign({}, meeting);
       const newAgenda = Object.assign([], newMeeting.agendaItems);
       const actualPosition = newAgenda[position].position;
+      await removeFromDatabase(meeting.id, actualPosition);
       newAgenda.splice(position, 1);
       newMeeting.agendaItems = newAgenda;
-      await removeFromDatabase(meeting.id, actualPosition);
-      setMeeting(newMeeting);
       for (let i = 0; i < newAgenda.length; i++) {
         newAgenda[i].position = i;
+        newAgenda[i].prevPosition = i;
       }
+      setMeeting(newMeeting);
     } catch (err) {
+      lock.current = false;
       toast.error(extractError(err));
       setLoading(false);
     }
@@ -137,19 +140,21 @@ export default function AgendaItem({
                     {getFormattedDuration(item.expectedDuration)}
                     {item.speakerMaterials && item.speaker ? (
                       <OverlayTrigger placement="top" overlay={renderTooltip}>
-                        <FaLink
-                          size={20}
-                          className="Clickable"
-                          onClick={() =>
-                            openFile(
-                              item.speakerMaterials,
-                              meeting.id,
-                              item.speaker.id,
-                            ).catch((err) => {
-                              toast.error('File not found');
-                            })
-                          }
-                        />
+                        <div>
+                          <FaLink
+                            size={20}
+                            className="Clickable"
+                            onClick={() =>
+                              openFile(
+                                item.speakerMaterials,
+                                meeting.id,
+                                item.speaker.id,
+                              ).catch((_) => {
+                                toast.error('File not found');
+                              })
+                            }
+                          />
+                        </div>
                       </OverlayTrigger>
                     ) : null}
                   </Card.Header>

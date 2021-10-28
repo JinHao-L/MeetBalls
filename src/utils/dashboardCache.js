@@ -18,7 +18,7 @@ function cacheMeeting(data, page, limit) {
 }
 
 export async function pullMeetings(page, limit) {
-  const validTTL = new Date(sessionStorage.getItem(TTL)) > Date.now();
+  const validTTL = sessionStorage.getItem(TTL) > Date.now();
   const meetingStr =
     validTTL && sessionStorage.getItem([MEETINGS, page, limit].join('_'));
   if (validTTL && meetingStr) {
@@ -34,7 +34,11 @@ export async function pullMeetings(page, limit) {
       : 0;
   const completedPage = Math.max(page - upcoming.meta.totalPages, 1);
 
-  const completed = await pullPastMeetings(completedPage, completedLimit, skipAmount);
+  const completed = await pullPastMeetings(
+    completedPage,
+    completedLimit,
+    skipAmount,
+  );
 
   const totalUpcomingCount = upcoming.meta.totalItems;
   const totalCompletedCount = completed.meta.totalItems;

@@ -1,5 +1,5 @@
-import { Card, Col } from 'react-bootstrap'
-import PropTypes from 'prop-types'
+import { Card, Col } from 'react-bootstrap';
+import PropTypes from 'prop-types';
 import { getFormattedDateTime } from '../../common/CommonFunctions';
 
 export const participantProp = PropTypes.shape({

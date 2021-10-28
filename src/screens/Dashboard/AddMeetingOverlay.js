@@ -292,6 +292,13 @@ export default function AddMeetingOverlay({
             </Offcanvas.Title>
           </Offcanvas.Header>
           <Offcanvas.Body>
+            {cloneMeeting === null ? null : (
+              <p>
+                Participants and agenda items will be copied over from{' '}
+                <b>{cloneMeeting.name}</b> to the new meeting. Note that speaker
+                and speaker materials will be removed from each agenda item.
+              </p>
+            )}
             <div className="d-grid gap-2">
               <Button
                 variant="primary"
@@ -394,6 +401,8 @@ async function fillItems(newMeeting, cloneMeeting) {
     newMeeting.agendaItems = result.agendaItems;
   }
   if (result.participants.length > 0) {
-    newMeeting.participants = result.participants.filter((x) => !x.isDuplicate);
+    newMeeting.participants = result.participants.filter(
+      (x) => !x.isDuplicate && x.userEmail,
+    );
   }
 }

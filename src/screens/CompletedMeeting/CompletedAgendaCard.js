@@ -27,7 +27,7 @@ export default function CompletedAgendaCard({ agendaItem }) {
           <Card.Title>{agendaItem.name}</Card.Title>
           <SpeakerSection item={agendaItem} />
           <Card.Text>{agendaItem.description}</Card.Text>
-          <div class="Buffer--20px"/>
+          <div class="Buffer--20px" />
           <Card.Text>
             Assigned duration:{' '}
             <b>{getFormattedDuration(agendaItem.expectedDuration)}</b>

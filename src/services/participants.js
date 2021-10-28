@@ -25,6 +25,14 @@ export const createParticipant = (meetingId, userEmail, userName) => {
   return server.post(`participant`, body, defaultHeaders);
 };
 
+export const createParticipants = (participants) => {
+  return server.post(
+    '/participant/create-many',
+    { participants },
+    defaultHeaders,
+  );
+};
+
 export const markParticipantPresent = (meetingId, userEmail) => {
   const body = {
     email: userEmail,

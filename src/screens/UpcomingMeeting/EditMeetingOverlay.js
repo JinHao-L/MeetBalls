@@ -41,9 +41,14 @@ export default function EditMeetingOverlay({
       newMeeting.name = nameRef.current.value;
       newMeeting.description = descriptionRef.current.value;
       newMeeting.startedAt = date.toISOString();
-      setMeeting(newMeeting);
-      setShow(false);
       updateDatabase(newMeeting);
+      setMeeting((meeting) => ({
+        ...meeting,
+        name: newMeeting.name,
+        description: newMeeting.description,
+        startedAt: newMeeting.startedAt,
+      }));
+      setShow(false);
     } catch (err) {
       toast.error(extractError(err));
     } finally {

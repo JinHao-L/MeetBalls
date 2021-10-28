@@ -1,11 +1,11 @@
 import { Card, Row, Col, Button } from 'react-bootstrap';
-import { getFormattedDuration } from '../../common/CommonFunctions';
-import server from '../../services/server';
-import { extractError } from '../../utils/extractError';
-import { defaultHeaders } from '../../utils/axiosConfig';
+import { getFormattedDuration } from '../../../common/CommonFunctions';
+import server from '../../../services/server';
+import { extractError } from '../../../utils/extractError';
+import { defaultHeaders } from '../../../utils/axiosConfig';
 import { toast } from 'react-toastify';
 import { useState } from 'react';
-import { SmallLoadingIndicator } from '../../components/SmallLoadingIndicator';
+import { SmallLoadingIndicator } from '../../../components/SmallLoadingIndicator';
 
 export default function SuggestionItem({
   item,
