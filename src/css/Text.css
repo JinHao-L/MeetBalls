@@ -47,16 +47,9 @@
 }
 
 .Text__elipsized--1-line {
-  display: inline-block;
-  word-break: break-word;
+  white-space: nowrap;
   overflow: hidden;
-  white-space: pre-line;
-  margin-left: 0px;
-  margin-right: 0px;
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
   text-overflow: ellipsis;
-  -webkit-line-clamp: 1;
 }
 
 .Text__elipsized--2-lines {

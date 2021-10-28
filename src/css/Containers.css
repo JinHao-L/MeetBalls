@@ -39,6 +39,11 @@
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
 }
 
+.Container__row {
+  display: flex;
+  flex-direction: row;
+}
+
 .Container__row--space-between {
   display: flex;
   justify-content: space-between;

@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { Card, Col, Row } from 'react-bootstrap';
+import { Badge, Card, Col, Row } from 'react-bootstrap';
 import { getDateInfo } from '../../common/CommonFunctions';
 import { useHistory } from 'react-router';
 import ConfirmDeleteModal from './ConfirmDeleteModal';
@@ -52,11 +52,23 @@ export default function UpcomingMeetingItem({
   }
 
   function Details() {
+    const date = new Date(meeting?.startedAt);
+    const isOverdue = date < new Date();
+
     return (
       <div className="Card__dashboard-content">
-        <Card.Title className="Text__elipsized--1-line">
-          {meeting.name}
-        </Card.Title>
+        {isOverdue ? (
+          <Card.Title className="Text__elipsized--1-line">
+            <Badge bg="danger" style={{ marginRight: 5 }}>
+              Overdue
+            </Badge>
+            {meeting.name}
+          </Card.Title>
+        ) : (
+          <Card.Title className="Text__elipsized--1-line">
+            {meeting.name}
+          </Card.Title>
+        )}
         <div className="Buffer--10px" />
         <Card.Subtitle className="Text__elipsized--1-line">
           {dateInfo.date} {dateInfo.startTime}
@@ -101,9 +113,6 @@ export default function UpcomingMeetingItem({
     );
   }
 
-  const date = new Date(meeting?.startedAt);
-  const isOverdue = date < new Date();
-
   return (
     <Col
       xl={4}
@@ -112,7 +121,7 @@ export default function UpcomingMeetingItem({
       sm={12}
       className="Container__padding--vertical-medium"
     >
-      <Card className="Card__dashboard" bg={isOverdue ? 'danger' : ''}>
+      <Card className="Card__dashboard">
         {deleting ? (
           <div
             style={{ height: '100%', width: '100%' }}
