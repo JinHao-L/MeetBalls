@@ -2,6 +2,7 @@ import PropTypes from 'prop-types';
 import { Button, Collapse } from 'react-bootstrap';
 import { useState } from 'react';
 import ParticipantItem, { participantProp } from './ParticipantItem'
+import downloadFile from '../../utils/downloadFile';
 
 export default function AttendanceList({ participants, name }) {
   const [showPresent, setShowPresent] = useState(true);
@@ -19,7 +20,7 @@ export default function AttendanceList({ participants, name }) {
     .map((person, idx) => <ParticipantItem person={person} key={idx} />);
   const numAbsent = absentees.length;
 
-  const fileName = `attendance_list_${name}.csv`;
+  const fileName = `${name} Attendance.csv`;
 
   function DownloadButton() {
     return (
@@ -95,14 +96,7 @@ function exportToCsv(participants) {
 
 function downloadAsCsv(participants, fileName) {
   const csvString = exportToCsv(participants);
-  const link = document.createElement('a');
-  link.style.display = 'none';
-  link.setAttribute('target', '_blank');
-  link.setAttribute('href', csvString);
-  link.setAttribute('download', fileName);
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
+  downloadFile(csvString, fileName);
 }
 
 function CollapseToggle({ show, setShow }) {

@@ -1,6 +1,7 @@
 import { Modal, Button, Form } from 'react-bootstrap';
 import { useRef } from 'react';
 import { toast } from 'react-toastify';
+import downloadFile from '../../../utils/downloadFile';
 
 export default function ImportModal({ show, setShow, parseFile, loading }) {
   const fileRef = useRef(null);
@@ -45,12 +46,6 @@ export default function ImportModal({ show, setShow, parseFile, loading }) {
 
 function downloadTemplateCSV() {
   const csvString = encodeURI('data:text/csv;charset=utf-8,Name,Email\n');
-  const link = document.createElement('a');
-  link.style.display = 'none';
-  link.setAttribute('target', '_blank');
-  link.setAttribute('href', csvString);
-  link.setAttribute('download', 'MeetBallsParticipantTemplate');
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
+  const fileName = 'MeetBallsParticipantTemplate.csv';
+  downloadFile(csvString, fileName);
 }
