@@ -68,6 +68,7 @@ export default function AgendaItemList({
           </Button>
         ) : (
           <Button
+            variant="secondary"
             onClick={() => {
               if (lock.current) {
                 return;

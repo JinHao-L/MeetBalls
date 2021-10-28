@@ -43,13 +43,10 @@ export default function OngoingMeetingItem({ meeting }) {
       sm={12}
       className="Container__padding--vertical-medium"
     >
-      <Card className="Card__dashboard" bg="primary" text="white">
+      <Card className="Card__dashboard" bg="primary">
         <Card.Body>
           <Details />
-          <div
-            className="Line--horizontal"
-            style={{ backgroundColor: '#c5c5c5' }}
-          />
+          <div className="Line--horizontal" />
           <div className="Buffer--5px" />
           <Toggles />
         </Card.Body>

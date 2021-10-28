@@ -1,7 +1,7 @@
 import { Card, Col, Row } from 'react-bootstrap';
 import { getDateInfo } from '../../common/CommonFunctions';
 import { useHistory } from 'react-router';
-import { FaEye, FaClone } from 'react-icons/fa';
+import { FaEye, FaRegClone } from 'react-icons/fa';
 
 export default function CompletedMeetingItem({
   meeting,
@@ -47,7 +47,7 @@ export default function CompletedMeetingItem({
           }}
           className="Toggle__card"
         >
-          <FaClone />
+          <FaRegClone />
           Clone
         </Col>
       </Row>

@@ -8,7 +8,7 @@ import PropTypes from 'prop-types';
 import { toast } from 'react-toastify';
 import { SmallLoadingIndicator } from '../../components/SmallLoadingIndicator';
 import unmount from '../../utils/unmount';
-import { FaTrash, FaClone, FaEdit, FaVideo } from 'react-icons/fa';
+import { FaTrash, FaRegClone, FaEdit, FaVideo } from 'react-icons/fa';
 
 export default function UpcomingMeetingItem({
   meeting,
@@ -87,7 +87,7 @@ export default function UpcomingMeetingItem({
           }}
           className="Toggle__card"
         >
-          <FaClone />
+          <FaRegClone />
           Clone
         </Col>
         <Col
@@ -101,6 +101,9 @@ export default function UpcomingMeetingItem({
     );
   }
 
+  const date = new Date(meeting?.startedAt);
+  const isOverdue = date < new Date();
+
   return (
     <Col
       xl={4}
@@ -109,7 +112,7 @@ export default function UpcomingMeetingItem({
       sm={12}
       className="Container__padding--vertical-medium"
     >
-      <Card className="Card__dashboard">
+      <Card className="Card__dashboard" bg={isOverdue ? 'danger' : ''}>
         {deleting ? (
           <div
             style={{ height: '100%', width: '100%' }}
