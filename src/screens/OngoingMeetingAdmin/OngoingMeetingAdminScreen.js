@@ -64,6 +64,13 @@ export default function OngoingMeetingAdminScreen() {
   }, []);
 
   useEffect(() => {
+    if (isHost && meeting?.id) {
+      // remove participant credentials
+      sessionStorage.removeItem(meeting.id)
+    }
+  }, [isHost])
+
+  useEffect(() => {
     if (validId && isHost && !once) {
       syncMeetingWithZoom(meeting)
         .then((newZoomUuid) => {
@@ -87,28 +94,36 @@ export default function OngoingMeetingAdminScreen() {
       setMeeting((meeting) => updateMeeting({ ...meeting, ...newMeeting }));
       setMeetingStatus(newMeeting.type);
     });
-    if (isHost) {
-      socket.on('host_participantUpdated', function (data) {
-        const update = JSON.parse(data);
-        setMeeting((meeting) => ({
-          ...meeting,
-          participants: updateParticipants(meeting.participants, update),
-        }));
-      });
-    } else {
-      socket.on('participantUpdated', function (data) {
-        const update = JSON.parse(data);
-        setMeeting((meeting) => ({
-          ...meeting,
-          participants: updateParticipants(meeting.participants, update),
-        }));
-      });
-    }
     socket.on('agendaUpdated', function (_) {
       pullMeeting();
     });
-    socket.on('userConnected', function (_) {});
   }, [socket]);
+
+  useEffect(() => {
+    if (socket) {
+      if (isHost) {
+        socket.on('host_participantUpdated', (data) => {
+          const update = JSON.parse(data);
+          setMeeting((meeting) => ({
+            ...meeting,
+            participants: updateParticipants(meeting.participants, update),
+          }));
+        });
+        console.log('host')
+        return () => socket?.off('host_participantUpdated');
+      } else {
+        socket.on('participantUpdated', function (data) {
+          const update = JSON.parse(data);
+          setMeeting((meeting) => ({
+            ...meeting,
+            participants: updateParticipants(meeting.participants, update),
+          }));
+        });
+        console.log('participant')
+        return () => socket?.off('participantUpdated');
+      }
+    }
+  }, [socket, isHost]);
 
   function startZoom() {
     if (!hasLaunched) setHasLaunched(true);
