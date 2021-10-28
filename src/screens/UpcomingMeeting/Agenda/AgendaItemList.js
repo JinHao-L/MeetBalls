@@ -112,7 +112,6 @@ function onDragEnd(result, meeting, setMeeting) {
   newMeeting.agendaItems = newAgenda;
   for (let i = 0; i < newAgenda.length; i++) {
     newAgenda[i].position = i;
-    newAgenda[i].prevPosition = i;
   }
   setMeeting(newMeeting);
 }
