@@ -20,7 +20,6 @@ export default function CompletedMeetingScreen() {
   const [loading, setLoading] = useState(true);
   const [restrictDescription, setRestrictDescription] = useState(false);
   const [currentTab, setCurrentTab] = useState('statistics');
-
   const [validId, setValidId] = useState(false);
 
   const { id } = useParams();
@@ -83,11 +82,7 @@ export default function CompletedMeetingScreen() {
   }
 
   function emailParticipants() {
-    const hosts = meeting.participants
-      .filter((p) => p.role === 2)
-      .map((p) => p.userEmail)
-      .join(',');
-    const bcc = meeting.participants
+    const participants = meeting.participants
       .filter((p) => p.role !== 2)
       .map((p) => p.userEmail)
       .join(',');
@@ -98,7 +93,7 @@ export default function CompletedMeetingScreen() {
       `to our meeting on ${getFormattedDate(meeting.startedAt)}.\n\n` +
       'Thank you.';
     const encodedBody = encodeURI(body);
-    const href = `mailto:${hosts}?subject=${title}&body=${encodedBody}&bcc=${bcc}`;
+    const href = `mailto:${participants}?subject=${title}&body=${encodedBody}`;
     window.open(href);
   }
 
