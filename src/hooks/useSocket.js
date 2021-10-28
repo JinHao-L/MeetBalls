@@ -50,7 +50,6 @@ export const useSocket = (meetingId) => {
   }
 
   function mergeParticipants(participants, update) {
-    console.log([...participants]);
     let hasUpdate = false;
     participants = participants.map((ppl) => {
       if (ppl.id === update.id) {
@@ -63,12 +62,10 @@ export const useSocket = (meetingId) => {
 
     if (!hasUpdate) {
       const emptyIdx = participants.findIndex((item) => !item.id);
-      console.log("HERE", emptyIdx, participants)
       if (emptyIdx === -1) {
         return [...participants, update];
       } else {
         participants.splice(emptyIdx, 0, update);
-        console.log(participants)
         return participants;
       }
     } else {
