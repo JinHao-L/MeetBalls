@@ -26,7 +26,7 @@ export default function AddMeetingOverlay({
   cloneMeeting,
 }) {
   const [loading, setLoading] = useState(false);
-  const [showZoomList, setShowZoomList] = useState(false);
+  const [showZoomList, setShowZoomList] = useState(true);
   const [zoomMeetingList, setZoomMeetingList] = useState([]);
   const [isZoomMeeting, setIsZoomMeeting] = useState(false);
   const [searched, setSearched] = useState(false);
@@ -264,7 +264,7 @@ export default function AddMeetingOverlay({
     setShow(false);
     setSearched(false);
     setIsZoomMeeting(false);
-    setShowZoomList(false);
+    setShowZoomList(true);
     handleReset();
   }
 
@@ -304,8 +304,11 @@ export default function AddMeetingOverlay({
                 variant="primary"
                 onClick={() => setShowZoomList(!showZoomList)}
               >
-                {showZoomList ? 'Cancel' : 'Select from Zoom'}
+                {showZoomList ? 'Add Manually' : 'Cancel'}
               </Button>
+              <div className="Buffer--10px" />
+              <div className="Line--horizontal" />
+              <div className="Buffer--10px" />
               {!showZoomList || (
                 <Button
                   variant="outline-primary"
@@ -317,6 +320,7 @@ export default function AddMeetingOverlay({
                 </Button>
               )}
             </div>
+
             {loading ? (
               <>
                 <div className="Buffer--100px" />
@@ -324,11 +328,9 @@ export default function AddMeetingOverlay({
               </>
             ) : (
               <>
-                <div className="Buffer--20px" />
-                <div className="Line--horizontal" />
-                <div className="Buffer--20px" />
                 {!loading && showZoomList ? (
                   <>
+                    <div className="Buffer--10px" />
                     <div className="d-grid gap-2">
                       <Button
                         variant="outline-primary"
