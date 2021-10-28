@@ -13,7 +13,7 @@ export default function CloneMeetingButton({ id, name }) {
   return (
     <>
       <Button variant="outline-primary" onClick={() => setShowModal(true)}>
-        Clone {name}
+        Clone Meeting
       </Button>
       <CloneMeetingModal
         show={showModal}
