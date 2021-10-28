@@ -70,6 +70,7 @@ export default function EditAgendaItem({
         } else {
           toast.error('Failed to upload file');
         }
+        lock.current = false;
         return;
       }
     } else if (

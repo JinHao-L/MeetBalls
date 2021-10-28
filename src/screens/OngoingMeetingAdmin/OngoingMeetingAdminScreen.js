@@ -87,28 +87,48 @@ export default function OngoingMeetingAdminScreen() {
       setMeeting((meeting) => updateMeeting({ ...meeting, ...newMeeting }));
       setMeetingStatus(newMeeting.type);
     });
-    if (isHost) {
-      socket.on('host_participantUpdated', function (data) {
-        const update = JSON.parse(data);
-        setMeeting((meeting) => ({
-          ...meeting,
-          participants: updateParticipants(meeting.participants, update),
-        }));
-      });
-    } else {
-      socket.on('participantUpdated', function (data) {
-        const update = JSON.parse(data);
-        setMeeting((meeting) => ({
-          ...meeting,
-          participants: updateParticipants(meeting.participants, update),
-        }));
-      });
-    }
     socket.on('agendaUpdated', function (_) {
       pullMeeting();
     });
-    socket.on('userConnected', function (_) {});
   }, [socket]);
+
+  useEffect(() => {
+    if (socket) {
+      if (isHost) {
+        const participantToken = sessionStorage.getItem(meeting.id);
+        if (participantToken) {
+          sessionStorage.removeItem(meeting.id)
+          pullMeeting();
+        }
+        socket.on('host_participantUpdated', (data) => {
+          const update = JSON.parse(data);
+          setMeeting((meeting) => ({
+            ...meeting,
+            participants: updateParticipants(meeting.participants, update),
+          }));
+        });
+        console.log('host');
+        return () => {
+          console.log('host - off');
+          socket?.off('host_participantUpdated');
+        };
+      } else {
+        // change in credentials
+        socket.on('participantUpdated', function (data) {
+          const update = JSON.parse(data);
+          setMeeting((meeting) => ({
+            ...meeting,
+            participants: updateParticipants(meeting.participants, update),
+          }));
+        });
+        console.log('participant');
+        return () => {
+          console.log('participant - off');
+          socket?.off('participantUpdated');
+        };
+      }
+    }
+  }, [socket, isHost]);
 
   function startZoom() {
     if (!hasLaunched) setHasLaunched(true);
