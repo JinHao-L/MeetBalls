@@ -20,7 +20,6 @@ export default function CompletedMeetingScreen() {
   const [loading, setLoading] = useState(true);
   const [restrictDescription, setRestrictDescription] = useState(false);
   const [currentTab, setCurrentTab] = useState('statistics');
-
   const [validId, setValidId] = useState(false);
 
   const { id } = useParams();

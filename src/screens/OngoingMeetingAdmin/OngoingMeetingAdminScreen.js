@@ -1,4 +1,12 @@
-import { Container, Row, Col, Button, Nav, Card } from 'react-bootstrap';
+import {
+  Container,
+  Row,
+  Col,
+  Button,
+  Nav,
+  Card,
+  Spinner,
+} from 'react-bootstrap';
 import { useParams } from 'react-router';
 import { useState, useEffect, useContext, useMemo, useCallback } from 'react';
 import {
@@ -45,6 +53,7 @@ export default function OngoingMeetingAdminScreen() {
   const [loading, setLoading] = useState(true);
   const [validId, setIsValidId] = useState(false);
   const [once, setOnce] = useState(false);
+  const [loadingNextItem, setLoadingNextItem] = useState(false);
   const AddToCalendarComponent = useAddToCalendar(meeting);
 
   const { id } = useParams();
@@ -97,7 +106,7 @@ export default function OngoingMeetingAdminScreen() {
       if (isHost) {
         const participantToken = sessionStorage.getItem(meeting.id);
         if (participantToken) {
-          sessionStorage.removeItem(meeting.id)
+          sessionStorage.removeItem(meeting.id);
           pullMeeting();
         }
         socket.on('host_participantUpdated', (data) => {
@@ -175,6 +184,7 @@ export default function OngoingMeetingAdminScreen() {
   }
 
   async function nextItem(time, agenda, id) {
+    setLoadingNextItem(true);
     const isLastItem = position + 1 >= agenda.length;
     const apiCall = isLastItem ? callEndMeeting : callNextMeeting;
     try {
@@ -191,7 +201,10 @@ export default function OngoingMeetingAdminScreen() {
       if (newPosition < agenda.length) {
         agenda[newPosition].startTime = time;
       }
-    } catch (err) {}
+    } catch (err) {
+    } finally {
+      setLoadingNextItem(false);
+    }
   }
 
   function syncMeeting(meeting) {
@@ -300,6 +313,7 @@ export default function OngoingMeetingAdminScreen() {
                   isHost={isHost}
                   startMeeting={startMeeting}
                   nextItem={nextItem}
+                  loadingNextItem={loadingNextItem}
                 />
               ) : (
                 <MeetingStatus
@@ -369,7 +383,15 @@ export default function OngoingMeetingAdminScreen() {
 
 // Agenda
 
-function AgendaToggle({ position, time, agenda, id, startMeeting, nextItem }) {
+function AgendaToggle({
+  position,
+  time,
+  agenda,
+  id,
+  startMeeting,
+  nextItem,
+  loadingNextItem,
+}) {
   if (position < 0) {
     return (
       <Button onClick={() => startMeeting(time, agenda, id)}>
@@ -380,11 +402,36 @@ function AgendaToggle({ position, time, agenda, id, startMeeting, nextItem }) {
     const isLastItem = position === agenda.length - 1;
     const message = isLastItem ? 'Finish Meeting' : 'Next Item';
     return (
-      <Button onClick={() => nextItem(time, agenda, id)}>{message}</Button>
+      <Button
+        onClick={() => nextItem(time, agenda, id)}
+        disabled={loadingNextItem}
+      >
+        {message}{' '}
+        {loadingNextItem && (
+          <Spinner
+            as="span"
+            animation="border"
+            size="sm"
+            role="status"
+            aria-hidden="true"
+          />
+        )}
+      </Button>
     );
   } else {
     return (
-      <Button href={`/completed/${id}`}>Meeting Ended - View Report</Button>
+      <Button href={`/completed/${id}`} disabled={loadingNextItem}>
+        Meeting Ended - View Report{' '}
+        {loadingNextItem && (
+          <Spinner
+            as="span"
+            animation="border"
+            size="sm"
+            role="status"
+            aria-hidden="true"
+          />
+        )}
+      </Button>
     );
   }
 }
