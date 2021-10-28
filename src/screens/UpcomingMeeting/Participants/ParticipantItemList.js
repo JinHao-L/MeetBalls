@@ -5,7 +5,6 @@ import unmount from '../../../utils/unmount';
 import AddParticipantsModal from './AddParticipantsModal';
 import { Button } from 'react-bootstrap';
 import ImportModal from './ImportModal';
-import { toast } from 'react-toastify';
 
 const PARTICIPANTS_HEADER_ERROR =
   'Invalid header row! Columns should be labeled "Name" and "Email" (case-specific)!';

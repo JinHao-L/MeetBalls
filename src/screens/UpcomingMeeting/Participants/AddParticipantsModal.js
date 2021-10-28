@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Card, Button, Form, Modal, ListGroup } from 'react-bootstrap';
+import { Card, Button, Modal, ListGroup } from 'react-bootstrap';
 import { toast } from 'react-toastify';
 import { createParticipants } from '../../../services/participants';
 
