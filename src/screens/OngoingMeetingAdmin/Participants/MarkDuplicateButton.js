@@ -38,7 +38,7 @@ async function markDuplicate(meeting, setMeeting, position) {
   try {
     await markParticipantDuplicate(
       meeting.id,
-      meeting.participants[position].userEmail,
+      meeting.participants[position].id,
     );
     delete meeting.participants[position];
     setMeeting(meeting);

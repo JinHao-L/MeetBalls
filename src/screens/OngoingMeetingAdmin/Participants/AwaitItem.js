@@ -63,7 +63,7 @@ async function markPresent(meeting, setMeeting, position) {
   try {
     await markParticipantPresent(
       meeting.id,
-      meeting.participants[position].userEmail,
+      meeting.participants[position].id,
     );
     meeting.participants[position].timeJoined = new Date().toISOString();
     setMeeting(meeting);

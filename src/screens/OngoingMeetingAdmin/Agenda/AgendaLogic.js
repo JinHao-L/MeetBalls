@@ -90,6 +90,7 @@ export function sortAndRemoveDupes(participants) {
   function byArrivalThenName(p1, p2) {
     const p1Join = p1.timeJoined;
     const p2Join = p2.timeJoined;
+    if (!p2.id) return -1;
     if (p1Join && !p2Join) return -1;
     else if (!p1Join && p2Join) return 1;
     else return p1.userName.localeCompare(p2.userName);

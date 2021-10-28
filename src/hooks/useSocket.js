@@ -8,11 +8,13 @@ export const useSocket = (meetingId) => {
   useEffect(() => {
     if (meetingId) {
       const accessToken = sessionStorage.getItem(accessTokenKey);
+      const participantToken = sessionStorage.getItem(meetingId);
       const newSocket = io(`${apiUrl}/meeting`, {
         reconnectionDelayMax: 10000,
         auth: {
           token: accessToken,
           meetingId,
+          participant: participantToken,
         },
       });
       newSocket.on('connect', function () {});
@@ -28,5 +30,51 @@ export const useSocket = (meetingId) => {
     }
   }, [meetingId]);
 
-  return { socket };
+  function mergeSuggestions(suggestions, update) {
+    let hasUpdate = false;
+    suggestions = suggestions.map((s) => {
+      if (s.id === update.id) {
+        hasUpdate = true;
+        return update;
+      } else {
+        return s;
+      }
+    });
+    if (!hasUpdate) {
+      // is new suggestion (add to bottom)
+      const newList = [...suggestions, update];
+      return newList;
+    } else {
+      return suggestions;
+    }
+  }
+
+  function mergeParticipants(participants, update) {
+    console.log([...participants]);
+    let hasUpdate = false;
+    participants = participants.map((ppl) => {
+      if (ppl.id === update.id) {
+        hasUpdate = true;
+        return update;
+      } else {
+        return ppl;
+      }
+    });
+
+    if (!hasUpdate) {
+      const emptyIdx = participants.findIndex((item) => !item.id);
+      console.log("HERE", emptyIdx, participants)
+      if (emptyIdx === -1) {
+        return [...participants, update];
+      } else {
+        participants.splice(emptyIdx, 0, update);
+        console.log(participants)
+        return participants;
+      }
+    } else {
+      return participants.filter((x) => !x.isDuplicate);
+    }
+  }
+
+  return { socket, mergeSuggestions, mergeParticipants };
 };
