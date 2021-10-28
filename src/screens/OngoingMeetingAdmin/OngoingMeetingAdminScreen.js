@@ -29,7 +29,6 @@ import {
   updateDelay,
   getCurrentPosition,
   getEndTime,
-  updateParticipants,
   sortAndRemoveDupes,
 } from './Agenda/AgendaLogic';
 import AgendaList from './Agenda/AgendaList';
@@ -60,7 +59,7 @@ export default function OngoingMeetingAdminScreen() {
   const AddToCalendarComponent = useAddToCalendar(meeting);
 
   const { id } = useParams();
-  const { socket } = useSocket(id);
+  const { socket, mergeParticipants } = useSocket(id);
   const user = useContext(UserContext);
   const isHost = useMemo(() => {
     return meeting?.hostId === user?.uuid;
@@ -74,6 +73,16 @@ export default function OngoingMeetingAdminScreen() {
       setTime(new Date().getTime());
     }, 1000);
   }, []);
+
+  useEffect(() => {
+    if (isHost) {
+      const participantToken = sessionStorage.getItem(meeting.id);
+      if (participantToken) {
+        sessionStorage.removeItem(meeting.id);
+        pullMeeting();
+      }
+    }
+  }, [isHost]);
 
   useEffect(() => {
     if (validId && isHost && !once) {
@@ -102,45 +111,16 @@ export default function OngoingMeetingAdminScreen() {
     socket.on('agendaUpdated', function (_) {
       pullMeeting();
     });
+    socket.on('participantUpdated', function (data) {
+      const update = JSON.parse(data);
+      setMeeting((meeting) => ({
+        ...meeting,
+        participants: sortAndRemoveDupes(
+          mergeParticipants(meeting.participants, update),
+        ),
+      }));
+    });
   }, [socket]);
-
-  useEffect(() => {
-    if (socket) {
-      if (isHost) {
-        const participantToken = sessionStorage.getItem(meeting.id);
-        if (participantToken) {
-          sessionStorage.removeItem(meeting.id);
-          pullMeeting();
-        }
-        socket.on('host_participantUpdated', (data) => {
-          const update = JSON.parse(data);
-          setMeeting((meeting) => ({
-            ...meeting,
-            participants: updateParticipants(meeting.participants, update),
-          }));
-        });
-        console.log('host');
-        return () => {
-          console.log('host - off');
-          socket?.off('host_participantUpdated');
-        };
-      } else {
-        // change in credentials
-        socket.on('participantUpdated', function (data) {
-          const update = JSON.parse(data);
-          setMeeting((meeting) => ({
-            ...meeting,
-            participants: updateParticipants(meeting.participants, update),
-          }));
-        });
-        console.log('participant');
-        return () => {
-          console.log('participant - off');
-          socket?.off('participantUpdated');
-        };
-      }
-    }
-  }, [socket, isHost]);
 
   function startZoom() {
     if (!hasLaunched) setHasLaunched(true);

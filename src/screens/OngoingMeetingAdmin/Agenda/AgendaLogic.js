@@ -68,28 +68,11 @@ export function getEndTime(time, agenda, position, meeting) {
   }
 }
 
-export function updateParticipants(participants, update) {
-  let hasUpdate = false;
-  participants = participants.map((ppl) => {
-    if (ppl.id === update.id) {
-      hasUpdate = true;
-      return update;
-    } else {
-      return ppl;
-    }
-  });
-  if (!hasUpdate) {
-    const newList = [update, ...participants];
-    return sortAndRemoveDupes(newList);
-  } else {
-    return participants.filter((x) => !x.isDuplicate);
-  }
-}
-
 export function sortAndRemoveDupes(participants) {
   function byArrivalThenName(p1, p2) {
     const p1Join = p1.timeJoined;
     const p2Join = p2.timeJoined;
+    if (!p2.id) return -1;
     if (p1Join && !p2Join) return -1;
     else if (!p1Join && p2Join) return 1;
     else return p1.userName.localeCompare(p2.userName);

@@ -58,7 +58,7 @@ async function unmarkPresent(meeting, setMeeting, position) {
   try {
     await markParticipantAbsent(
       meeting.id,
-      meeting.participants[position].userEmail,
+      meeting.participants[position].id,
     );
     meeting.participants[position].timeJoined = null;
     setMeeting(meeting);

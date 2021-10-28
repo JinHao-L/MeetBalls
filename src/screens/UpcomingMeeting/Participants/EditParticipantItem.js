@@ -74,6 +74,7 @@ export default function EditParticipantItem({
         email,
         username,
         oldEmail,
+        oldId
       );
       meeting.participants[position] = newParticipant;
       syncAgenda(oldId, newParticipant);
@@ -149,13 +150,13 @@ export default function EditParticipantItem({
   );
 }
 
-async function updateDatabase(meetingId, newEmail, newUsername, oldEmail) {
+async function updateDatabase(meetingId, newEmail, newUsername, oldEmail, oldId) {
   if (oldEmail === newEmail.toLowerCase()) {
     const result = await server.put(
       '/participant',
       {
         meetingId: meetingId,
-        userEmail: oldEmail,
+        participantId: oldId,
         userName: newUsername,
       },
       defaultHeaders,
@@ -166,7 +167,7 @@ async function updateDatabase(meetingId, newEmail, newUsername, oldEmail) {
   if (oldEmail.length !== 0) {
     await server.delete('/participant', {
       data: {
-        participants: [{ userEmail: oldEmail }],
+        participants: [{ participantId: oldId }],
         meetingId: meetingId,
       },
       ...defaultHeaders,

@@ -25,7 +25,7 @@ const NAME_KEY = 'name';
 
 export default function ParticipantScreen() {
   const { id } = useParams();
-  const { socket } = useSocket(id);
+  const { socket, mergeSuggestions, mergeParticipants } = useSocket(id);
   const [meeting, setMeeting] = useState(blankMeeting);
   const [validId, setValidId] = useState(true);
   const [loading, setLoading] = useState(true);
@@ -65,7 +65,41 @@ export default function ParticipantScreen() {
       const newMeeting = JSON.parse(data, agendaReviver);
       if (newMeeting.status !== 1) {
         history.replace('/ongoing/' + id);
+      } else {
+        setMeeting((meeting) => ({ ...meeting, ...newMeeting }));
       }
+    });
+
+    socket.on('agendaUpdated', function (_) {
+      pullAgenda();
+    });
+
+    socket.on('suggestionUpdated', function (item) {
+      const update = JSON.parse(item);
+      if (update.participantId === joinerId) {
+        setSuggestions((s) => mergeSuggestions(s, update));
+      }
+    });
+
+    socket.on('suggestionDeleted', function (suggestionId) {
+      setSuggestions((s) => s.filter((x) => x.id !== suggestionId));
+    });
+
+    socket.on('participantDeleted', function (participantId) {
+      setMeeting((meeting) => ({
+        ...meeting,
+        participants: meeting.participants.filter(
+          (x) => x.id !== participantId,
+        ),
+      }));
+    });
+
+    socket.on('participantUpdated', function (data) {
+      const update = JSON.parse(data);
+      setMeeting((meeting) => ({
+        ...meeting,
+        participants: mergeParticipants(meeting.participants, update),
+      }));
     });
   }, [socket]);
 
@@ -92,6 +126,18 @@ export default function ParticipantScreen() {
     const result = response.data;
     setMeeting(result);
     obtainRelevantAgendaItems(result);
+  }
+
+  async function pullAgenda() {
+    const response = await server.get(`/agenda-item/${id}`, {
+      headers: {
+        ...defaultHeaders.headers,
+        'X-Participant': sessionStorage.getItem(id) || '',
+      },
+    });
+    if (response.status !== 200) return;
+    const result = response.data;
+    obtainRelevantAgendaItems({ agendaItems: result });
   }
 
   async function obtainRelevantAgendaItems(loadedMeeting) {

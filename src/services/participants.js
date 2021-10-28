@@ -33,23 +33,23 @@ export const createParticipants = (participants) => {
   );
 };
 
-export const markParticipantPresent = (meetingId, userEmail) => {
+export const markParticipantPresent = (meetingId, id) => {
   const body = {
-    email: userEmail,
+    participantId: id,
   };
   return server.put(`participant/${meetingId}/present`, body);
 };
 
-export const markParticipantAbsent = (meetingId, userEmail) => {
+export const markParticipantAbsent = (meetingId, id) => {
   const body = {
-    email: userEmail,
+    participantId: id,
   };
   return server.put(`participant/${meetingId}/absent`, body);
 };
 
-export const markParticipantDuplicate = (meetingId, userEmail) => {
+export const markParticipantDuplicate = (meetingId, id) => {
   const body = {
-    email: userEmail,
+    participantId: id,
   };
   return server.put(`participant/${meetingId}/duplicate`, body);
 };

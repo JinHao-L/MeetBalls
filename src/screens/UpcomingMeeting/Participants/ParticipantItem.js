@@ -36,9 +36,8 @@ export default function ParticipantItem({ setMeeting, meeting, position }) {
       setRemoving(true);
       const newMeeting = Object.assign({}, meeting);
       const newParticipants = Object.assign([], newMeeting.participants);
-      const email = newParticipants[position].userEmail;
       const id = newParticipants[position].id;
-      await removeFromDatabase(email, meeting.id);
+      await removeFromDatabase(id, meeting.id);
       newParticipants.splice(position, 1);
       newMeeting.participants = newParticipants;
       setMeeting(newMeeting);
@@ -132,11 +131,11 @@ export default function ParticipantItem({ setMeeting, meeting, position }) {
   );
 }
 
-async function removeFromDatabase(email, meetingId) {
+async function removeFromDatabase(id, meetingId) {
   await server.delete('/participant', {
     ...defaultHeaders,
     data: {
-      participants: [{ userEmail: email }],
+      participants: [{ participantId: id }],
       meetingId: meetingId,
     },
   });

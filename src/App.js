@@ -56,7 +56,7 @@ export default function App() {
       <AppNavbar />
       <CustomBootstrapStyle />
       <div className="Container__content">
-        <ToastContainer position="top-right" />
+        <ToastContainer position="top-right" pauseOnFocusLoss={false} />
         <Switch>
           <Route exact path="/">
             <LandingScreen />
