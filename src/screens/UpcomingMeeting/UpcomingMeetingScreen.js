@@ -101,18 +101,15 @@ export default function UpcomingMeetingScreen() {
     });
 
     socket.on('suggestionUpdated', function (item) {
-      console.log('suggestionUpdated', item);
       const update = JSON.parse(item);
       setSuggestions((s) => mergeSuggestions(s, update));
     });
 
     socket.on('suggestionDeleted', function (suggestionId) {
-      console.log('suggestionDeleted', suggestionId);
       setSuggestions((s) => s.filter((x) => x.id !== suggestionId));
     });
 
     socket.on('participantDeleted', function (participantId) {
-      console.log('participantDeleted', participantId);
       setMeeting((meeting) => ({
         ...meeting,
         participants: meeting.participants.filter(
@@ -122,7 +119,6 @@ export default function UpcomingMeetingScreen() {
     });
 
     socket.on('participantUpdated', (data) => {
-      console.log('participantUpdated', data);
       const update = JSON.parse(data);
       setMeeting((meeting) => ({
         ...meeting,
