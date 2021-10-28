@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Card, Button, Form, Modal, ListGroup } from 'react-bootstrap';
 import { toast } from 'react-toastify';
-import { extractError } from '../../../utils/extractError';
 import { createParticipants } from '../../../services/participants';
 
 export default function AddParticipantsModal({
@@ -33,7 +32,6 @@ export default function AddParticipantsModal({
           <div>
             {candidate?.userName} - {candidate?.userEmail}
           </div>
-          <Form.Check checked={!emailSet.has(candidate?.userEmail)} readOnly />
         </div>
       </ListGroup.Item>
     );
@@ -60,8 +58,9 @@ export default function AddParticipantsModal({
       } else {
         toast.warning('Some participants could not be added.');
       }
+      setShow(false);
     } catch (e) {
-      toast.error(extractError(e));
+      toast.error('Error in data. Please check that all emails are valid.');
     }
   }
 
@@ -76,10 +75,14 @@ export default function AddParticipantsModal({
             The following participants will be added to <b>{meeting.name}</b>.
           </p>
           <Card className="Card__invite">
-            <ListGroup variant="flush">
-              {eligibleCandidates}
-              {existingCandidates}
-            </ListGroup>
+            <ListGroup variant="flush">{eligibleCandidates}</ListGroup>
+          </Card>
+          <div className="Buffer--10px" />
+          <p className="Text__paragraph">
+            The following participants has been identified as duplicates.
+          </p>
+          <Card className="Card__invite">
+            <ListGroup variant="flush">{existingCandidates}</ListGroup>
           </Card>
           <div className="Buffer--10px" />
           <p className="Text__paragraph">Are you sure you want to continue?</p>
@@ -93,7 +96,6 @@ export default function AddParticipantsModal({
           variant="danger"
           onClick={() => {
             addParticipants(newCandidates);
-            setShow(false);
           }}
           disabled={newCandidates.length === 0}
         >
