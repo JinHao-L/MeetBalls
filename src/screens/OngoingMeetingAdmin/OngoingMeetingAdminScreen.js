@@ -1,12 +1,4 @@
-import {
-  Container,
-  Row,
-  Col,
-  Button,
-  Nav,
-  Card,
-  Spinner,
-} from 'react-bootstrap';
+import { Container, Row, Col, Button, Nav, Card } from 'react-bootstrap';
 import { useParams } from 'react-router';
 import { useState, useEffect, useContext, useMemo, useCallback } from 'react';
 import {
@@ -39,6 +31,7 @@ import { googleAnalytics } from '../../services/firebase';
 import { clearMeetingsCache } from '../../utils/dashboardCache';
 import { FullLoadingIndicator } from '../../components/FullLoadingIndicator';
 import { useAddToCalendar } from '../../hooks/useAddToCalendar';
+import AgendaToggle from './AgendaToggle';
 
 export default function OngoingMeetingAdminScreen() {
   const [position, setPosition] = useState(-1);
@@ -382,59 +375,6 @@ export default function OngoingMeetingAdminScreen() {
 }
 
 // Agenda
-
-function AgendaToggle({
-  position,
-  time,
-  agenda,
-  id,
-  startMeeting,
-  nextItem,
-  loadingNextItem,
-}) {
-  if (position < 0) {
-    return (
-      <Button onClick={() => startMeeting(time, agenda, id)}>
-        Start Meeting
-      </Button>
-    );
-  } else if (position < agenda.length) {
-    const isLastItem = position === agenda.length - 1;
-    const message = isLastItem ? 'Finish Meeting' : 'Next Item';
-    return (
-      <Button
-        onClick={() => nextItem(time, agenda, id)}
-        disabled={loadingNextItem}
-      >
-        {message}{' '}
-        {loadingNextItem && (
-          <Spinner
-            as="span"
-            animation="border"
-            size="sm"
-            role="status"
-            aria-hidden="true"
-          />
-        )}
-      </Button>
-    );
-  } else {
-    return (
-      <Button href={`/completed/${id}`} disabled={loadingNextItem}>
-        Meeting Ended - View Report{' '}
-        {loadingNextItem && (
-          <Spinner
-            as="span"
-            animation="border"
-            size="sm"
-            role="status"
-            aria-hidden="true"
-          />
-        )}
-      </Button>
-    );
-  }
-}
 
 function MeetingStatus({ position, agenda }) {
   if (position < 0) {

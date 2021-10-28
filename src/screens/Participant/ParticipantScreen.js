@@ -226,6 +226,7 @@ export default function ParticipantScreen() {
               Here are the items you will be presenting:
             </p>
             <Row>{UploadItems()}</Row>
+            <div className="Buffer--50px" />
           </Col>
           <Col
             lg={5}
@@ -239,10 +240,9 @@ export default function ParticipantScreen() {
             </div>
             <div className="Buffer--10px" />
             <SuggestionItems />
+            <div className="Buffer--50px" />
           </Col>
         </Row>
-
-        <div className="Buffer--50px" />
       </Container>
       <div className="Buffer--50px" />
     </div>

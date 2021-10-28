@@ -19,7 +19,7 @@ export default function CompletedMeetingScreen() {
   const [meeting, setMeeting] = useState(blankMeeting);
   const [loading, setLoading] = useState(true);
   const [restrictDescription, setRestrictDescription] = useState(false);
-  const [currentTab, setCurrentTab] = useState('statistics');
+  const [currentTab, setCurrentTab] = useState(Tabs.PARTICIPANTS);
   const [validId, setValidId] = useState(false);
 
   const { id } = useParams();
@@ -62,10 +62,10 @@ export default function CompletedMeetingScreen() {
 
   function Content() {
     switch (currentTab) {
-      case 'statistics': {
+      case Tabs.STATISTICS: {
         return <Statistics meeting={meeting} />;
       }
-      case 'agenda': {
+      case Tabs.AGENDA: {
         return meeting.agendaItems.map((item, idx) => (
           <CompletedAgendaCard agendaItem={item} key={idx} />
         ));
@@ -164,18 +164,18 @@ export default function CompletedMeetingScreen() {
             <div className="Buffer--50px" />
             <Nav
               variant="tabs"
-              defaultActiveKey="statistics"
+              defaultActiveKey={Tabs.PARTICIPANTS}
               onSelect={(selectedKey) => setCurrentTab(selectedKey)}
               style={{ marginLeft: 20, marginRight: 20 }}
             >
               <Nav.Item>
-                <Nav.Link eventKey="statistics">Statistics</Nav.Link>
+                <Nav.Link eventKey={Tabs.PARTICIPANTS}>Participants</Nav.Link>
               </Nav.Item>
               <Nav.Item>
-                <Nav.Link eventKey="participants">Participants</Nav.Link>
+                <Nav.Link eventKey={Tabs.AGENDA}>Agenda</Nav.Link>
               </Nav.Item>
               <Nav.Item>
-                <Nav.Link eventKey="agenda">Agenda</Nav.Link>
+                <Nav.Link eventKey={Tabs.STATISTICS}>Statistics</Nav.Link>
               </Nav.Item>
             </Nav>
             <div className="Buffer--20px" />
@@ -190,3 +190,9 @@ export default function CompletedMeetingScreen() {
     </div>
   );
 }
+
+const Tabs = {
+  AGENDA: 'agenda',
+  PARTICIPANTS: 'participants',
+  STATISTICS: 'statistics',
+};
