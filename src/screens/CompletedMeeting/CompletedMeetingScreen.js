@@ -14,6 +14,7 @@ import BackgroundPattern from '../../assets/background_pattern2.jpg';
 import { logEvent } from '@firebase/analytics';
 import { googleAnalytics } from '../../services/firebase';
 import { FullLoadingIndicator } from '../../components/FullLoadingIndicator';
+import CloneMeetingButton from '../../components/CloneMeetingButton';
 
 export default function CompletedMeetingScreen() {
   const [meeting, setMeeting] = useState(blankMeeting);
@@ -137,6 +138,7 @@ export default function CompletedMeetingScreen() {
               <p className="Text__hint">
                 Make sure you have enabled mail links in your browser
               </p>
+              <CloneMeetingButton id={meeting.id} name={meeting.name} />
             </div>
             <div className="Buffer--20px" />
             <div className="Container__row--space-between">
