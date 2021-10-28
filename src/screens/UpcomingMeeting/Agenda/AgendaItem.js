@@ -8,16 +8,16 @@ import {
 } from 'react-bootstrap';
 import { Draggable } from 'react-beautiful-dnd';
 import { useEffect, useRef, useState } from 'react';
-import { getFormattedDuration } from '../../common/CommonFunctions';
-import EditAgendaItem from './EditAgendaItem';
-import server from '../../services/server';
-import { defaultHeaders } from '../../utils/axiosConfig';
-import { SmallLoadingIndicator } from '../../components/SmallLoadingIndicator';
 import { toast } from 'react-toastify';
 import { FaLink } from 'react-icons/fa';
-import { extractError } from '../../utils/extractError';
-import { openFile } from '../../services/files';
-import unmount from '../../utils/unmount';
+import { getFormattedDuration } from '../../../common/CommonFunctions';
+import server from '../../../services/server';
+import { defaultHeaders } from '../../../utils/axiosConfig';
+import { SmallLoadingIndicator } from '../../../components/SmallLoadingIndicator';
+import { extractError } from '../../../utils/extractError';
+import { openFile } from '../../../services/files';
+import unmount from '../../../utils/unmount';
+import EditAgendaItem from './EditAgendaItem';
 
 export default function AgendaItem({
   meeting,

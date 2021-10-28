@@ -1,17 +1,17 @@
 import { DragDropContext, Droppable } from 'react-beautiful-dnd';
-import AgendaItem from './AgendaItem';
 import { useEffect, useRef, useState } from 'react';
 import { Button } from 'react-bootstrap';
-import server from '../../services/server';
-import { defaultHeaders } from '../../utils/axiosConfig';
-import unmount from '../../utils/unmount';
+import server from '../../../services/server';
+import { defaultHeaders } from '../../../utils/axiosConfig';
+import unmount from '../../../utils/unmount';
+import AgendaItem from './AgendaItem';
 
 export default function AgendaItemList({
   meeting,
   setMeeting,
   isReordering,
   setReordering,
-  lock
+  lock,
 }) {
   const [isDeleting, setDeleting] = useState(false);
   const items = [];

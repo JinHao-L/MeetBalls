@@ -34,7 +34,11 @@ export async function pullMeetings(page, limit) {
       : 0;
   const completedPage = Math.max(page - upcoming.meta.totalPages, 1);
 
-  const completed = await pullPastMeetings(completedPage, completedLimit, skipAmount);
+  const completed = await pullPastMeetings(
+    completedPage,
+    completedLimit,
+    skipAmount,
+  );
 
   const totalUpcomingCount = upcoming.meta.totalItems;
   const totalCompletedCount = completed.meta.totalItems;
