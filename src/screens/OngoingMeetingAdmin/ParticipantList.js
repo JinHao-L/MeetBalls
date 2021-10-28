@@ -24,31 +24,34 @@ export default function ParticipantList({
     [position, meeting],
   );
   return (
-    <Row>
-      {participants.map((participant, i) => {
-        if (participant.timeJoined != null) {
-          return (
-            <PresentItem
-              meeting={meeting}
-              setMeeting={setMeeting}
-              position={i}
-              showButton={!ended && shouldShowButton}
-              key={'Participant' + i}
-            />
-          );
-        } else {
-          return (
-            <AwaitItem
-              meeting={meeting}
-              setMeeting={setMeeting}
-              position={i}
-              showButton={!ended && shouldShowButton}
-              key={'Participant' + i}
-            />
-          );
-        }
-      })}
-    </Row>
+    <>
+      <Row>
+        {participants.map((participant, i) => {
+          if (participant.timeJoined != null) {
+            return (
+              <PresentItem
+                meeting={meeting}
+                setMeeting={setMeeting}
+                position={i}
+                showButton={!ended && shouldShowButton}
+                key={'Participant' + i}
+              />
+            );
+          } else {
+            return (
+              <AwaitItem
+                meeting={meeting}
+                setMeeting={setMeeting}
+                position={i}
+                showButton={!ended && shouldShowButton}
+                key={'Participant' + i}
+              />
+            );
+          }
+        })}
+      </Row>
+      <div className="Buffer--100px" />
+    </>
   );
 }
 

@@ -344,7 +344,7 @@ export default function OngoingMeetingAdminScreen() {
               </Nav.Item>
             </Nav>
             <div className="Buffer--20px" />
-            <div className="Container__padding--horizontal">
+            <div className="Container__padding--horizontal Container__scrollable-screen">
               {currentTab === 'agenda' ? (
                 <AgendaList
                   time={time}

@@ -4,27 +4,60 @@ import {
   MaterialsSection,
   SpeakerSection,
 } from '../../components/AgendaItemComponents';
+import { useRef, useEffect } from 'react';
 
 export default function AgendaList({ time, agenda, position }) {
+  const currentItemRef = useRef();
+
+  console.log(currentItemRef.current);
+
+  useEffect(() => {
+    currentItemRef?.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [position]);
+
   const items = [];
   if (position >= agenda.length) {
     for (let i = 0; i < agenda.length; i++) {
-      items.push(<ActiveItem item={agenda[i]} key={'Item ' + i} />);
+      items.push(
+        <ActiveItem
+          item={agenda[i]}
+          key={'Item ' + i}
+          isPassed={i < position}
+          isEnded={true}
+        />,
+      );
     }
   } else {
-    for (let i = Math.max(0, position); i < agenda.length; i++) {
+    for (let i = 0; i < agenda.length; i++) {
       if (agenda[i].startTime === null) {
         items.push(<NotStartedItem item={agenda[i]} key={'Item ' + i} />);
       } else if (i === position) {
         items.push(
-          <CurrentItem item={agenda[i]} time={time} key="Item Current" />,
+          <CurrentItem
+            item={agenda[i]}
+            time={time}
+            key="Item Current"
+            reference={currentItemRef}
+          />,
         );
       } else {
-        items.push(<ActiveItem item={agenda[i]} key={'Item ' + i} />);
+        items.push(
+          <ActiveItem
+            item={agenda[i]}
+            key={'Item ' + i}
+            isPassed={i < position}
+            isEnded={false}
+          />,
+        );
       }
     }
   }
-  return items;
+  return (
+    <>
+      {items}
+      <div className="Buffer--100px" />
+    </>
+  );
 }
 
 function NotStartedItem({ item }) {
@@ -48,7 +81,7 @@ function NotStartedItem({ item }) {
   );
 }
 
-function CurrentItem({ item, time }) {
+function CurrentItem({ item, time, reference }) {
   const currentDuration = time - item.startTime;
   const timeRemaining = item.actualDuration - currentDuration;
   const exceeded = currentDuration - item.expectedDuration;
@@ -60,7 +93,7 @@ function CurrentItem({ item, time }) {
     timeRemainingText += ` ( Exceeded by ${exceededTime})`;
   }
   return (
-    <Col className="Container__padding--vertical-small">
+    <Col className="Container__padding--vertical-small" ref={reference}>
       <Card bg={timeRemaining > 0 ? 'primary' : 'danger'} text="light">
         <Card.Body>
           <Card.Title>{item.name}</Card.Title>
@@ -79,10 +112,12 @@ function CurrentItem({ item, time }) {
   );
 }
 
-function ActiveItem({ item }) {
+function ActiveItem({ item, isPassed, isEnded }) {
+  var opacity = 1;
+  if (isPassed && !isEnded) opacity = 0.5;
   return (
     <Col className="Container__padding--vertical-small">
-      <Card>
+      <Card style={{ opacity: opacity }}>
         <Card.Body>
           <Card.Title>{item.name}</Card.Title>
           <SpeakerSection item={item} />
@@ -91,7 +126,8 @@ function ActiveItem({ item }) {
         </Card.Body>
         <Card.Footer>
           <Card.Text>
-            Duration: {getFormattedDuration(item.actualDuration)}
+            {isPassed ? null : 'Expected '}Duration:{' '}
+            {getFormattedDuration(item.actualDuration)}
           </Card.Text>
         </Card.Footer>
       </Card>

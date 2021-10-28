@@ -104,6 +104,17 @@
   overflow-x: hidden;
 }
 
+.Container__scrollable-screen {
+  height: calc(100vh - 56px - 100px - 180px);
+  overflow-y: scroll;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.Container__scrollable-screen::-webkit-scrollbar {
+  display: none;
+}
+
 .Card__statistics {
   height: 270px;
 }
