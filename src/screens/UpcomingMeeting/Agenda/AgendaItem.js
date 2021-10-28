@@ -140,19 +140,21 @@ export default function AgendaItem({
                     {getFormattedDuration(item.expectedDuration)}
                     {item.speakerMaterials && item.speaker ? (
                       <OverlayTrigger placement="top" overlay={renderTooltip}>
-                        <FaLink
-                          size={20}
-                          className="Clickable"
-                          onClick={() =>
-                            openFile(
-                              item.speakerMaterials,
-                              meeting.id,
-                              item.speaker.id,
-                            ).catch((err) => {
-                              toast.error('File not found');
-                            })
-                          }
-                        />
+                        <div>
+                          <FaLink
+                            size={20}
+                            className="Clickable"
+                            onClick={() =>
+                              openFile(
+                                item.speakerMaterials,
+                                meeting.id,
+                                item.speaker.id,
+                              ).catch((_) => {
+                                toast.error('File not found');
+                              })
+                            }
+                          />
+                        </div>
                       </OverlayTrigger>
                     ) : null}
                   </Card.Header>

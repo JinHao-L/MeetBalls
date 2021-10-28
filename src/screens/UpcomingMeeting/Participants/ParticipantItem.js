@@ -111,7 +111,9 @@ export default function ParticipantItem({ setMeeting, meeting, position }) {
             {participant?.role === 2 ? 'Host' : 'Participant'}
             {participant?.role !== 2 && participant.invited ? (
               <OverlayTrigger placement="top" overlay={renderTooltip}>
-                <FaRegEnvelope size={20} />
+                <div>
+                  <FaRegEnvelope size={20} />
+                </div>
               </OverlayTrigger>
             ) : null}
           </Card.Header>
