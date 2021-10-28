@@ -1,13 +1,19 @@
-import ParticipantItem from './ParticipantItem';
-import parseCsvToObjects from '../../../utils/parseCsvToObjects';
 import { useEffect, useRef, useState } from 'react';
-import unmount from '../../../utils/unmount';
-import AddParticipantsModal from './AddParticipantsModal';
 import { Button } from 'react-bootstrap';
+import { toast } from 'react-toastify';
+import { isValidEmail } from '../../../common/CommonFunctions';
+import parseCsvToObjects from '../../../utils/parseCsvToObjects';
+import unmount from '../../../utils/unmount';
+import ParticipantItem from './ParticipantItem';
+import AddParticipantsModal from './AddParticipantsModal';
 import ImportModal from './ImportModal';
 
 const PARTICIPANTS_HEADER_ERROR =
   'Invalid header row! Columns should be labeled "Name" and "Email" (case-specific)!';
+const INVALID_EMAIL_WARNING =
+  'Found entries with invalid emails. Those entries have been omitted.';
+const DUPLICATE_ENTRY_WARNING =
+  'Found duplicate emails in the CSV. Only the first instance will be included.';
 
 export default function ParticipantItemList({ meeting, setMeeting }) {
   const [loading, setLoading] = useState(false);
@@ -91,6 +97,7 @@ export default function ParticipantItemList({ meeting, setMeeting }) {
 }
 
 function convertToParticipants(meetingId, res) {
+  const emailSet = new Set();
   const participants = res.map((p) => {
     return {
       meetingId: meetingId,
@@ -98,5 +105,24 @@ function convertToParticipants(meetingId, res) {
       userEmail: p['Email'],
     };
   });
-  return participants;
+  const finalList = [];
+  let invalidEmailFound = false;
+  let duplicateEmailFound = false;
+
+  participants.forEach((p) => {
+    const email = p.userEmail;
+    const alreadyExists = emailSet.has(email);
+    const invalid = !isValidEmail(email);
+    if (alreadyExists) duplicateEmailFound = true;
+    if (invalid) invalidEmailFound = true;
+    if (alreadyExists || invalid) return;
+
+    emailSet.add(email);
+    finalList.push(p);
+  });
+
+  if (invalidEmailFound) toast.warning(INVALID_EMAIL_WARNING);
+  if (duplicateEmailFound) toast.warning(DUPLICATE_ENTRY_WARNING);
+
+  return finalList;
 }
