@@ -64,13 +64,6 @@ export default function OngoingMeetingAdminScreen() {
   }, []);
 
   useEffect(() => {
-    if (isHost && meeting?.id) {
-      // remove participant credentials
-      sessionStorage.removeItem(meeting.id)
-    }
-  }, [isHost])
-
-  useEffect(() => {
     if (validId && isHost && !once) {
       syncMeetingWithZoom(meeting)
         .then((newZoomUuid) => {
@@ -102,6 +95,11 @@ export default function OngoingMeetingAdminScreen() {
   useEffect(() => {
     if (socket) {
       if (isHost) {
+        const participantToken = sessionStorage.getItem(meeting.id);
+        if (participantToken) {
+          sessionStorage.removeItem(meeting.id)
+          pullMeeting();
+        }
         socket.on('host_participantUpdated', (data) => {
           const update = JSON.parse(data);
           setMeeting((meeting) => ({
@@ -109,9 +107,13 @@ export default function OngoingMeetingAdminScreen() {
             participants: updateParticipants(meeting.participants, update),
           }));
         });
-        console.log('host')
-        return () => socket?.off('host_participantUpdated');
+        console.log('host');
+        return () => {
+          console.log('host - off');
+          socket?.off('host_participantUpdated');
+        };
       } else {
+        // change in credentials
         socket.on('participantUpdated', function (data) {
           const update = JSON.parse(data);
           setMeeting((meeting) => ({
@@ -119,8 +121,11 @@ export default function OngoingMeetingAdminScreen() {
             participants: updateParticipants(meeting.participants, update),
           }));
         });
-        console.log('participant')
-        return () => socket?.off('participantUpdated');
+        console.log('participant');
+        return () => {
+          console.log('participant - off');
+          socket?.off('participantUpdated');
+        };
       }
     }
   }, [socket, isHost]);
