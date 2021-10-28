@@ -1,6 +1,11 @@
 import Papa from 'papaparse';
 
-export default function parseCsvToObjects(file, headers, onSuccess, headerErrMsg = '') {
+export default function parseCsvToObjects(
+  file,
+  headers,
+  onSuccess,
+  headerErrMsg = '',
+) {
   const config = {
     header: true,
     skipEmptyLines: true,
@@ -20,7 +25,7 @@ function successHandler(headers, callback, headerErrMsg = '') {
     const fields = response.meta.fields;
     if (!fields) throw new Error('Headers should have been enabled!');
 
-    const validFields = headers.every(e => fields.includes(e));
+    const validFields = headers.every((e) => fields.includes(e));
     if (!validFields) {
       const errMsg = headerErrMsg ? headerErrMsg : 'Headers are incorrect!';
       throw new Error(errMsg);

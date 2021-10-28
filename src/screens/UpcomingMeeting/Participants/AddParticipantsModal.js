@@ -1,20 +1,20 @@
-import { useEffect, useState } from "react";
-import { Card, Button, Form, Modal, ListGroup } from "react-bootstrap";
-import { toast } from "react-toastify";
-import { extractError } from "../../../utils/extractError";
-import { createParticipants } from "../../../services/participants";
+import { useEffect, useState } from 'react';
+import { Card, Button, Form, Modal, ListGroup } from 'react-bootstrap';
+import { toast } from 'react-toastify';
+import { extractError } from '../../../utils/extractError';
+import { createParticipants } from '../../../services/participants';
 
 export default function AddParticipantsModal({
   show,
   setShow,
   candidates,
   meeting,
-  setMeeting
+  setMeeting,
 }) {
   const [emailSet, setEmailSet] = useState(new Set());
   const [newCandidates, setNewCandidates] = useState([]);
   const [dupeCandidates, setDupeCandidates] = useState([]);
-  
+
   useEffect(() => {
     const existingEmails = meeting.participants.map((p) => p.userEmail);
     const set = new Set(existingEmails);
@@ -24,17 +24,16 @@ export default function AddParticipantsModal({
     const ineligibleUsers = candidates.filter((p) => emailSet.has(p.userEmail));
     setNewCandidates(eligibleUsers);
     setDupeCandidates(ineligibleUsers);
-  }, [show]);
+  }, [candidates]);
 
   function CandidateItem({ candidate }) {
     return (
       <ListGroup.Item>
         <div className="Container__row--space-between">
-            <div>{candidate?.userName} - {candidate?.userEmail}</div>
-            <Form.Check
-              checked={!emailSet.has(candidate?.userEmail)}
-              readOnly
-            />
+          <div>
+            {candidate?.userName} - {candidate?.userEmail}
+          </div>
+          <Form.Check checked={!emailSet.has(candidate?.userEmail)} readOnly />
         </div>
       </ListGroup.Item>
     );
@@ -54,7 +53,7 @@ export default function AddParticipantsModal({
       const newList = meeting.participants
         .concat(newParticipants)
         .sort((p1, p2) => p1.userName.localeCompare(p2.userName));
-      setMeeting((prev) => ({...prev, participants: newList}));
+      setMeeting((prev) => ({ ...prev, participants: newList }));
 
       if (newParticipants.length === participants.length) {
         toast.success('All new participants have been added!');
@@ -65,11 +64,11 @@ export default function AddParticipantsModal({
       toast.error(extractError(e));
     }
   }
-  
+
   return (
     <Modal show={show} onHide={() => setShow(false)} centered>
       <Modal.Header>
-        <Modal.Title>Participants Imported</Modal.Title>
+        <Modal.Title>Select Participants</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <div>
@@ -93,7 +92,7 @@ export default function AddParticipantsModal({
         <Button
           variant="danger"
           onClick={() => {
-            addParticipants(newCandidates)
+            addParticipants(newCandidates);
             setShow(false);
           }}
           disabled={newCandidates.length === 0}
