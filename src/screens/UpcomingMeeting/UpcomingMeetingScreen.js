@@ -25,6 +25,7 @@ import { googleAnalytics } from '../../services/firebase';
 import { FullLoadingIndicator } from '../../components/FullLoadingIndicator';
 import { useAddToCalendar } from '../../hooks/useAddToCalendar';
 import { useRef } from 'react';
+import CloneMeetingButton from '../../components/CloneMeetingButton';
 
 export default function UpcomingMeetingScreen() {
   const [meeting, setMeeting] = useState(blankMeeting);
@@ -218,6 +219,7 @@ export default function UpcomingMeetingScreen() {
                   />
                 )}
               </Button>
+              <CloneMeetingButton id={meeting.id} name={meeting.name} />
               <Button
                 variant="outline-primary"
                 onClick={() => setShowEditMeeting(true)}
