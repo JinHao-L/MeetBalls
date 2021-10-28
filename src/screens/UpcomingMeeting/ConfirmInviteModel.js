@@ -108,7 +108,7 @@ export default function ConfirmInviteModel({
               onClick={() =>
                 setInviteList(
                   meeting.participants.filter(
-                    (participant) => participant?.role !== 2,
+                    (participant) => participant?.role !== 2 && participant?.userEmail,
                   ),
                 )
               }

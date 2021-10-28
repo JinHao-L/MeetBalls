@@ -250,7 +250,7 @@ export default function UpcomingMeetingScreen() {
                 variant="outline-primary"
                 onClick={() => {
                   setInviteList(
-                    meeting?.participants?.filter((x) => !x.invited && x.userEmail),
+                    meeting?.participants?.filter((x) => !x.invited && x.userEmail && x.role !== 2),
                   );
                   setShowInviteModal(true);
                 }}
