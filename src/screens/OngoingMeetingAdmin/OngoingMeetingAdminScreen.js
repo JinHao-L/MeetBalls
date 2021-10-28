@@ -1,15 +1,11 @@
-import { Container, Row, Col, Button, Nav, Card } from 'react-bootstrap';
-import { useParams } from 'react-router';
 import { useState, useEffect, useContext, useMemo, useCallback } from 'react';
+import { useParams } from 'react-router';
 import {
   getFormattedDateTime,
-  getFormattedTime,
   agendaReviver,
   openLinkInNewTab,
 } from '../../common/CommonFunctions';
-import AgendaList from './AgendaList';
 import { blankMeeting } from '../../common/ObjectTemplates';
-import ParticipantList from './ParticipantList';
 import {
   getMeeting,
   callStartMeeting,
@@ -22,16 +18,30 @@ import { UserContext } from '../../context/UserContext';
 import RedirectionScreen, {
   MEETING_NOT_FOUND_ERR,
 } from '../../components/RedirectionScreen';
-import useSound from 'use-sound';
-import Bell from '../../assets/Bell.mp3';
-import BackgroundPattern from '../../assets/background_pattern2.jpg';
-import FeedbackOverlay from './FeedbackOverlay';
+
 import { logEvent } from '@firebase/analytics';
 import { googleAnalytics } from '../../services/firebase';
 import { clearMeetingsCache } from '../../utils/dashboardCache';
-import { FullLoadingIndicator } from '../../components/FullLoadingIndicator';
 import { useAddToCalendar } from '../../hooks/useAddToCalendar';
-import AgendaToggle from './AgendaToggle';
+
+import {
+  initializeAgenda,
+  updateDelay,
+  getCurrentPosition,
+  getEndTime,
+  updateParticipants,
+  sortAndRemoveDupes,
+} from './Agenda/AgendaLogic';
+import AgendaList from './Agenda/AgendaList';
+import ParticipantList from './Participants/ParticipantList';
+import ControlToggle from './ControlToggle';
+import { Container, Row, Col, Button, Nav, Card } from 'react-bootstrap';
+import { FullLoadingIndicator } from '../../components/FullLoadingIndicator';
+import FeedbackOverlay from './FeedbackOverlay';
+
+import useSound from 'use-sound';
+import Bell from '../../assets/Bell.mp3';
+import BackgroundPattern from '../../assets/background_pattern2.jpg';
 
 export default function OngoingMeetingAdminScreen() {
   const [position, setPosition] = useState(-1);
@@ -298,7 +308,7 @@ export default function OngoingMeetingAdminScreen() {
             </p>
             <div className="d-grid gap-2">
               {isHost && !showError ? (
-                <AgendaToggle
+                <ControlToggle
                   position={position}
                   agenda={meeting.agendaItems}
                   time={time}
@@ -309,10 +319,9 @@ export default function OngoingMeetingAdminScreen() {
                   loadingNextItem={loadingNextItem}
                 />
               ) : (
-                <MeetingStatus
-                  position={position}
-                  agenda={meeting.agendaItems}
-                />
+                <p className="Text__subheader">
+                  {meetingStatusText(position, meeting.agendaItems)}
+                </p>
               )}
             </div>
             <div className="Buffer--20px" />
@@ -376,110 +385,12 @@ export default function OngoingMeetingAdminScreen() {
 
 // Agenda
 
-function MeetingStatus({ position, agenda }) {
+function meetingStatusText(position, agenda) {
   if (position < 0) {
-    return <p className="Text__subheader">Meeting Not Started</p>;
+    return 'Meeting Not Started';
   } else if (position < agenda.length) {
-    return <p className="Text__subheader">Meeting Ongoing</p>;
+    return 'Meeting Ongoing';
   } else {
-    return <p className="Text__subheader">Meeting Ended</p>;
+    return 'Meeting Ended';
   }
-}
-
-function initializeAgenda(time, agenda) {
-  var lastTiming = time;
-  for (let i = 0; i < agenda.length; i++) {
-    agenda[i].actualDuration = agenda[i].expectedDuration;
-    agenda[i].startTime = lastTiming;
-    lastTiming += agenda[i].actualDuration;
-  }
-}
-
-function updateDelay(agenda, time, position, play) {
-  if (position < 0 || position >= agenda.length) return;
-  const delay = Math.max(
-    0,
-    time - agenda[position].startTime - agenda[position].actualDuration,
-  );
-  if (
-    agenda[position].actualDuration === agenda[position].expectedDuration &&
-    delay > 0 &&
-    delay < 1000
-  ) {
-    play();
-  }
-  agenda[position].actualDuration += delay;
-  updateAgenda(agenda, position);
-}
-
-function updateAgenda(agenda, position) {
-  for (let i = 0; i < agenda.length; i++) {
-    agenda[i].isCurrent = i === position;
-  }
-  if (position >= agenda.length) return;
-  var lastTiming = agenda[position].startTime;
-  for (let i = position; i < agenda.length; i++) {
-    agenda[i].startTime = lastTiming;
-    lastTiming += agenda[i].actualDuration;
-  }
-}
-
-function getCurrentPosition(meeting) {
-  const agenda = meeting.agendaItems;
-  for (let i = 0; i < agenda.length; i++) {
-    if (agenda[i].isCurrent) {
-      return i;
-    }
-  }
-}
-
-function getEndTime(time, agenda, position, meeting) {
-  if (position < 0) {
-    var duration = 0;
-    agenda.forEach((item) => {
-      duration += item.expectedDuration;
-    });
-    const supposedStartTime = new Date(meeting.startedAt).getTime();
-    if (time > supposedStartTime) {
-      return getFormattedTime(new Date(time + duration));
-    } else {
-      return getFormattedTime(new Date(supposedStartTime + duration));
-    }
-  } else {
-    if (agenda.length === 0) return '';
-    var lastAgendaItem = agenda[agenda.length - 1];
-    return getFormattedTime(
-      new Date(lastAgendaItem.startTime + lastAgendaItem.actualDuration),
-    );
-  }
-}
-
-function updateParticipants(participants, update) {
-  let hasUpdate = false;
-  participants = participants.map((ppl) => {
-    if (ppl.id === update.id) {
-      hasUpdate = true;
-      return update;
-    } else {
-      return ppl;
-    }
-  });
-  if (!hasUpdate) {
-    const newList = [update, ...participants];
-    return sortAndRemoveDupes(newList);
-  } else {
-    return participants.filter((x) => !x.isDuplicate);
-  }
-}
-
-function sortAndRemoveDupes(participants) {
-  function byArrivalThenName(p1, p2) {
-    const p1Join = p1.timeJoined;
-    const p2Join = p2.timeJoined;
-    if (p1Join && !p2Join) return -1;
-    else if (!p1Join && p2Join) return 1;
-    else return p1.userName.localeCompare(p2.userName);
-  }
-
-  return participants.filter((x) => !x.isDuplicate).sort(byArrivalThenName);
 }

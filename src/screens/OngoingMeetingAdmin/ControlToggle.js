@@ -1,6 +1,6 @@
 import { Row, Col, Button, Spinner } from 'react-bootstrap';
 
-export default function AgendaToggle({
+export default function ControlToggle({
   position,
   time,
   agenda,
