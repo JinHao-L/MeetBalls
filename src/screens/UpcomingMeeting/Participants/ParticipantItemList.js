@@ -70,7 +70,7 @@ export default function ParticipantItemList({ meeting, setMeeting }) {
           Import From CSV
         </Button>
       </div>
-        <div className="Buffer--20px" />
+      <div className="Buffer--20px" />
       <ImportModal
         show={showImportModal}
         setShow={setShowImportModal}

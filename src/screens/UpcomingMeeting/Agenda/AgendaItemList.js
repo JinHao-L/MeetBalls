@@ -11,7 +11,7 @@ export default function AgendaItemList({
   setMeeting,
   isReordering,
   setReordering,
-  lock
+  lock,
 }) {
   const [isDeleting, setDeleting] = useState(false);
   const items = [];

@@ -73,7 +73,10 @@ export default function CompletedMeetingScreen() {
       }
       default: {
         return (
-          <AttendanceList participants={meeting.participants} name={meeting.name} />
+          <AttendanceList
+            participants={meeting.participants}
+            name={meeting.name}
+          />
         );
       }
     }

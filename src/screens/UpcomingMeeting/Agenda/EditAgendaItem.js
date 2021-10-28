@@ -9,7 +9,10 @@ import {
 } from 'react-bootstrap';
 import { useState } from 'react';
 import { toast } from 'react-toastify';
-import { getFormattedDuration, isValidUrl } from '../../../common/CommonFunctions';
+import {
+  getFormattedDuration,
+  isValidUrl,
+} from '../../../common/CommonFunctions';
 import server from '../../../services/server';
 import { defaultHeaders } from '../../../utils/axiosConfig';
 import { extractError } from '../../../utils/extractError';
@@ -21,7 +24,7 @@ export default function EditAgendaItem({
   meeting,
   position,
   setMeeting,
-  lock
+  lock,
 }) {
   const item = meeting.agendaItems[position];
   const [duration, setDuration] = useState(item.expectedDuration);
