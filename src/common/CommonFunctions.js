@@ -1,3 +1,5 @@
+import isEmail from 'validator/lib/isEmail';
+
 export function getFormattedDateTime(isoDate) {
   const date = new Date(isoDate);
   const options = {
@@ -98,10 +100,9 @@ export function isValidUrl(url) {
 }
 
 export function isValidEmail(email) {
-  let validator = document.createElement('input');
-  validator.type = 'email';
-  validator.value = email;
-  const success = validator.checkValidity();
-  validator.remove();
-  return success;
+  const isSpace = !email || !email.trim();
+  if (isSpace) return false;
+
+  console.log(email);
+  return isEmail(email);
 }
