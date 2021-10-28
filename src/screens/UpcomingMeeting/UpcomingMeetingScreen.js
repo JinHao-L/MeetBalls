@@ -219,13 +219,19 @@ export default function UpcomingMeetingScreen() {
                   />
                 )}
               </Button>
-              <CloneMeetingButton id={meeting.id} name={meeting.name} />
-              <Button
-                variant="outline-primary"
-                onClick={() => setShowEditMeeting(true)}
-              >
-                Edit / Delete Meeting
-              </Button>
+              <Row>
+                <Col className="d-grid gap-2" style={{ paddingRight: 5 }}>
+                  <CloneMeetingButton id={meeting.id} name={meeting.name} />
+                </Col>
+                <Col className="d-grid gap-2" style={{ paddingLeft: 5 }}>
+                  <Button
+                    variant="outline-primary"
+                    onClick={() => setShowEditMeeting(true)}
+                  >
+                    Edit / Delete
+                  </Button>
+                </Col>
+              </Row>
             </div>
             <div className="Buffer--20px" />
             <div className="Container__row--space-between">

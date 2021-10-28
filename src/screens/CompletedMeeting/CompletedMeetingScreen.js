@@ -132,7 +132,7 @@ export default function CompletedMeetingScreen() {
             </p>
             <div className="d-grid gap-2">
               {/* <Button>Get Meeting Recording</Button> */}
-              <Button variant="outline-primary" onClick={emailParticipants}>
+              <Button variant="primary" onClick={emailParticipants}>
                 Email Participants
               </Button>
               <p className="Text__hint">

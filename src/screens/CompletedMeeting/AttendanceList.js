@@ -25,6 +25,7 @@ export default function AttendanceList({ participants, name }) {
   function DownloadButton() {
     return (
       <Button
+        variant="outline-primary"
         className="d-grid gap-2 Text--no-decoration"
         onClick={() => downloadAsCsv(participants, fileName)}
         block="true"
