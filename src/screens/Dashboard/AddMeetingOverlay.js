@@ -111,8 +111,8 @@ export default function AddMeetingOverlay({
 
       const start = meeting.start_time;
       const startField = start ? new Date(start) : new Date();
-      setFieldValue('name', meeting.topic);
-      setFieldValue('desc', meeting.agenda || '');
+      setFieldValue('name', cloneMeeting?.name || meeting.topic);
+      setFieldValue('desc', cloneMeeting?.description || meeting.agenda || '');
       setFieldValue('meetingId', meeting.id);
       setFieldValue('meetingPassword', zoomMeeting.password);
       setFieldValue('link', meeting.join_url);
@@ -268,6 +268,18 @@ export default function AddMeetingOverlay({
     handleReset();
   }
 
+  function CloneDescriptionText() {
+    if (!cloneMeeting) return null;
+    return (
+      <p>
+        Participants and agenda items will be copied over from{' '}
+        <b>{cloneMeeting.name}</b> to the new meeting. Note that speaker
+        and speaker materials will be removed from each agenda item.
+      </p>
+    );
+  }
+
+  const title = cloneMeeting ? `Cloning "${cloneMeeting.name}"` : 'Add New Meeting';
   return (
     <Formik
       validationSchema={schema}
@@ -285,20 +297,10 @@ export default function AddMeetingOverlay({
       }) => (
         <Offcanvas show={show} onHide={() => onClose(handleReset)}>
           <Offcanvas.Header closeButton>
-            <Offcanvas.Title>
-              {cloneMeeting === null
-                ? 'Add New Meeting'
-                : 'Cloning "' + cloneMeeting.name + '"'}
-            </Offcanvas.Title>
+            <Offcanvas.Title>{title}</Offcanvas.Title>
           </Offcanvas.Header>
           <Offcanvas.Body>
-            {cloneMeeting === null ? null : (
-              <p>
-                Participants and agenda items will be copied over from{' '}
-                <b>{cloneMeeting.name}</b> to the new meeting. Note that speaker
-                and speaker materials will be removed from each agenda item.
-              </p>
-            )}
+            <CloneDescriptionText />
             <div className="d-grid gap-2">
               <Button
                 variant="primary"
@@ -394,6 +396,7 @@ async function fillItems(newMeeting, cloneMeeting) {
     defaultHeaders,
   );
   if (response.status !== 200) return;
+
   const result = response.data;
   if (result.agendaItems.length > 0) {
     result.agendaItems.forEach((item) => {
