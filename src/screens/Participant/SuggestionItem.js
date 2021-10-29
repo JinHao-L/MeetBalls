@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Col, Card, Row, Button } from 'react-bootstrap';
 import EditSuggestionItem from './EditSuggestionItem';
 import { toast } from 'react-toastify';
@@ -15,6 +15,14 @@ export default function SuggestionItem({
 }) {
   const [editing, setEditing] = useState(false);
   const [isDeleting, setDeleting] = useState(false);
+  const mounted = useRef(true);
+
+  useEffect(() => {
+    mounted.current = true;
+    return () => {
+      mounted.current = false;
+    };
+  }, []);
 
   if (!editing && item.name === '') {
     setEditing(true);
@@ -55,7 +63,7 @@ export default function SuggestionItem({
     } catch (err) {
       toast.error(extractError(err));
     }
-    setDeleting(false);
+    if (mounted.current) setDeleting(false);
   }
 
   function edit() {

@@ -8,7 +8,7 @@ export default function SpeakerSelection({
 }) {
   const choices = candidates.map((candidate) => (
     <Dropdown.Item
-      key={candidate.userEmail}
+      key={`speaker: ${candidate.id}`}
       onClick={() => onSelect(candidate)}
     >
       {candidate.userName}

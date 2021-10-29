@@ -54,6 +54,8 @@ export default function UpcomingMeetingScreen() {
   const { socket, mergeSuggestions, mergeParticipants } = useSocket(id);
   const lock = useRef(false);
 
+  const mounted = useRef(true);
+
   // lock the setmeeting
   useEffect(() => {
     lock.current = false;
@@ -61,14 +63,25 @@ export default function UpcomingMeetingScreen() {
   }, [meeting]);
 
   useEffect(() => {
-    return pullMeeting()
-      .then(() => {
-        logEvent(googleAnalytics, 'visit_upcoming_screen', { meeting: id });
-        setValidId(true);
-      })
-      .catch((_) => setValidId(false))
-      .finally(() => setLoading(false));
+    mounted.current = true;
+    populateMeetingInformation();
+    
+    return () => {
+      mounted.current = false;
+    }
   }, []);
+
+  async function populateMeetingInformation() {
+    try {
+      await pullMeeting();
+      logEvent(googleAnalytics, 'visit_upcoming_screen', { meeting: id });
+      setValidId(true);
+    } catch {
+      setValidId(false);
+    } finally {
+      if (mounted.current) setLoading(false);
+    }
+  }
 
   async function getSuggestions(meetingId) {
     try {
@@ -214,9 +227,7 @@ export default function UpcomingMeetingScreen() {
     return <Redirect to={'/ongoing/' + id} />;
   }
 
-  if (loading) {
-    return <FullLoadingIndicator />;
-  }
+  if (loading) return <FullLoadingIndicator />;
 
   return (
     <div
