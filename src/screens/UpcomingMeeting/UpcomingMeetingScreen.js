@@ -208,8 +208,8 @@ export default function UpcomingMeetingScreen() {
   if (!loading && !validId)
     return <RedirectionScreen message={MEETING_NOT_FOUND_ERR} />;
 
-  // if (meeting.id !== '' && user?.uuid !== meeting.hostId)
-  //   return <RedirectionScreen message={BAD_MEETING_PERMS_MSG} />;
+  if (meeting.id !== '' && (user?.uuid !== meeting.hostId))
+    return <RedirectionScreen message={BAD_MEETING_PERMS_MSG} />;
 
   if (meeting.type !== undefined && meeting.type !== 1) {
     return <Redirect to={'/ongoing/' + id} />;
