@@ -86,7 +86,6 @@
 .Container__login-screen {
   padding-left: 40px;
   padding-right: 40px;
-  height: calc(100vh - 56px);
   justify-content: center;
   display: flex;
   flex-direction: column;

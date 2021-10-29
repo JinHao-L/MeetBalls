@@ -22,7 +22,7 @@ import RedirectionScreen, {
 import { logEvent } from '@firebase/analytics';
 import { googleAnalytics } from '../../services/firebase';
 import { clearMeetingsCache } from '../../utils/dashboardCache';
-import { useAddToCalendar } from '../../hooks/useAddToCalendar';
+import { AddToCalendar } from '../../components/AddToCalendar';
 
 import {
   initializeAgenda,
@@ -56,7 +56,6 @@ export default function OngoingMeetingAdminScreen() {
   const [validId, setIsValidId] = useState(false);
   const [once, setOnce] = useState(false);
   const [loadingNextItem, setLoadingNextItem] = useState(false);
-  const AddToCalendarComponent = useAddToCalendar(meeting);
 
   const { id } = useParams();
   const { socket, mergeParticipants } = useSocket(id);
@@ -270,7 +269,7 @@ export default function OngoingMeetingAdminScreen() {
               <LaunchZoomButton />
               {meetingStatus === 1 ? (
                 <>
-                  <AddToCalendarComponent />
+                  <AddToCalendar meeting={meeting} />
                   <ReturnToEditPageButton />
                 </>
               ) : null}

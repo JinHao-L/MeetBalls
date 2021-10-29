@@ -1,7 +1,16 @@
+
 .Image__login {
-  height: calc(100vh - 56px);
+  max-height: calc(100vh * 50%);
   width: 100%;
   object-fit: cover;
+}
+
+@media (min-width: 992px) {
+  .Image__login {
+    height: calc(100vh - 56px);
+    min-height: unset;
+    max-height: unset;
+  }
 }
 
 .Image__banner {
