@@ -89,7 +89,7 @@ export default function UpcomingMeetingScreen() {
 
     socket.on('meetingUpdated', function (data) {
       const newMeeting = JSON.parse(data, agendaReviver);
-      if (newMeeting.status !== 1) {
+      if (newMeeting.type !== 1) {
         history.replace('/ongoing/' + id);
       } else {
         setMeeting((meeting) => ({ ...meeting, ...newMeeting }));
@@ -250,7 +250,9 @@ export default function UpcomingMeetingScreen() {
                 variant="outline-primary"
                 onClick={() => {
                   setInviteList(
-                    meeting?.participants?.filter((x) => !x.invited && x.userEmail && x.role !== 2),
+                    meeting?.participants?.filter(
+                      (x) => !x.invited && x.userEmail && x.role !== 2,
+                    ),
                   );
                   setShowInviteModal(true);
                 }}
