@@ -63,7 +63,7 @@ export default function EditSuggestionItem({
       name: name,
       description: description,
       expectedDuration: duration,
-      speakerId: speaker?.id
+      speakerId: speaker?.id,
     };
     if (item.name.length === 0) {
       try {

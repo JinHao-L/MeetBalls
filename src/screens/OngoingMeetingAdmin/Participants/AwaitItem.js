@@ -61,10 +61,7 @@ export default function AwaitItem({
 
 async function markPresent(meeting, setMeeting, position) {
   try {
-    await markParticipantPresent(
-      meeting.id,
-      meeting.participants[position].id,
-    );
+    await markParticipantPresent(meeting.id, meeting.participants[position].id);
     meeting.participants[position].timeJoined = new Date().toISOString();
     setMeeting(meeting);
   } catch (error) {

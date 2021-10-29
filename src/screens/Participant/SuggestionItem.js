@@ -7,7 +7,12 @@ import { extractError } from '../../utils/extractError';
 import { defaultHeaders } from '../../utils/axiosConfig';
 import { getFormattedDuration } from '../../common/CommonFunctions';
 
-export default function SuggestionItem({ item, participants, suggestions, setSuggestions }) {
+export default function SuggestionItem({
+  item,
+  participants,
+  suggestions,
+  setSuggestions,
+}) {
   const [editing, setEditing] = useState(false);
   const [isDeleting, setDeleting] = useState(false);
 
@@ -59,7 +64,7 @@ export default function SuggestionItem({ item, participants, suggestions, setSug
 
   function Buttons() {
     if (item?.accepted) return <Card.Footer>Accepted</Card.Footer>;
-    
+
     return (
       <Row>
         <Col style={{ paddingRight: 0 }} onClick={remove}>
@@ -77,7 +82,9 @@ export default function SuggestionItem({ item, participants, suggestions, setSug
   }
 
   const speakerName = item.speaker?.userName;
-  const speakerSubtitle = speakerName ? `To be presented by ${speakerName}` : '';
+  const speakerSubtitle = speakerName
+    ? `To be presented by ${speakerName}`
+    : '';
   return (
     <Col lg={12} md={12} sm={12} className="Container__padding--vertical-small">
       <Card>

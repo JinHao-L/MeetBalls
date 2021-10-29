@@ -74,7 +74,7 @@ export default function EditParticipantItem({
         email,
         username,
         oldEmail,
-        oldId
+        oldId,
       );
       meeting.participants[position] = newParticipant;
       syncAgenda(oldId, newParticipant);
@@ -150,7 +150,13 @@ export default function EditParticipantItem({
   );
 }
 
-async function updateDatabase(meetingId, newEmail, newUsername, oldEmail, oldId) {
+async function updateDatabase(
+  meetingId,
+  newEmail,
+  newUsername,
+  oldEmail,
+  oldId,
+) {
   if (oldEmail === newEmail.toLowerCase()) {
     const result = await server.put(
       '/participant',

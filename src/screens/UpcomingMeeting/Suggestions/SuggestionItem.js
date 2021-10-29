@@ -66,7 +66,9 @@ export default function SuggestionItem({
   }
 
   const speakerName = item.speaker?.userName;
-  const speakerSubtitle = speakerName ? `To be presented by ${speakerName}` : '';
+  const speakerSubtitle = speakerName
+    ? `To be presented by ${speakerName}`
+    : '';
 
   return (
     <div

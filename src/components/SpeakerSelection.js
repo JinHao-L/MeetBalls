@@ -1,6 +1,11 @@
-import { Dropdown, DropdownButton } from "react-bootstrap";
+import { Dropdown, DropdownButton } from 'react-bootstrap';
 
-export default function SpeakerSelection({ candidates, current, onSelect, onClear }) {
+export default function SpeakerSelection({
+  candidates,
+  current,
+  onSelect,
+  onClear,
+}) {
   const choices = candidates.map((candidate) => (
     <Dropdown.Item
       key={candidate.userEmail}
@@ -23,9 +28,5 @@ export default function SpeakerSelection({ candidates, current, onSelect, onClea
 }
 
 function ClearSpeakerOption({ onClear }) {
-  return (
-    <Dropdown.Item onClick={onClear} >
-      Remove speaker
-    </Dropdown.Item>
-  );
+  return <Dropdown.Item onClick={onClear}>Remove speaker</Dropdown.Item>;
 }

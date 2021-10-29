@@ -90,7 +90,8 @@ export default function ConfirmInviteModel({
             <ListGroup variant="flush">
               {meeting.participants.length > 0 ? (
                 meeting.participants.map((participant, id) => {
-                  if (participant?.role === 2 || !participant?.userEmail) return null;
+                  if (participant?.role === 2 || !participant?.userEmail)
+                    return null;
                   return <ParticipantItem key={id} participant={participant} />;
                 })
               ) : (
@@ -108,7 +109,8 @@ export default function ConfirmInviteModel({
               onClick={() =>
                 setInviteList(
                   meeting.participants.filter(
-                    (participant) => participant?.role !== 2 && participant?.userEmail,
+                    (participant) =>
+                      participant?.role !== 2 && participant?.userEmail,
                   ),
                 )
               }

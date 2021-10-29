@@ -273,13 +273,15 @@ export default function AddMeetingOverlay({
     return (
       <p>
         Participants and agenda items will be copied over from{' '}
-        <b>{cloneMeeting.name}</b> to the new meeting. Note that speaker
-        and speaker materials will be removed from each agenda item.
+        <b>{cloneMeeting.name}</b> to the new meeting. Note that speaker and
+        speaker materials will be removed from each agenda item.
       </p>
     );
   }
 
-  const title = cloneMeeting ? `Cloning "${cloneMeeting.name}"` : 'Add New Meeting';
+  const title = cloneMeeting
+    ? `Cloning "${cloneMeeting.name}"`
+    : 'Add New Meeting';
   return (
     <Formik
       validationSchema={schema}

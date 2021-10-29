@@ -29,7 +29,6 @@ export default function AddParticipantsModal({
     const ineligibleUsers = candidates.filter((p) => emailSet.has(p.userEmail));
     setDupeCandidates(ineligibleUsers);
     filterInvalidEntries(eligibleUsers);
-
   }, [candidates]);
 
   function filterInvalidEntries(eligibleUsers) {

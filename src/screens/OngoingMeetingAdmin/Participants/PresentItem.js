@@ -56,10 +56,7 @@ export default function PresentItem({
 
 async function unmarkPresent(meeting, setMeeting, position) {
   try {
-    await markParticipantAbsent(
-      meeting.id,
-      meeting.participants[position].id,
-    );
+    await markParticipantAbsent(meeting.id, meeting.participants[position].id);
     meeting.participants[position].timeJoined = null;
     setMeeting(meeting);
   } catch (error) {
