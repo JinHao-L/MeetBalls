@@ -121,7 +121,6 @@ export default function EditAgendaItem({
     if (!participant) throw Error('Speaker should have been selected!');
 
     setSpeaker(participant);
-    console.log(speaker);
     if (!isValidUrl(materials)) setMaterials('');
   }
 

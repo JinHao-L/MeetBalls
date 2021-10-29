@@ -40,10 +40,8 @@ export default function AddParticipantsModal({
     const dupeList = [];
     const invalidList = [];
     const emailSet = new Set();
-    console.log(eligibleUsers);
 
     for (const person of eligibleUsers) {
-      console.log(person);
       const email = person.userEmail;
       const alreadyExists = emailSet.has(email);
       const invalid = !isValidEmail(email);
