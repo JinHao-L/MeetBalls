@@ -26,7 +26,7 @@ import BackgroundPattern from '../../assets/background_pattern2.jpg';
 import { logEvent } from '@firebase/analytics';
 import { googleAnalytics } from '../../services/firebase';
 import { FullLoadingIndicator } from '../../components/FullLoadingIndicator';
-import { useAddToCalendar } from '../../hooks/useAddToCalendar';
+import { AddToCalendar } from '../../components/AddToCalendar';
 import { useRef } from 'react';
 import CloneMeetingButton from '../../components/CloneMeetingButton';
 import { useSocket } from '../../hooks/useSocket';
@@ -45,7 +45,6 @@ export default function UpcomingMeetingScreen() {
 
   const [loading, setLoading] = useState(true);
   const [validId, setValidId] = useState(true);
-  const AddToCalendarComponent = useAddToCalendar(meeting);
 
   const history = useHistory();
   const user = useContext(UserContext);
@@ -245,7 +244,7 @@ export default function UpcomingMeetingScreen() {
             </p>
             <div className="d-grid gap-2">
               <Button onClick={startZoom}>Start Zoom Meeting</Button>
-              <AddToCalendarComponent />
+              <AddToCalendar meeting={meeting} />
               <Button
                 variant="outline-primary"
                 onClick={() => {
