@@ -55,7 +55,7 @@ export default function SuggestionItem({
     }
   }
 
-  if (loading)
+  if (loading) {
     return (
       <Card>
         <div className="Buffer--50px" />
@@ -63,6 +63,10 @@ export default function SuggestionItem({
         <div className="Buffer--50px" />
       </Card>
     );
+  }
+
+  const speakerName = item.speaker?.userName;
+  const speakerSubtitle = speakerName ? `To be presented by ${speakerName}` : '';
 
   return (
     <div
@@ -73,6 +77,7 @@ export default function SuggestionItem({
       <Card>
         <Card.Body>
           <Card.Title>{item.name}</Card.Title>
+          <Card.Subtitle>{speakerSubtitle}</Card.Subtitle>
           <Card.Subtitle>
             {getFormattedDuration(item.expectedDuration)}
           </Card.Subtitle>

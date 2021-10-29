@@ -7,7 +7,7 @@ import { extractError } from '../../utils/extractError';
 import { defaultHeaders } from '../../utils/axiosConfig';
 import { getFormattedDuration } from '../../common/CommonFunctions';
 
-export default function SuggestionItem({ item, suggestions, setSuggestions }) {
+export default function SuggestionItem({ item, participants, suggestions, setSuggestions }) {
   const [editing, setEditing] = useState(false);
   const [isDeleting, setDeleting] = useState(false);
 
@@ -19,6 +19,7 @@ export default function SuggestionItem({ item, suggestions, setSuggestions }) {
     return (
       <EditSuggestionItem
         item={item}
+        participants={participants}
         suggestions={suggestions}
         setSuggestions={setSuggestions}
         setEditing={setEditing}
@@ -56,33 +57,40 @@ export default function SuggestionItem({ item, suggestions, setSuggestions }) {
     setEditing(true);
   }
 
+  function Buttons() {
+    if (item?.accepted) return <Card.Footer>Accepted</Card.Footer>;
+    
+    return (
+      <Row>
+        <Col style={{ paddingRight: 0 }} onClick={remove}>
+          <div className="d-grid gap-2">
+            <Button variant="card-left-danger">Remove</Button>
+          </div>
+        </Col>
+        <Col style={{ paddingLeft: 0 }}>
+          <div className="d-grid gap-2" onClick={edit}>
+            <Button variant="card-right">Edit</Button>
+          </div>
+        </Col>
+      </Row>
+    );
+  }
+
+  const speakerName = item.speaker?.userName;
+  const speakerSubtitle = speakerName ? `To be presented by ${speakerName}` : '';
   return (
     <Col lg={12} md={12} sm={12} className="Container__padding--vertical-small">
       <Card>
         <Card.Body>
           <Card.Title>{item?.name}</Card.Title>
+          <Card.Subtitle>{speakerSubtitle}</Card.Subtitle>
           <Card.Subtitle>
             {getFormattedDuration(item?.expectedDuration)}
           </Card.Subtitle>
           <div className="Buffer--5px" />
           <Card.Text>{item.description}</Card.Text>
         </Card.Body>
-        {item?.accepted ? (
-          <Card.Footer>Accepted</Card.Footer>
-        ) : (
-          <Row>
-            <Col style={{ paddingRight: 0 }} onClick={remove}>
-              <div className="d-grid gap-2">
-                <Button variant="card-left-danger">Remove</Button>
-              </div>
-            </Col>
-            <Col style={{ paddingLeft: 0 }}>
-              <div className="d-grid gap-2" onClick={edit}>
-                <Button variant="card-right">Edit</Button>
-              </div>
-            </Col>
-          </Row>
-        )}
+        <Buttons />
       </Card>
     </Col>
   );

@@ -171,6 +171,7 @@ export default function ParticipantScreen() {
         <SuggestionItem
           item={suggestions[i]}
           key={i}
+          participants={meeting.participants}
           suggestions={suggestions}
           setSuggestions={setSuggestions}
         />,

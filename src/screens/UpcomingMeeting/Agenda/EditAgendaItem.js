@@ -17,6 +17,7 @@ import server from '../../../services/server';
 import { defaultHeaders } from '../../../utils/axiosConfig';
 import { extractError } from '../../../utils/extractError';
 import { uploadFile } from '../../../services/files';
+import SpeakerSelection from '../../../components/SpeakerSelection';
 
 export default function EditAgendaItem({
   setLoading,
@@ -116,32 +117,17 @@ export default function EditAgendaItem({
     }
   }
 
-  function SpeakerItems() {
-    const choices = meeting.participants.map((participant) => (
-      <Dropdown.Item
-        key={participant.userEmail}
-        onClick={() => {
-          setSpeaker(participant);
-          if (!isValidUrl(materials)) {
-            setMaterials('');
-          }
-        }}
-      >
-        {participant.userName}
-      </Dropdown.Item>
-    ));
-    choices.push(
-      <Dropdown.Item
-        key="null choice"
-        onClick={() => {
-          setSpeaker(null);
-          setMaterials('');
-        }}
-      >
-        Remove speaker
-      </Dropdown.Item>,
-    );
-    return choices;
+  function selectSpeaker(participant) {
+    if (!participant) throw Error('Speaker should have been selected!');
+
+    setSpeaker(participant);
+    console.log(speaker);
+    if (!isValidUrl(materials)) setMaterials('');
+  }
+
+  function clearSpeaker() {
+    setSpeaker(null);
+    setMaterials('');
   }
 
   function close() {
@@ -189,13 +175,12 @@ export default function EditAgendaItem({
               onChange={(event) => setDescription(event.target.value)}
             />
             <Form.Label column>Speaker (optional)</Form.Label>
-            <DropdownButton
-              variant="outline-primary"
-              placeholder="Add presenter"
-              title={speaker?.userName || '(No speaker assigned)'}
-            >
-              <SpeakerItems />
-            </DropdownButton>
+            <SpeakerSelection
+              candidates={meeting.participants}
+              current={speaker}
+              onSelect={selectSpeaker}
+              onClear={clearSpeaker}
+            />
             <Form.Group as={Row} hidden={speaker === null}>
               <Form.Label column>Materials (optional)</Form.Label>
               <Form.Label
