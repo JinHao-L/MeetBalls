@@ -65,10 +65,10 @@ export default function UpcomingMeetingScreen() {
   useEffect(() => {
     mounted.current = true;
     populateMeetingInformation();
-    
+
     return () => {
       mounted.current = false;
-    }
+    };
   }, []);
 
   async function populateMeetingInformation() {
