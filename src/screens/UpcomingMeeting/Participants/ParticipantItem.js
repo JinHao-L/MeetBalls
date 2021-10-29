@@ -133,7 +133,10 @@ export default function ParticipantItem({ setMeeting, meeting, position }) {
 
 async function removeFromDatabase(id, meetingId) {
   await server.delete('/participant', {
-    ...defaultHeaders,
+    headers: {
+      ...defaultHeaders.headers,
+      'X-Participant': sessionStorage.getItem(meetingId) || '',
+    },
     data: {
       participants: [{ participantId: id }],
       meetingId: meetingId,

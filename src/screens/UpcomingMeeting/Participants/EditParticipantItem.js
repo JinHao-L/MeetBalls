@@ -74,7 +74,7 @@ export default function EditParticipantItem({
         email,
         username,
         oldEmail,
-        oldId
+        oldId,
       );
       meeting.participants[position] = newParticipant;
       syncAgenda(oldId, newParticipant);
@@ -150,7 +150,13 @@ export default function EditParticipantItem({
   );
 }
 
-async function updateDatabase(meetingId, newEmail, newUsername, oldEmail, oldId) {
+async function updateDatabase(
+  meetingId,
+  newEmail,
+  newUsername,
+  oldEmail,
+  oldId,
+) {
   if (oldEmail === newEmail.toLowerCase()) {
     const result = await server.put(
       '/participant',
@@ -159,7 +165,12 @@ async function updateDatabase(meetingId, newEmail, newUsername, oldEmail, oldId)
         participantId: oldId,
         userName: newUsername,
       },
-      defaultHeaders,
+      {
+        headers: {
+          ...defaultHeaders.headers,
+          'X-Participant': sessionStorage.getItem(meetingId) || '',
+        },
+      },
     );
     return result.data;
   }
@@ -170,7 +181,10 @@ async function updateDatabase(meetingId, newEmail, newUsername, oldEmail, oldId)
         participants: [{ participantId: oldId }],
         meetingId: meetingId,
       },
-      ...defaultHeaders,
+      headers: {
+        ...defaultHeaders.headers,
+        'X-Participant': sessionStorage.getItem(meetingId) || '',
+      },
     });
   }
   const result = await server.post(
@@ -180,7 +194,12 @@ async function updateDatabase(meetingId, newEmail, newUsername, oldEmail, oldId)
       userEmail: newEmail.toLowerCase(),
       userName: newUsername,
     },
-    defaultHeaders,
+    {
+      headers: {
+        ...defaultHeaders.headers,
+        'X-Participant': sessionStorage.getItem(meetingId) || '',
+      },
+    },
   );
   return result.data;
 }
