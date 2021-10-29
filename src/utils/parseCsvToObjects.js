@@ -1,4 +1,5 @@
 import Papa from 'papaparse';
+import { toast } from 'react-toastify';
 
 export default function parseCsvToObjects(
   file,
@@ -17,7 +18,7 @@ export default function parseCsvToObjects(
 
 function errorHandler(err, _) {
   console.error(err);
-  throw err;
+  toast.error('Encountered error parsing CSV');
 }
 
 function successHandler(headers, callback, headerErrMsg = '') {
@@ -28,7 +29,8 @@ function successHandler(headers, callback, headerErrMsg = '') {
     const validFields = headers.every((e) => fields.includes(e));
     if (!validFields) {
       const errMsg = headerErrMsg ? headerErrMsg : 'Headers are incorrect!';
-      throw new Error(errMsg);
+      toast.error(errMsg);
+      return;
     }
 
     const data = response.data;
