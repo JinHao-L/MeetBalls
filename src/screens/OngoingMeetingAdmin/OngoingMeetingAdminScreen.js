@@ -173,11 +173,11 @@ export default function OngoingMeetingAdminScreen() {
       await apiCall(id);
       agenda[position].actualDuration = time - agenda[position].startTime;
       if (isLastItem) {
-        clearMeetingsCache();
         setMeetingStatus(3);
         setShowFeedback(true);
         logEvent(googleAnalytics, 'end_meeting', { meetingId: id });
       }
+      clearMeetingsCache();
       const newPosition = position + 1;
       setPosition(newPosition);
       if (newPosition < agenda.length) {
