@@ -3,6 +3,7 @@ import { markParticipantAbsent } from '../../../services/participants';
 import { toast } from 'react-toastify';
 import { extractError } from '../../../utils/extractError';
 import MarkDuplicateButton from './MarkDuplicateButton';
+import RoleBadge from '../../../components/RoleBadge';
 
 export default function PresentItem({
   meeting,
@@ -26,10 +27,11 @@ export default function PresentItem({
               ? participant.userName
               : 'Guest'}
           </Card.Title>
-
           <Card.Text className="Text__elipsized--1-line">
             {participant.userEmail}
           </Card.Text>
+          <RoleBadge role={participant.role} isPresent={true} />
+          <div className="Buffer--5px" />
         </Card.Body>
         {showButton && participant.role !== 2 && (
           <div className="Container__row--space-between">
@@ -56,10 +58,7 @@ export default function PresentItem({
 
 async function unmarkPresent(meeting, setMeeting, position) {
   try {
-    await markParticipantAbsent(
-      meeting.id,
-      meeting.participants[position].id,
-    );
+    await markParticipantAbsent(meeting.id, meeting.participants[position].id);
     meeting.participants[position].timeJoined = null;
     setMeeting(meeting);
   } catch (error) {

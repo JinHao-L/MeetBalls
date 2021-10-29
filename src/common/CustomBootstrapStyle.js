@@ -263,6 +263,11 @@ export default function CustomBootstrapStyle() {
       color: white;
     }
 
+    .bg-warning {
+      background-color: #edb124!important;
+      color: white;
+    }
+
     .bg-landing1 {
       background-color: #9CA5B7!important;
     }
