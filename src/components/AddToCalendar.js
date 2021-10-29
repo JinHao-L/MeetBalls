@@ -19,7 +19,6 @@ export const AddToCalendar = ({ meeting }) => {
   useEffect(() => {
     if (open) {
       const onClose = (event) => {
-        console.log(event)
         if (event.target?.id !== 'calendar-button') {
           setOpen(false);
         }
@@ -53,7 +52,7 @@ export const AddToCalendar = ({ meeting }) => {
     });
   }, [meeting]);
 
-  if (!urls) return;
+  if (!urls) return null;
   return (
     <div className="chq-atc">
       <button
