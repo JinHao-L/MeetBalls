@@ -7,11 +7,12 @@ export default function parseCsvToObjects(
   onSuccess,
   headerErrMsg = '',
 ) {
+  const callback = successHandler(headers, onSuccess, headerErrMsg);
   const config = {
     header: true,
     skipEmptyLines: true,
     error: errorHandler,
-    complete: successHandler(headers, onSuccess, headerErrMsg),
+    complete: callback,
   };
   Papa.parse(file, config);
 }

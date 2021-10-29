@@ -9,8 +9,7 @@ import ImportModal from './ImportModal';
 const PARTICIPANTS_HEADER_ERROR =
   'Invalid header row! Columns should be labeled "Name" and "Email" (case-specific)!';
 
-  export default function ParticipantItemList({ meeting, setMeeting }) {
-  const [loading, setLoading] = useState(false);
+export default function ParticipantItemList({ meeting, setMeeting }) {
   const [showAddModal, setShowAddModal] = useState(false);
   const [newParticipants, setNewParticipants] = useState([]);
   const mounted = useRef(true);
@@ -22,32 +21,23 @@ const PARTICIPANTS_HEADER_ERROR =
   }, []);
 
   function uploadParticipants(file) {
-    setLoading(true);
-    if (!file) {
-      setLoading(false);
-      return;
-    }
+    if (!file) return;
+
     const fileNameSplit = file.name.split('.');
     const fileExtension = fileNameSplit[fileNameSplit.length - 1];
-    if (fileExtension !== 'csv') {
-      setLoading(false);
-      throw new Error('Invalid file type!');
-    }
+    if (fileExtension !== 'csv') throw new Error('Invalid file type!');
     parseCsvToObjects(
       file,
       ['Name', 'Email'],
       presentModal,
       PARTICIPANTS_HEADER_ERROR,
     );
-    setShowImportModal(false);
-    setShowAddModal(true);
-    setLoading(false);
   }
 
   function presentModal(fileContents) {
     const participants = convertToParticipants(meeting.id, fileContents);
     setNewParticipants(participants);
-    setLoading(false);
+    setShowImportModal(false);
     setShowAddModal(true);
   }
 
