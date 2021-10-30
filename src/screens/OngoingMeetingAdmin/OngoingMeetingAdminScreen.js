@@ -233,7 +233,7 @@ export default function OngoingMeetingAdminScreen() {
   const LaunchZoomButton = useCallback(() => {
     return (
       <Button
-        variant="outline-primary"
+        variant="primary"
         onClick={startZoom}
         disabled={meetingStatus === 3}
       >
@@ -283,8 +283,17 @@ export default function OngoingMeetingAdminScreen() {
             <p className="Text__subheader">
               {getFormattedDateTime(meeting.startedAt)}
             </p>
+            <Card border="primary" bg="secondary">
+              <Card.Body>
+                <Card.Subtitle>Meeting ID</Card.Subtitle>
+                <Card.Text>{meeting?.meetingId}</Card.Text>
+                <Card.Subtitle>Password</Card.Subtitle>
+                <Card.Text>{meeting?.meetingPassword}</Card.Text>
+                <LaunchZoomButton />
+              </Card.Body>
+            </Card>
+            <div className="Buffer--10px" />
             <div className="d-grid gap-2">
-              <LaunchZoomButton />
               {meetingStatus === 1 ? (
                 <>
                   <AddToCalendar meeting={meeting} />
