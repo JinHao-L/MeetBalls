@@ -19,6 +19,7 @@ import { googleAnalytics } from '../../services/firebase';
 import SuggestionItem from './SuggestionItem';
 import { FullLoadingIndicator } from '../../components/FullLoadingIndicator';
 import { AddToCalendar } from '../../components/AddToCalendar';
+import useDocumentTitle from '../../hooks/useDocumentTitle';
 
 const JOINER_KEY = 'joiner';
 const NAME_KEY = 'name';
@@ -38,6 +39,7 @@ export default function ParticipantScreen() {
   const joinerId = params.get(JOINER_KEY);
   const name = params.get(NAME_KEY);
   const history = useHistory();
+  useDocumentTitle(meeting.name);
 
   useEffect(() => {
     if (!joinerId) {
@@ -46,7 +48,7 @@ export default function ParticipantScreen() {
       return;
     }
     pullSuggestions();
-    return pullMeeting()
+    pullMeeting()
       .then(() => {
         setValidId(true);
         logEvent(googleAnalytics, 'visit_participant_screen', {
