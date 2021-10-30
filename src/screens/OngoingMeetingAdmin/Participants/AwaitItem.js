@@ -3,6 +3,7 @@ import { markParticipantPresent } from '../../../services/participants';
 import { toast } from 'react-toastify';
 import { extractError } from '../../../utils/extractError';
 import MarkDuplicateButton from './MarkDuplicateButton';
+import RoleBadge from '../../../components/RoleBadge';
 
 export default function AwaitItem({
   meeting,
@@ -23,11 +24,7 @@ export default function AwaitItem({
       lg={6}
       style={{ padding: 'auto' }}
     >
-      <Card
-        bg={showButton ? null : 'danger'}
-        text={showButton ? 'dark' : 'light'}
-        style={{ height: '100%' }}
-      >
+      <Card style={{ height: '100%', position: 'relative' }}>
         <Card.Body>
           <Card.Title className="Text__elipsized--1-line">
             {displayName}
@@ -35,6 +32,8 @@ export default function AwaitItem({
           <Card.Text className="Text__elipsized--1-line">
             {participant.userEmail}
           </Card.Text>
+          <RoleBadge role={participant.role} isPresent={false} />
+          <div className="Buffer--5px" />
         </Card.Body>
         {showButton && participant.role !== 2 && (
           <div className="Container__row--space-between">
@@ -61,10 +60,7 @@ export default function AwaitItem({
 
 async function markPresent(meeting, setMeeting, position) {
   try {
-    await markParticipantPresent(
-      meeting.id,
-      meeting.participants[position].id,
-    );
+    await markParticipantPresent(meeting.id, meeting.participants[position].id);
     meeting.participants[position].timeJoined = new Date().toISOString();
     setMeeting(meeting);
   } catch (error) {
