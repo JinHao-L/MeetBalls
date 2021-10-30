@@ -131,6 +131,7 @@ export default function EditParticipantItem({
                 defaultValue={email}
                 onChange={(event) => setEmail(event.target.value)}
               />
+              <Form.Label column/>
               <Form.Check
                 type={'checkbox'}
                 label={'Co-host'}
