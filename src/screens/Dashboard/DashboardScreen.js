@@ -40,10 +40,8 @@ export default function DashboardScreen() {
 
   useEffect(() => {
     logEvent(googleAnalytics, 'visit_dashboard');
-  }, []);
-
-  useEffect(() => {
     setBanner(getBanner);
+    return () => clearMeetingsCache();
   }, []);
 
   useEffect(() => {
