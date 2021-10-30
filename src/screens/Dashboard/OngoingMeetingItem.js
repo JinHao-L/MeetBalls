@@ -11,7 +11,7 @@ export default function OngoingMeetingItem({ meeting }) {
     return (
       <div className="Card__dashboard-content">
         <Card.Title className="Text__elipsized--1-line">
-          <Badge style={{ marginRight: 5 }}>Ongoing</Badge>
+          <Badge style={{ marginRight: 10 }}>Ongoing</Badge>
           {meeting.name}
         </Card.Title>
         <div className="Buffer--10px" />

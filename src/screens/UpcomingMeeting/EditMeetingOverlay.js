@@ -131,7 +131,12 @@ async function updateDatabase(newMeeting) {
       enableTranscription: newMeeting.enableTranscription,
       startedAt: newMeeting.startedAt,
     },
-    defaultHeaders,
+    {
+      headers: {
+        ...defaultHeaders.headers,
+        'X-Participant': sessionStorage.getItem(newMeeting.id) || '',
+      },
+    },
   );
   clearMeetingsCache();
 }

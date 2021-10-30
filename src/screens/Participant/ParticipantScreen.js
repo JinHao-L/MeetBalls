@@ -18,7 +18,7 @@ import { logEvent } from '@firebase/analytics';
 import { googleAnalytics } from '../../services/firebase';
 import SuggestionItem from './SuggestionItem';
 import { FullLoadingIndicator } from '../../components/FullLoadingIndicator';
-import { useAddToCalendar } from '../../hooks/useAddToCalendar';
+import { AddToCalendar } from '../../components/AddToCalendar';
 
 const JOINER_KEY = 'joiner';
 const NAME_KEY = 'name';
@@ -38,7 +38,6 @@ export default function ParticipantScreen() {
   const joinerId = params.get(JOINER_KEY);
   const name = params.get(NAME_KEY);
   const history = useHistory();
-  const AddToCalendarComponent = useAddToCalendar(meeting);
 
   useEffect(() => {
     if (!joinerId) {
@@ -231,7 +230,7 @@ export default function ParticipantScreen() {
                   <Button onClick={() => history.push('/ongoing/' + id)}>
                     Go to Meeting
                   </Button>
-                  <AddToCalendarComponent />
+                  <AddToCalendar meeting={meeting} />
                 </div>
                 <div className="Buffer--50px" />
               </Col>

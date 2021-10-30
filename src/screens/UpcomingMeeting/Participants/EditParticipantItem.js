@@ -18,6 +18,7 @@ export default function EditParticipantItem({
   const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState(participant.userEmail);
   const [username, setUsername] = useState(participant.userName);
+  const [isCoHost, toggleCoHost] = useState(participant.role === 3);
   const mounted = useRef(true);
 
   useEffect(() => {
@@ -56,12 +57,16 @@ export default function EditParticipantItem({
       return;
     }
 
-    if (participant.userName === username && participant.userEmail === email) {
+    if (
+      participant.userName === username &&
+      participant.userEmail === email &&
+      isCoHost === (participant.role === 3)
+    ) {
       setEditing(false);
       return;
     }
 
-    if (participant.userName === username && checkForDuplicate()) {
+    if (participant.userEmail !== email && checkForDuplicate()) {
       toast.error(`Participant with email ${email} already exist`);
       return;
     }
@@ -73,6 +78,7 @@ export default function EditParticipantItem({
         meeting.id,
         email,
         username,
+        isCoHost,
         oldEmail,
         oldId,
       );
@@ -125,6 +131,13 @@ export default function EditParticipantItem({
                 defaultValue={email}
                 onChange={(event) => setEmail(event.target.value)}
               />
+              <Form.Label column/>
+              <Form.Check
+                type={'checkbox'}
+                label={'Co-host'}
+                checked={isCoHost}
+                onChange={() => toggleCoHost((prev) => !prev)}
+              />
             </Form.Group>
             <div className="Buffer--10px" />
           </Card.Body>
@@ -154,6 +167,7 @@ async function updateDatabase(
   meetingId,
   newEmail,
   newUsername,
+  isCoHost,
   oldEmail,
   oldId,
 ) {
@@ -164,8 +178,14 @@ async function updateDatabase(
         meetingId: meetingId,
         participantId: oldId,
         userName: newUsername,
+        role: isCoHost ? 3 : 1,
       },
-      defaultHeaders,
+      {
+        headers: {
+          ...defaultHeaders.headers,
+          'X-Participant': sessionStorage.getItem(meetingId) || '',
+        },
+      },
     );
     return result.data;
   }
@@ -176,7 +196,10 @@ async function updateDatabase(
         participants: [{ participantId: oldId }],
         meetingId: meetingId,
       },
-      ...defaultHeaders,
+      headers: {
+        ...defaultHeaders.headers,
+        'X-Participant': sessionStorage.getItem(meetingId) || '',
+      },
     });
   }
   const result = await server.post(
@@ -185,8 +208,14 @@ async function updateDatabase(
       meetingId: meetingId,
       userEmail: newEmail.toLowerCase(),
       userName: newUsername,
+      role: isCoHost ? 3 : 1,
     },
-    defaultHeaders,
+    {
+      headers: {
+        ...defaultHeaders.headers,
+        'X-Participant': sessionStorage.getItem(meetingId) || '',
+      },
+    },
   );
   return result.data;
 }

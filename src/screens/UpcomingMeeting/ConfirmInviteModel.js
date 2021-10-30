@@ -24,7 +24,12 @@ export default function ConfirmInviteModel({
       const inviteResponse = await server.post(
         `/participant/send-multiple-invites`,
         { participants },
-        defaultHeaders,
+        {
+          headers: {
+            ...defaultHeaders.headers,
+            'X-Participant': sessionStorage.getItem(meeting.id) || '',
+          },
+        },
       );
       const inviteData = inviteResponse.data.data;
       const successes = inviteData.filter((status) => status.success).length;

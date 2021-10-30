@@ -59,7 +59,7 @@ export default function UpcomingMeetingItem({
       <div className="Card__dashboard-content">
         {isOverdue ? (
           <Card.Title className="Text__elipsized--1-line">
-            <Badge bg="danger" style={{ marginRight: 5 }}>
+            <Badge bg="danger" style={{ marginRight: 10 }}>
               Overdue
             </Badge>
             {meeting.name}

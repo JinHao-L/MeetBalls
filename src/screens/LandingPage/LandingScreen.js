@@ -143,7 +143,7 @@ export default function LandingScreen() {
                   top: 0,
                   left: 0,
                 }}
-                src={'https://www.youtube.com/embed/c8qQhg3S80s'}
+                src={'https://www.youtube.com/embed/Ru1LYvjYynk'}
                 frameBorder={0}
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                 allowFullScreen

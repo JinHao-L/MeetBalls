@@ -195,7 +195,12 @@ export default function AgendaItem({
 }
 
 async function removeFromDatabase(meetingId, position) {
-  await server.delete(`/agenda-item/${meetingId}/${position}`, defaultHeaders);
+  await server.delete(`/agenda-item/${meetingId}/${position}`, {
+    headers: {
+      ...defaultHeaders.headers,
+      'X-Participant': sessionStorage.getItem(meetingId) || '',
+    },
+  });
 }
 
 const renderTooltip = (props) => (

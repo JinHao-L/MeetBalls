@@ -26,7 +26,7 @@ import BackgroundPattern from '../../assets/background_pattern2.jpg';
 import { logEvent } from '@firebase/analytics';
 import { googleAnalytics } from '../../services/firebase';
 import { FullLoadingIndicator } from '../../components/FullLoadingIndicator';
-import { useAddToCalendar } from '../../hooks/useAddToCalendar';
+import { AddToCalendar } from '../../components/AddToCalendar';
 import { useRef } from 'react';
 import CloneMeetingButton from '../../components/CloneMeetingButton';
 import { useSocket } from '../../hooks/useSocket';
@@ -45,7 +45,6 @@ export default function UpcomingMeetingScreen() {
 
   const [loading, setLoading] = useState(true);
   const [validId, setValidId] = useState(true);
-  const AddToCalendarComponent = useAddToCalendar(meeting);
 
   const history = useHistory();
   const user = useContext(UserContext);
@@ -86,8 +85,10 @@ export default function UpcomingMeetingScreen() {
   async function getSuggestions(meetingId) {
     try {
       const response = await server.get(`/suggestion/${meetingId}`, {
-        ...defaultHeaders.headers,
-        'X-Participant': sessionStorage.getItem(meetingId) || '',
+        headers: {
+          ...defaultHeaders.headers,
+          'X-Participant': sessionStorage.getItem(id) || '',
+        },
       });
       if (response.status !== 200) return;
       const result = response.data;
@@ -109,9 +110,10 @@ export default function UpcomingMeetingScreen() {
       }
     });
 
-    socket.on('agendaUpdated', function (_) {
-      pullMeeting();
-    });
+    // re-implement when allow co-host control in edit screen
+    // socket.on('agendaUpdated', function (_) {
+    //   pullMeeting();
+    // });
 
     socket.on('suggestionUpdated', function (item) {
       const update = JSON.parse(item);
@@ -220,7 +222,7 @@ export default function UpcomingMeetingScreen() {
   if (!loading && !validId)
     return <RedirectionScreen message={MEETING_NOT_FOUND_ERR} />;
 
-  if (meeting.id !== '' && user?.uuid !== meeting.hostId)
+  if (meeting.id !== '' && (user?.uuid !== meeting.hostId))
     return <RedirectionScreen message={BAD_MEETING_PERMS_MSG} />;
 
   if (meeting.type !== undefined && meeting.type !== 1) {
@@ -256,7 +258,7 @@ export default function UpcomingMeetingScreen() {
             </p>
             <div className="d-grid gap-2">
               <Button onClick={startZoom}>Start Zoom Meeting</Button>
-              <AddToCalendarComponent />
+              <AddToCalendar meeting={meeting} />
               <Button
                 variant="outline-primary"
                 onClick={() => {
