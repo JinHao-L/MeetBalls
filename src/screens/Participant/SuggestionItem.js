@@ -5,7 +5,6 @@ import { toast } from 'react-toastify';
 import server from '../../services/server';
 import { extractError } from '../../utils/extractError';
 import { defaultHeaders } from '../../utils/axiosConfig';
-import { getFormattedDuration } from '../../common/CommonFunctions';
 import AgendaItemInfoSection from '../../components/AgendaItemComponents';
 
 export default function SuggestionItem({

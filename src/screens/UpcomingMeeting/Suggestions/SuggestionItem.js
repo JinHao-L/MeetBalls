@@ -1,5 +1,4 @@
 import { Card, Row, Col, Button } from 'react-bootstrap';
-import { getFormattedDuration } from '../../../common/CommonFunctions';
 import server from '../../../services/server';
 import { extractError } from '../../../utils/extractError';
 import { defaultHeaders } from '../../../utils/axiosConfig';
@@ -65,11 +64,6 @@ export default function SuggestionItem({
       </Card>
     );
   }
-
-  const speakerName = item.speaker?.userName;
-  const speakerSubtitle = speakerName
-    ? `To be presented by ${speakerName}`
-    : '';
 
   return (
     <div
