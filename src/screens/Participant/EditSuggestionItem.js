@@ -13,9 +13,11 @@ import { toast } from 'react-toastify';
 import server from '../../services/server';
 import { extractError } from '../../utils/extractError';
 import { defaultHeaders } from '../../utils/axiosConfig';
+import SpeakerSelection from '../../components/SpeakerSelection';
 
 export default function EditSuggestionItem({
   item,
+  participants,
   suggestions,
   setSuggestions,
   setEditing,
@@ -23,6 +25,7 @@ export default function EditSuggestionItem({
   const [name, setName] = useState(item.name);
   const [description, setDescription] = useState(item.description);
   const [duration, setDuration] = useState(item.expectedDuration);
+  const [speaker, setSpeaker] = useState(item.speaker || null);
 
   function DurationItems() {
     return durationMinutes.map((duration) => (
@@ -60,6 +63,7 @@ export default function EditSuggestionItem({
       name: name,
       description: description,
       expectedDuration: duration,
+      speakerId: speaker?.id,
     };
     if (item.name.length === 0) {
       try {
@@ -96,6 +100,7 @@ export default function EditSuggestionItem({
         item.name = name;
         item.description = description;
         item.expectedDuration = duration;
+        item.speaker = speaker;
         setEditing(false);
       } catch (err) {
         toast.error(extractError(err));
@@ -128,6 +133,13 @@ export default function EditSuggestionItem({
               as="textarea"
               defaultValue={description}
               onChange={(event) => setDescription(event.target.value)}
+            />
+            <Form.Label column>Speaker (optional)</Form.Label>
+            <SpeakerSelection
+              candidates={participants}
+              current={speaker}
+              onSelect={setSpeaker}
+              onClear={() => setSpeaker(null)}
             />
           </Form.Group>
         </Card.Body>

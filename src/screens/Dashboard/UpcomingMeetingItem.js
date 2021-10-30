@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { Card, Col, Row } from 'react-bootstrap';
+import { Badge, Card, Col, Row } from 'react-bootstrap';
 import { getDateInfo } from '../../common/CommonFunctions';
 import { useHistory } from 'react-router';
 import ConfirmDeleteModal from './ConfirmDeleteModal';
@@ -8,7 +8,7 @@ import PropTypes from 'prop-types';
 import { toast } from 'react-toastify';
 import { SmallLoadingIndicator } from '../../components/SmallLoadingIndicator';
 import unmount from '../../utils/unmount';
-import { FaTrash, FaClone, FaEdit, FaVideo } from 'react-icons/fa';
+import { FaTrash, FaRegClone, FaEdit, FaVideo } from 'react-icons/fa';
 
 export default function UpcomingMeetingItem({
   meeting,
@@ -52,11 +52,23 @@ export default function UpcomingMeetingItem({
   }
 
   function Details() {
+    const date = new Date(meeting?.startedAt);
+    const isOverdue = date < new Date();
+
     return (
       <div className="Card__dashboard-content">
-        <Card.Title className="Text__elipsized--1-line">
-          {meeting.name}
-        </Card.Title>
+        {isOverdue ? (
+          <Card.Title className="Text__elipsized--1-line">
+            <Badge bg="danger" style={{ marginRight: 10 }}>
+              Overdue
+            </Badge>
+            {meeting.name}
+          </Card.Title>
+        ) : (
+          <Card.Title className="Text__elipsized--1-line">
+            {meeting.name}
+          </Card.Title>
+        )}
         <div className="Buffer--10px" />
         <Card.Subtitle className="Text__elipsized--1-line">
           {dateInfo.date} {dateInfo.startTime}
@@ -87,7 +99,7 @@ export default function UpcomingMeetingItem({
           }}
           className="Toggle__card"
         >
-          <FaClone />
+          <FaRegClone />
           Clone
         </Col>
         <Col

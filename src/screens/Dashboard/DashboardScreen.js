@@ -14,8 +14,13 @@ import { UserContext } from '../../context/UserContext';
 import AppFooter from '../../components/AppFooter';
 import { LoadingIndicator } from '../../components/LoadingIndicator';
 import unmount from '../../utils/unmount';
+import { useHistory, useLocation } from 'react-router';
+import { getMeeting } from '../../services/meeting';
+
+const INVALID_CLONE_ID_ERR = 'Invalid meeting ID given, could not be cloned';
 
 export default function DashboardScreen() {
+  const user = useContext(UserContext);
   const [upcoming, setUpcoming] = useState([]);
   const [upcomingCount, setUpcomingCount] = useState(0);
   const [meetingHistory, setHistory] = useState([]);
@@ -23,24 +28,40 @@ export default function DashboardScreen() {
   const [showOverlay, setShowOverlay] = useState(false);
   const [cloneMeeting, setCloneMeeting] = useState(null);
   const [banner, setBanner] = useState('');
-  const user = useContext(UserContext);
   const [activePage, setActivePage] = useState(1);
   const [totalPage, setTotalPage] = useState(1);
 
   const mounted = useRef(true);
 
+  const { search } = useLocation();
+  const params = new URLSearchParams(search);
+  const cloneId = params.get('clone');
+  const history = useHistory();
+
   useEffect(() => {
     logEvent(googleAnalytics, 'visit_dashboard');
-  }, []);
-
-  useEffect(() => {
     setBanner(getBanner);
+    return () => clearMeetingsCache();
   }, []);
 
   useEffect(() => {
+    function onValidCloneId(toClone) {
+      setCloneMeeting(toClone);
+      setShowOverlay(true);
+      history.replace('/home');
+    }
+
+    function onInvalidCloneId() {
+      toast.error(INVALID_CLONE_ID_ERR);
+      history.replace('/home');
+    }
+
     mounted.current = true;
     setLoading(true);
     populateMeetings();
+    if (cloneId) {
+      verifyClone(cloneId, onValidCloneId, onInvalidCloneId);
+    }
 
     return unmount(mounted, 'DashboardScreen');
   }, [activePage]);
@@ -51,7 +72,6 @@ export default function DashboardScreen() {
     return pullMeetings(activePage, limit)
       .then((meetings) => {
         if (!mounted.current) return;
-        console.log(meetings.count);
         setUpcoming(meetings.upcoming);
         setUpcomingCount(meetings.count.upcoming);
         setTotalPage(meetings.count.pages);
@@ -64,19 +84,22 @@ export default function DashboardScreen() {
       });
   }, [activePage]);
 
-  function checkIfExist(id) {
-    for (let i = 0; i < upcoming.length; i++) {
-      if (upcoming[i].zoomUuid === id) {
-        return true;
+  const checkIfExist = useCallback(
+    (id) => {
+      for (let i = 0; i < upcoming.length; i++) {
+        if (upcoming[i].zoomUuid === id) {
+          return true;
+        }
       }
-    }
-    for (let i = 0; i < meetingHistory.length; i++) {
-      if (meetingHistory[i].zoomUuid === id) {
-        return true;
+      for (let i = 0; i < meetingHistory.length; i++) {
+        if (meetingHistory[i].zoomUuid === id) {
+          return true;
+        }
       }
-    }
-    return false;
-  }
+      return false;
+    },
+    [upcoming, meetingHistory],
+  );
 
   const PaginationButtons = useCallback(() => {
     let items = [];
@@ -237,4 +260,14 @@ function FeedbackToggle() {
       </div>
     </a>
   );
+}
+
+async function verifyClone(id, ifValid, ifFail) {
+  try {
+    const response = await getMeeting(id);
+    const meeting = response.data;
+    if (meeting) ifValid(meeting);
+  } catch (e) {
+    return ifFail();
+  }
 }

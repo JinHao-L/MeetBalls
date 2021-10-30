@@ -1,10 +1,11 @@
 import DatePicker from 'react-datepicker';
 import { useState, useEffect } from 'react';
-import { Offcanvas, Form, Button, Card } from 'react-bootstrap';
+import { Offcanvas, Form, Button, Card, Col, Row } from 'react-bootstrap';
 import { useHistory } from 'react-router';
 import { defaultHeaders } from '../../utils/axiosConfig';
 import * as yup from 'yup';
 import { Formik } from 'formik';
+import { FaSyncAlt } from 'react-icons/fa';
 
 import 'react-datepicker/dist/react-datepicker.css';
 import server from '../../services/server';
@@ -26,34 +27,39 @@ export default function AddMeetingOverlay({
   cloneMeeting,
 }) {
   const [loading, setLoading] = useState(false);
-  const [showZoomList, setShowZoomList] = useState(false);
-  const [zoomMeetingList, setZoomMeetingList] = useState([]);
+  const [showZoomList, setShowZoomList] = useState(true);
+  const [fullZoomList, setFullZoomList] = useState([]);
+  const [filteredZoomList, setFilteredZoomList] = useState([]);
   const [isZoomMeeting, setIsZoomMeeting] = useState(false);
   const [searched, setSearched] = useState(false);
   const history = useHistory();
 
   useEffect(() => {
-    if (showZoomList && !searched) {
+    if (show && !searched) {
       return getZoomMeetingList();
     }
-  }, [showZoomList]);
+  }, [show]);
+
+  useEffect(() => {
+    const filteredList = [];
+    fullZoomList.forEach((meeting) => {
+      if (
+        !filteredList.find((added) => added.uuid === meeting.uuid) &&
+        !checkIfExist(meeting.uuid)
+      ) {
+        filteredList.push(meeting);
+      }
+    });
+    setFilteredZoomList(filteredList);
+  }, [fullZoomList, checkIfExist]);
 
   async function getZoomMeetingList() {
     try {
       setLoading(true);
       const response = await server.get(`/zoom/meetings`, defaultHeaders);
-      const result = response.data;
       if (response.status !== 200) return;
-      const filteredList = [];
-      result.forEach((meeting) => {
-        if (
-          !filteredList.find((added) => added.uuid === meeting.uuid) &&
-          !checkIfExist(meeting.uuid)
-        ) {
-          filteredList.push(meeting);
-        }
-      });
-      setZoomMeetingList(filteredList);
+      const result = response.data;
+      setFullZoomList(result);
     } catch (err) {
       toast.error(extractError(err));
     } finally {
@@ -88,6 +94,7 @@ export default function AddMeetingOverlay({
       .post('/meeting', newMeeting, defaultHeaders)
       .then((res) => {
         onUpdate();
+        setSearched(false);
         const id = res.data.id;
         setShow(false);
         logEvent(googleAnalytics, 'created_meeting', { meetingId: id });
@@ -111,8 +118,8 @@ export default function AddMeetingOverlay({
 
       const start = meeting.start_time;
       const startField = start ? new Date(start) : new Date();
-      setFieldValue('name', meeting.topic);
-      setFieldValue('desc', meeting.agenda || '');
+      setFieldValue('name', cloneMeeting?.name || meeting.topic);
+      setFieldValue('desc', cloneMeeting?.description || meeting.agenda || '');
       setFieldValue('meetingId', meeting.id);
       setFieldValue('meetingPassword', zoomMeeting.password);
       setFieldValue('link', meeting.join_url);
@@ -236,7 +243,7 @@ export default function AddMeetingOverlay({
 
   function ZoomMeetingList({ setFieldValue }) {
     const items = [];
-    zoomMeetingList.forEach((meeting, idx) => {
+    filteredZoomList.forEach((meeting, idx) => {
       const startTime = meeting.start_time;
       const dateStr = startTime
         ? getFormattedDateTime(new Date(startTime))
@@ -264,10 +271,30 @@ export default function AddMeetingOverlay({
     setShow(false);
     setSearched(false);
     setIsZoomMeeting(false);
-    setShowZoomList(false);
+    setShowZoomList(true);
     handleReset();
   }
 
+  function CloneDescriptionText() {
+    if (!cloneMeeting) return null;
+    return (
+      <p>
+        Participants and agenda items will be copied over from{' '}
+        <b>{cloneMeeting.name}</b> to the new meeting. Note that speaker and
+        speaker materials will be removed from each agenda item.
+      </p>
+    );
+  }
+
+  function ZoomMeetingText() {
+    return (
+      <p>Below are your upcoming Zoom meetings.</p>
+    );
+  }
+
+  const title = cloneMeeting
+    ? `Cloning "${cloneMeeting.name}"`
+    : 'Add New Meeting';
   return (
     <Formik
       validationSchema={schema}
@@ -285,36 +312,50 @@ export default function AddMeetingOverlay({
       }) => (
         <Offcanvas show={show} onHide={() => onClose(handleReset)}>
           <Offcanvas.Header closeButton>
-            <Offcanvas.Title>
-              {cloneMeeting === null
-                ? 'Add New Meeting'
-                : 'Cloning "' + cloneMeeting.name + '"'}
-            </Offcanvas.Title>
+            <Offcanvas.Title>{title}</Offcanvas.Title>
           </Offcanvas.Header>
           <Offcanvas.Body>
-            {cloneMeeting === null ? null : (
-              <p>
-                Participants and agenda items will be copied over from{' '}
-                <b>{cloneMeeting.name}</b> to the new meeting. Note that speaker
-                and speaker materials will be removed from each agenda item.
-              </p>
-            )}
+            <CloneDescriptionText />
             <div className="d-grid gap-2">
               <Button
                 variant="primary"
                 onClick={() => setShowZoomList(!showZoomList)}
               >
-                {showZoomList ? 'Cancel' : 'Select from Zoom'}
+                {showZoomList ? 'Add Manually' : 'Cancel'}
               </Button>
+              <div className="Buffer--10px" />
+              <div className="Line--horizontal" />
+              <div className="Buffer--10px" />
               {!showZoomList || (
-                <Button
-                  variant="outline-primary"
-                  onClick={() => {
-                    openLinkInNewTab('https://zoom.us/meeting/schedule');
-                  }}
-                >
-                  New Zoom Meeting
-                </Button>
+                <Row>
+                  <Col
+                    className="d-grid gap-2"
+                    xs={9}
+                    style={{ paddingRight: 5 }}
+                  >
+                    <Button
+                      variant="outline-primary"
+                      onClick={() => {
+                        openLinkInNewTab('https://zoom.us/meeting/schedule');
+                      }}
+                    >
+                      New Zoom Meeting
+                    </Button>
+                  </Col>
+                  <Col
+                    className="d-grid gap-2"
+                    xs={3}
+                    style={{ paddingLeft: 5 }}
+                  >
+                    <Button
+                      variant="outline-primary"
+                      onClick={getZoomMeetingList}
+                      disabled={loading}
+                    >
+                      <FaSyncAlt />
+                    </Button>
+                  </Col>
+                </Row>
               )}
             </div>
             {loading ? (
@@ -324,21 +365,15 @@ export default function AddMeetingOverlay({
               </>
             ) : (
               <>
-                <div className="Buffer--20px" />
-                <div className="Line--horizontal" />
-                <div className="Buffer--20px" />
                 {!loading && showZoomList ? (
                   <>
-                    <div className="d-grid gap-2">
-                      <Button
-                        variant="outline-primary"
-                        onClick={getZoomMeetingList}
-                      >
-                        Refresh
-                      </Button>
-                    </div>
                     <div className="Buffer--20px" />
-                    <ZoomMeetingList setFieldValue={setFieldValue} />
+                    <ZoomMeetingText />
+                    {filteredZoomList.length > 0 ? (
+                      <ZoomMeetingList setFieldValue={setFieldValue} />
+                    ) : (
+                      <p className="Text__hint">- No upcoming zoom meetings -</p>
+                    )}
                   </>
                 ) : (
                   <ManualInput
@@ -392,6 +427,7 @@ async function fillItems(newMeeting, cloneMeeting) {
     defaultHeaders,
   );
   if (response.status !== 200) return;
+
   const result = response.data;
   if (result.agendaItems.length > 0) {
     result.agendaItems.forEach((item) => {

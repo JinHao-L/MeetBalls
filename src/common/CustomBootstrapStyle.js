@@ -249,8 +249,7 @@ export default function CustomBootstrapStyle() {
     }
 
     .bg-secondary {
-      background-color: #f28f71!important;
-      color: white;
+      background-color: #fffaf5!important;
     }
 
     .bg-success {
@@ -260,6 +259,11 @@ export default function CustomBootstrapStyle() {
 
     .bg-danger {
       background-color: #f65454!important;
+      color: white;
+    }
+
+    .bg-warning {
+      background-color: #edb124!important;
       color: white;
     }
 
@@ -312,10 +316,21 @@ export default function CustomBootstrapStyle() {
       padding-right: 20px;
     }
 
+    .nav-tabs .nav-item.show .nav-link:hover, .nav-tabs .nav-link.active:hover {
+      background-color: #8F6B58;
+      color: white;
+      border-radius: 20px;
+      text-align: center;
+      margin-right: 10px;
+      margin-bottom: 10px;
+      padding-left: 20px;
+      padding-right: 20px;
+    }
+
+
     .nav-tabs .nav-link {
       color: #8F6B58;
       border-radius: 20px;
-      border-color: #8F6B58;
       text-align: center;
       margin-right: 10px;
       margin-bottom: 10px;
@@ -328,9 +343,8 @@ export default function CustomBootstrapStyle() {
     }
 
     .nav-tabs .nav-link:hover {
-      border-color: #725546;
-      background-color: #725546;
-      color: white;
+      border-color: #f2f2f2;
+      background-color: #f2f2f2;
     }
 
     .card .card-text {

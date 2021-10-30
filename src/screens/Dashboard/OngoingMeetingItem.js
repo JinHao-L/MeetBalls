@@ -1,18 +1,23 @@
-import { Card, Col, Row } from 'react-bootstrap';
+import { Badge, Card, Col, Row } from 'react-bootstrap';
 import { useHistory } from 'react-router';
 import { FaEye } from 'react-icons/fa';
+import { getDateInfo } from '../../common/CommonFunctions';
 
 export default function OngoingMeetingItem({ meeting }) {
   const history = useHistory();
+  const dateInfo = getDateInfo(meeting.startedAt, meeting.duration);
 
   function Details() {
     return (
       <div className="Card__dashboard-content">
         <Card.Title className="Text__elipsized--1-line">
+          <Badge style={{ marginRight: 10 }}>Ongoing</Badge>
           {meeting.name}
         </Card.Title>
         <div className="Buffer--10px" />
-        <Card.Subtitle>Ongoing</Card.Subtitle>
+        <Card.Subtitle className="Text__elipsized--1-line">
+          STARTED - {dateInfo.date} {dateInfo.startTime}
+        </Card.Subtitle>
         <div className="Buffer--20px" />
         <Card.Text className="Text__elipsized--2-lines">
           {meeting.description}
@@ -43,13 +48,10 @@ export default function OngoingMeetingItem({ meeting }) {
       sm={12}
       className="Container__padding--vertical-medium"
     >
-      <Card className="Card__dashboard" bg="primary" text="white">
+      <Card className="Card__dashboard">
         <Card.Body>
           <Details />
-          <div
-            className="Line--horizontal"
-            style={{ backgroundColor: '#c5c5c5' }}
-          />
+          <div className="Line--horizontal" />
           <div className="Buffer--5px" />
           <Toggles />
         </Card.Body>

@@ -15,6 +15,7 @@ import { SmallLoadingIndicator } from '../../../components/SmallLoadingIndicator
 import { extractError } from '../../../utils/extractError';
 import unmount from '../../../utils/unmount';
 import EditParticipantItem from './EditParticipantItem';
+import RoleBadge from '../../../components/RoleBadge';
 
 export default function ParticipantItem({ setMeeting, meeting, position }) {
   const [removing, setRemoving] = useState(false);
@@ -36,9 +37,8 @@ export default function ParticipantItem({ setMeeting, meeting, position }) {
       setRemoving(true);
       const newMeeting = Object.assign({}, meeting);
       const newParticipants = Object.assign([], newMeeting.participants);
-      const email = newParticipants[position].userEmail;
       const id = newParticipants[position].id;
-      await removeFromDatabase(email, meeting.id);
+      await removeFromDatabase(id, meeting.id);
       newParticipants.splice(position, 1);
       newMeeting.participants = newParticipants;
       setMeeting(newMeeting);
@@ -107,23 +107,26 @@ export default function ParticipantItem({ setMeeting, meeting, position }) {
         </Card>
       ) : (
         <Card>
-          <Card.Header className="Container__row--space-between">
-            {participant?.role === 2 ? 'Host' : 'Participant'}
-            {participant?.role !== 2 && participant.invited ? (
-              <OverlayTrigger placement="top" overlay={renderTooltip}>
-                <div>
-                  <FaRegEnvelope size={20} />
-                </div>
-              </OverlayTrigger>
-            ) : null}
-          </Card.Header>
           <Card.Body>
-            <Card.Title>
-              {participant?.userName != null && participant?.userName.length > 0
-                ? participant?.userName
-                : 'Guest'}
-            </Card.Title>
-            <Card.Text>{participant?.userEmail}</Card.Text>
+            <div className="Container__row--space-between">
+              <Card.Title className="Text__elipsized--1-line">
+                {participant?.userName != null &&
+                participant?.userName.length > 0
+                  ? participant?.userName
+                  : 'Guest'}
+              </Card.Title>
+              {participant?.role !== 2 && participant.invited ? (
+                <OverlayTrigger placement="top" overlay={renderTooltip}>
+                  <div>
+                    <FaRegEnvelope size={20} />
+                  </div>
+                </OverlayTrigger>
+              ) : null}
+            </div>
+            <Card.Text className="Text__elipsized--1-line">
+              {participant?.userEmail}
+            </Card.Text>
+            <RoleBadge role={participant?.role} />
           </Card.Body>
           <Buttons />
         </Card>
@@ -132,11 +135,14 @@ export default function ParticipantItem({ setMeeting, meeting, position }) {
   );
 }
 
-async function removeFromDatabase(email, meetingId) {
+async function removeFromDatabase(id, meetingId) {
   await server.delete('/participant', {
-    ...defaultHeaders,
+    headers: {
+      ...defaultHeaders.headers,
+      'X-Participant': sessionStorage.getItem(meetingId) || '',
+    },
     data: {
-      participants: [{ userEmail: email }],
+      participants: [{ participantId: id }],
       meetingId: meetingId,
     },
   });

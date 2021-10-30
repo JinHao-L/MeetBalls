@@ -11,7 +11,10 @@ export const deleteParticipants = (meetingId, userEmail) => {
     ],
   };
   return server.delete(`participant`, {
-    ...defaultHeaders,
+    headers: {
+      ...defaultHeaders.headers,
+      'X-Participant': sessionStorage.getItem(meetingId) || '',
+    },
     data: body,
   });
 };
@@ -22,34 +25,62 @@ export const createParticipant = (meetingId, userEmail, userName) => {
     userEmail,
     userName,
   };
-  return server.post(`participant`, body, defaultHeaders);
+  return server.post(`participant`, body, {
+    headers: {
+      ...defaultHeaders.headers,
+      'X-Participant': sessionStorage.getItem(meetingId) || '',
+    },
+  });
 };
 
 export const createParticipants = (participants) => {
   return server.post(
     '/participant/create-many',
     { participants },
-    defaultHeaders,
+    {
+      headers: {
+        ...defaultHeaders.headers,
+        'X-Participant':
+          participants?.length > 0
+            ? sessionStorage.getItem(participants[0].meetingId)
+            : '',
+      },
+    },
   );
 };
 
-export const markParticipantPresent = (meetingId, userEmail) => {
+export const markParticipantPresent = (meetingId, id) => {
   const body = {
-    email: userEmail,
+    participantId: id,
   };
-  return server.put(`participant/${meetingId}/present`, body);
+  return server.put(`participant/${meetingId}/present`, body, {
+    headers: {
+      ...defaultHeaders.headers,
+      'X-Participant': sessionStorage.getItem(meetingId) || '',
+    },
+  });
 };
 
-export const markParticipantAbsent = (meetingId, userEmail) => {
+export const markParticipantAbsent = (meetingId, id) => {
   const body = {
-    email: userEmail,
+    participantId: id,
   };
-  return server.put(`participant/${meetingId}/absent`, body);
+  return server.put(`participant/${meetingId}/absent`, body, {
+    headers: {
+      ...defaultHeaders.headers,
+      'X-Participant': sessionStorage.getItem(meetingId) || '',
+    },
+  });
 };
 
-export const markParticipantDuplicate = (meetingId, userEmail) => {
+export const markParticipantDuplicate = (meetingId, id) => {
   const body = {
-    email: userEmail,
+    participantId: id,
   };
-  return server.put(`participant/${meetingId}/duplicate`, body);
+  return server.put(`participant/${meetingId}/duplicate`, body, {
+    headers: {
+      ...defaultHeaders.headers,
+      'X-Participant': sessionStorage.getItem(meetingId) || '',
+    },
+  });
 };

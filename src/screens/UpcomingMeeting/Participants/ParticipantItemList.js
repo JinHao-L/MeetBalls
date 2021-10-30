@@ -1,16 +1,15 @@
-import ParticipantItem from './ParticipantItem';
-import parseCsvToObjects from '../../../utils/parseCsvToObjects';
 import { useEffect, useRef, useState } from 'react';
-import unmount from '../../../utils/unmount';
-import AddParticipantsModal from './AddParticipantsModal';
 import { Button } from 'react-bootstrap';
+import parseCsvToObjects from '../../../utils/parseCsvToObjects';
+import unmount from '../../../utils/unmount';
+import ParticipantItem from './ParticipantItem';
+import AddParticipantsModal from './AddParticipantsModal';
 import ImportModal from './ImportModal';
 
 const PARTICIPANTS_HEADER_ERROR =
   'Invalid header row! Columns should be labeled "Name" and "Email" (case-specific)!';
 
 export default function ParticipantItemList({ meeting, setMeeting }) {
-  const [loading, setLoading] = useState(false);
   const [showAddModal, setShowAddModal] = useState(false);
   const [newParticipants, setNewParticipants] = useState([]);
   const mounted = useRef(true);
@@ -22,32 +21,23 @@ export default function ParticipantItemList({ meeting, setMeeting }) {
   }, []);
 
   function uploadParticipants(file) {
-    setLoading(true);
-    if (!file) {
-      setLoading(false);
-      return;
-    }
+    if (!file) return;
+
     const fileNameSplit = file.name.split('.');
     const fileExtension = fileNameSplit[fileNameSplit.length - 1];
-    if (fileExtension !== 'csv') {
-      setLoading(false);
-      throw new Error('Invalid file type!');
-    }
+    if (fileExtension !== 'csv') throw new Error('Invalid file type!');
     parseCsvToObjects(
       file,
       ['Name', 'Email'],
       presentModal,
       PARTICIPANTS_HEADER_ERROR,
     );
-    setShowImportModal(false);
-    setShowAddModal(true);
-    setLoading(false);
   }
 
   function presentModal(fileContents) {
     const participants = convertToParticipants(meeting.id, fileContents);
     setNewParticipants(participants);
-    setLoading(false);
+    setShowImportModal(false);
     setShowAddModal(true);
   }
 
@@ -65,7 +55,7 @@ export default function ParticipantItemList({ meeting, setMeeting }) {
   }
   return (
     <>
-      <div className="d-grid gap-2" key="btn">
+      <div className="d-grid gap-2">
         <Button onClick={() => setShowImportModal(true)}>
           Import From CSV
         </Button>
@@ -75,7 +65,6 @@ export default function ParticipantItemList({ meeting, setMeeting }) {
         show={showImportModal}
         setShow={setShowImportModal}
         parseFile={uploadParticipants}
-        loading={loading}
       />
       <AddParticipantsModal
         key={'add_participant_modal'}

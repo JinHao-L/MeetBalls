@@ -1,11 +1,11 @@
 import { Card, Row, Col, Button } from 'react-bootstrap';
-import { getFormattedDuration } from '../../../common/CommonFunctions';
 import server from '../../../services/server';
 import { extractError } from '../../../utils/extractError';
 import { defaultHeaders } from '../../../utils/axiosConfig';
 import { toast } from 'react-toastify';
 import { useState } from 'react';
 import { SmallLoadingIndicator } from '../../../components/SmallLoadingIndicator';
+import AgendaItemInfoSection from '../../../components/AgendaItemComponents';
 
 export default function SuggestionItem({
   item,
@@ -55,7 +55,7 @@ export default function SuggestionItem({
     }
   }
 
-  if (loading)
+  if (loading) {
     return (
       <Card>
         <div className="Buffer--50px" />
@@ -63,6 +63,7 @@ export default function SuggestionItem({
         <div className="Buffer--50px" />
       </Card>
     );
+  }
 
   return (
     <div
@@ -71,14 +72,7 @@ export default function SuggestionItem({
       key={item.id}
     >
       <Card>
-        <Card.Body>
-          <Card.Title>{item.name}</Card.Title>
-          <Card.Subtitle>
-            {getFormattedDuration(item.expectedDuration)}
-          </Card.Subtitle>
-          <div className="Buffer--5px" />
-          <Card.Text>{item.description}</Card.Text>
-        </Card.Body>
+        <AgendaItemInfoSection item={item} showDuration />
         <Row>
           <Col style={{ paddingRight: 0 }}>
             <div className="d-grid gap-2">

@@ -1,5 +1,6 @@
 import server from './server';
 import { agendaReviver } from '../common/CommonFunctions';
+import { defaultHeaders } from '../utils/axiosConfig';
 
 // id of meeting
 export const getMeeting = async (meetingId) => {
@@ -21,7 +22,12 @@ export const updateMeeting = (newMeeting) => {
     ...(duration && { duration }),
     ...(enableTranscription && { enableTranscription }),
   };
-  return server.put(`meeting/${newMeeting.id}`, body);
+  return server.put(`meeting/${newMeeting.id}`, body, {
+    headers: {
+      ...defaultHeaders.headers,
+      'X-Participant': sessionStorage.getItem(newMeeting.id) || '',
+    },
+  });
 };
 
 export const syncMeetingWithZoom = async (meeting) => {
@@ -40,13 +46,28 @@ export const syncMeetingWithZoom = async (meeting) => {
 };
 
 export const callStartMeeting = (id) => {
-  return server.post(`meeting/start/${id}`);
+  return server.post(`meeting/start/${id}`, {}, {
+    headers: {
+      ...defaultHeaders.headers,
+      'X-Participant': sessionStorage.getItem(id) || '',
+    },
+  });
 };
 
 export const callNextMeeting = (id) => {
-  return server.post(`meeting/next/${id}`);
+  return server.post(`meeting/next/${id}`, {}, {
+    headers: {
+      ...defaultHeaders.headers,
+      'X-Participant': sessionStorage.getItem(id) || '',
+    },
+  });
 };
 
 export const callEndMeeting = (id) => {
-  return server.post(`meeting/end/${id}`);
+  return server.post(`meeting/end/${id}`, {}, {
+    headers: {
+      ...defaultHeaders.headers,
+      'X-Participant': sessionStorage.getItem(id) || '',
+    },
+  });
 };

@@ -56,6 +56,7 @@ export default function AgendaItemList({
       <div className="d-grid gap-2">
         {isReordering ? (
           <Button
+            variant="outline-primary"
             onClick={() => {
               if (lock.current) {
                 return;
@@ -68,6 +69,7 @@ export default function AgendaItemList({
           </Button>
         ) : (
           <Button
+            variant="secondary"
             onClick={() => {
               if (lock.current) {
                 return;
@@ -144,7 +146,12 @@ async function updateDatabase(meetingId, agendaItems) {
         positions: changes,
         meetingId: meetingId,
       },
-      defaultHeaders,
+      {
+        headers: {
+          ...defaultHeaders.headers,
+          'X-Participant': sessionStorage.getItem(meetingId) || '',
+        },
+      },
     );
   }
 }

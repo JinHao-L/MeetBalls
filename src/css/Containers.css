@@ -39,6 +39,11 @@
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
 }
 
+.Container__row {
+  display: flex;
+  flex-direction: row;
+}
+
 .Container__row--space-between {
   display: flex;
   justify-content: space-between;
@@ -81,7 +86,6 @@
 .Container__login-screen {
   padding-left: 40px;
   padding-right: 40px;
-  height: calc(100vh - 56px);
   justify-content: center;
   display: flex;
   flex-direction: column;
@@ -102,6 +106,18 @@
   max-height: 400px;
   overflow-y: scroll;
   overflow-x: hidden;
+}
+
+.Container__scrollable-screen {
+  min-height: 150px;
+  height: calc(100vh - 56px - 100px - 180px);
+  overflow-y: scroll;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.Container__scrollable-screen::-webkit-scrollbar {
+  display: none;
 }
 
 .Card__statistics {

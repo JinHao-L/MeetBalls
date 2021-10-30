@@ -1,15 +1,11 @@
-import { Container, Row, Col, Button, Nav, Card } from 'react-bootstrap';
-import { useParams } from 'react-router';
 import { useState, useEffect, useContext, useMemo, useCallback } from 'react';
+import { useParams } from 'react-router';
 import {
   getFormattedDateTime,
-  getFormattedTime,
   agendaReviver,
   openLinkInNewTab,
 } from '../../common/CommonFunctions';
-import AgendaList from './AgendaList';
 import { blankMeeting } from '../../common/ObjectTemplates';
-import ParticipantList from './ParticipantList';
 import {
   getMeeting,
   callStartMeeting,
@@ -22,15 +18,32 @@ import { UserContext } from '../../context/UserContext';
 import RedirectionScreen, {
   MEETING_NOT_FOUND_ERR,
 } from '../../components/RedirectionScreen';
-import useSound from 'use-sound';
-import Bell from '../../assets/Bell.mp3';
-import BackgroundPattern from '../../assets/background_pattern2.jpg';
-import FeedbackOverlay from './FeedbackOverlay';
+
 import { logEvent } from '@firebase/analytics';
 import { googleAnalytics } from '../../services/firebase';
 import { clearMeetingsCache } from '../../utils/dashboardCache';
+import { AddToCalendar } from '../../components/AddToCalendar';
+
+import {
+  initializeAgenda,
+  updateDelay,
+  getCurrentPosition,
+  getEndTime,
+  sortAndRemoveDupes,
+} from './Agenda/AgendaLogic';
+import AgendaList from './Agenda/AgendaList';
+import ParticipantList from './Participants/ParticipantList';
+import ControlToggle from './ControlToggle';
+import { Container, Row, Col, Button, Nav, Card } from 'react-bootstrap';
 import { FullLoadingIndicator } from '../../components/FullLoadingIndicator';
-import { useAddToCalendar } from '../../hooks/useAddToCalendar';
+import FeedbackOverlay from './FeedbackOverlay';
+
+import useSound from 'use-sound';
+import Bell from '../../assets/Bell.mp3';
+import BackgroundPattern from '../../assets/background_pattern2.jpg';
+import server from '../../services/server';
+import { defaultHeaders } from '../../utils/axiosConfig';
+import useDocumentTitle from '../../hooks/useDocumentTitle';
 
 export default function OngoingMeetingAdminScreen() {
   const [position, setPosition] = useState(-1);
@@ -45,16 +58,26 @@ export default function OngoingMeetingAdminScreen() {
   const [loading, setLoading] = useState(true);
   const [validId, setIsValidId] = useState(false);
   const [once, setOnce] = useState(false);
-  const AddToCalendarComponent = useAddToCalendar(meeting);
+  const [loadingNextItem, setLoadingNextItem] = useState(false);
 
   const { id } = useParams();
-  const { socket } = useSocket(id);
+  const { socket, mergeParticipants } = useSocket(id);
   const user = useContext(UserContext);
-  const isHost = useMemo(() => {
-    return meeting?.hostId === user?.uuid;
-  }, [meeting.hostId, user]);
+  const [joiner, setJoiner] = useState(null);
+  const [loadingJoiner, setLoadingJoiner] = useState(true);
   const [play] = useSound(Bell, { volume: 0.1 });
+  useDocumentTitle(meeting.name);
 
+  const isHost = useMemo(() => {
+    if (loadingJoiner || joiner) return false;
+    return meeting?.hostId === user?.uuid;
+  }, [meeting.hostId, user, joiner, loadingJoiner]);
+  const privileged = useMemo(() => {
+    const isCohost = joiner && joiner?.role === 3;
+    return isCohost || isHost;
+  }, [joiner, isHost]);
+
+  // Populate meeting info
   useEffect(() => {
     pullMeeting();
     logEvent(googleAnalytics, 'visit_ongoing_screen', { meeting: id });
@@ -63,8 +86,38 @@ export default function OngoingMeetingAdminScreen() {
     }, 1000);
   }, []);
 
+  // Retrieve joiner info
   useEffect(() => {
-    if (validId && isHost && !once) {
+    const token = sessionStorage.getItem(id);
+    if (!token) {
+      setLoadingJoiner(false);
+      return;
+    }
+
+    server
+      .get(`/meeting/magic-link`, {
+        headers: { ...defaultHeaders.headers, 'X-Participant': token },
+      })
+      .then((response) => {
+        setJoiner(response.data.joiner);
+      })
+      .catch((_err) => console.log(_err))
+      .finally(() => setLoadingJoiner(false));
+  }, []);
+
+  useEffect(() => {
+    if (meeting?.hostId === user?.uuid) {
+      const participantToken = sessionStorage.getItem(meeting.id);
+      if (participantToken) {
+        sessionStorage.removeItem(meeting.id);
+        pullMeeting();
+        setJoiner(null);
+      }
+    }
+  }, [privileged]);
+
+  useEffect(() => {
+    if (validId && meeting?.hostId === user?.uuid && !once) {
       syncMeetingWithZoom(meeting)
         .then((newZoomUuid) => {
           if (newZoomUuid) {
@@ -90,45 +143,16 @@ export default function OngoingMeetingAdminScreen() {
     socket.on('agendaUpdated', function (_) {
       pullMeeting();
     });
+    socket.on('participantUpdated', function (data) {
+      const update = JSON.parse(data);
+      setMeeting((meeting) => ({
+        ...meeting,
+        participants: sortAndRemoveDupes(
+          mergeParticipants(meeting.participants, update),
+        ),
+      }));
+    });
   }, [socket]);
-
-  useEffect(() => {
-    if (socket) {
-      if (isHost) {
-        const participantToken = sessionStorage.getItem(meeting.id);
-        if (participantToken) {
-          sessionStorage.removeItem(meeting.id)
-          pullMeeting();
-        }
-        socket.on('host_participantUpdated', (data) => {
-          const update = JSON.parse(data);
-          setMeeting((meeting) => ({
-            ...meeting,
-            participants: updateParticipants(meeting.participants, update),
-          }));
-        });
-        console.log('host');
-        return () => {
-          console.log('host - off');
-          socket?.off('host_participantUpdated');
-        };
-      } else {
-        // change in credentials
-        socket.on('participantUpdated', function (data) {
-          const update = JSON.parse(data);
-          setMeeting((meeting) => ({
-            ...meeting,
-            participants: updateParticipants(meeting.participants, update),
-          }));
-        });
-        console.log('participant');
-        return () => {
-          console.log('participant - off');
-          socket?.off('participantUpdated');
-        };
-      }
-    }
-  }, [socket, isHost]);
 
   function startZoom() {
     if (!hasLaunched) setHasLaunched(true);
@@ -175,23 +199,27 @@ export default function OngoingMeetingAdminScreen() {
   }
 
   async function nextItem(time, agenda, id) {
+    setLoadingNextItem(true);
     const isLastItem = position + 1 >= agenda.length;
     const apiCall = isLastItem ? callEndMeeting : callNextMeeting;
     try {
       await apiCall(id);
       agenda[position].actualDuration = time - agenda[position].startTime;
       if (isLastItem) {
-        clearMeetingsCache();
         setMeetingStatus(3);
         setShowFeedback(true);
         logEvent(googleAnalytics, 'end_meeting', { meetingId: id });
       }
+      clearMeetingsCache();
       const newPosition = position + 1;
       setPosition(newPosition);
       if (newPosition < agenda.length) {
         agenda[newPosition].startTime = time;
       }
-    } catch (err) {}
+    } catch (err) {
+    } finally {
+      setLoadingNextItem(false);
+    }
   }
 
   function syncMeeting(meeting) {
@@ -220,7 +248,7 @@ export default function OngoingMeetingAdminScreen() {
   const LaunchZoomButton = useCallback(() => {
     return (
       <Button
-        variant="outline-primary"
+        variant="primary"
         onClick={startZoom}
         disabled={meetingStatus === 3}
       >
@@ -230,7 +258,7 @@ export default function OngoingMeetingAdminScreen() {
   }, [meetingStatus, hasLaunched, meeting]);
 
   const ReturnToEditPageButton = useCallback(() => {
-    if (user?.uuid !== meeting.hostId) return null;
+    if (!isHost) return null;
 
     return (
       <Button variant="outline-primary" href={`/meeting/${id}`}>
@@ -270,11 +298,20 @@ export default function OngoingMeetingAdminScreen() {
             <p className="Text__subheader">
               {getFormattedDateTime(meeting.startedAt)}
             </p>
+            {/* <Card border="primary" bg="secondary">
+              <Card.Body>
+                <Card.Subtitle>Meeting ID</Card.Subtitle>
+                <Card.Text>{meeting?.meetingId}</Card.Text>
+                <Card.Subtitle>Password</Card.Subtitle>
+                <Card.Text>{meeting?.meetingPassword}</Card.Text>
+              </Card.Body>
+            </Card> */}
+            <div className="Buffer--10px" />
             <div className="d-grid gap-2">
               <LaunchZoomButton />
               {meetingStatus === 1 ? (
                 <>
-                  <AddToCalendarComponent />
+                  <AddToCalendar meeting={meeting} />
                   <ReturnToEditPageButton />
                 </>
               ) : null}
@@ -291,21 +328,23 @@ export default function OngoingMeetingAdminScreen() {
               {getEndTime(time, meeting.agendaItems, position, meeting)}
             </p>
             <div className="d-grid gap-2">
-              {isHost && !showError ? (
-                <AgendaToggle
+              {privileged &&
+              (!joiner || position !== meeting?.agendaItems?.length) &&
+              !showError ? (
+                <ControlToggle
                   position={position}
                   agenda={meeting.agendaItems}
                   time={time}
                   id={meeting.id}
-                  isHost={isHost}
+                  isHost={privileged}
                   startMeeting={startMeeting}
                   nextItem={nextItem}
+                  loadingNextItem={loadingNextItem}
                 />
               ) : (
-                <MeetingStatus
-                  position={position}
-                  agenda={meeting.agendaItems}
-                />
+                <p className="Text__subheader">
+                  {meetingStatusText(position, meeting.agendaItems)}
+                </p>
               )}
             </div>
             <div className="Buffer--20px" />
@@ -337,7 +376,7 @@ export default function OngoingMeetingAdminScreen() {
               </Nav.Item>
             </Nav>
             <div className="Buffer--20px" />
-            <div className="Container__padding--horizontal">
+            <div className="Container__padding--horizontal Container__scrollable-screen">
               {currentTab === 'agenda' ? (
                 <AgendaList
                   time={time}
@@ -349,7 +388,7 @@ export default function OngoingMeetingAdminScreen() {
                   meeting={meeting}
                   setMeeting={setMeeting}
                   position={position}
-                  shouldShowButton={isHost}
+                  shouldShowButton={privileged}
                 />
               )}
             </div>
@@ -369,130 +408,12 @@ export default function OngoingMeetingAdminScreen() {
 
 // Agenda
 
-function AgendaToggle({ position, time, agenda, id, startMeeting, nextItem }) {
+function meetingStatusText(position, agenda) {
   if (position < 0) {
-    return (
-      <Button onClick={() => startMeeting(time, agenda, id)}>
-        Start Meeting
-      </Button>
-    );
+    return 'Meeting Not Started';
   } else if (position < agenda.length) {
-    const isLastItem = position === agenda.length - 1;
-    const message = isLastItem ? 'Finish Meeting' : 'Next Item';
-    return (
-      <Button onClick={() => nextItem(time, agenda, id)}>{message}</Button>
-    );
+    return 'Meeting Ongoing';
   } else {
-    return (
-      <Button href={`/completed/${id}`}>Meeting Ended - View Report</Button>
-    );
+    return 'Meeting Ended';
   }
-}
-
-function MeetingStatus({ position, agenda }) {
-  if (position < 0) {
-    return <p className="Text__subheader">Meeting Not Started</p>;
-  } else if (position < agenda.length) {
-    return <p className="Text__subheader">Meeting Ongoing</p>;
-  } else {
-    return <p className="Text__subheader">Meeting Ended</p>;
-  }
-}
-
-function initializeAgenda(time, agenda) {
-  var lastTiming = time;
-  for (let i = 0; i < agenda.length; i++) {
-    agenda[i].actualDuration = agenda[i].expectedDuration;
-    agenda[i].startTime = lastTiming;
-    lastTiming += agenda[i].actualDuration;
-  }
-}
-
-function updateDelay(agenda, time, position, play) {
-  if (position < 0 || position >= agenda.length) return;
-  const delay = Math.max(
-    0,
-    time - agenda[position].startTime - agenda[position].actualDuration,
-  );
-  if (
-    agenda[position].actualDuration === agenda[position].expectedDuration &&
-    delay > 0 &&
-    delay < 1000
-  ) {
-    play();
-  }
-  agenda[position].actualDuration += delay;
-  updateAgenda(agenda, position);
-}
-
-function updateAgenda(agenda, position) {
-  for (let i = 0; i < agenda.length; i++) {
-    agenda[i].isCurrent = i === position;
-  }
-  if (position >= agenda.length) return;
-  var lastTiming = agenda[position].startTime;
-  for (let i = position; i < agenda.length; i++) {
-    agenda[i].startTime = lastTiming;
-    lastTiming += agenda[i].actualDuration;
-  }
-}
-
-function getCurrentPosition(meeting) {
-  const agenda = meeting.agendaItems;
-  for (let i = 0; i < agenda.length; i++) {
-    if (agenda[i].isCurrent) {
-      return i;
-    }
-  }
-}
-
-function getEndTime(time, agenda, position, meeting) {
-  if (position < 0) {
-    var duration = 0;
-    agenda.forEach((item) => {
-      duration += item.expectedDuration;
-    });
-    const supposedStartTime = new Date(meeting.startedAt).getTime();
-    if (time > supposedStartTime) {
-      return getFormattedTime(new Date(time + duration));
-    } else {
-      return getFormattedTime(new Date(supposedStartTime + duration));
-    }
-  } else {
-    if (agenda.length === 0) return '';
-    var lastAgendaItem = agenda[agenda.length - 1];
-    return getFormattedTime(
-      new Date(lastAgendaItem.startTime + lastAgendaItem.actualDuration),
-    );
-  }
-}
-
-function updateParticipants(participants, update) {
-  let hasUpdate = false;
-  participants = participants.map((ppl) => {
-    if (ppl.id === update.id) {
-      hasUpdate = true;
-      return update;
-    } else {
-      return ppl;
-    }
-  });
-  if (!hasUpdate) {
-    const newList = [update, ...participants];
-    return sortAndRemoveDupes(newList);
-  } else {
-    return participants.filter((x) => !x.isDuplicate);
-  }
-}
-
-function sortAndRemoveDupes(participants) {
-  function byArrivalThenName(p1, p2) {
-    const p1Join = p1.timeJoined;
-    const p2Join = p2.timeJoined;
-    if (p1Join && !p2Join) return -1;
-    else if (!p1Join && p2Join) return 1;
-    else return p1.userName.localeCompare(p2.userName);
-  }
-
-  return participants.filter((x) => !x.isDuplicate).sort(byArrivalThenName);
 }

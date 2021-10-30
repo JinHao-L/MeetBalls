@@ -14,16 +14,18 @@ import BackgroundPattern from '../../assets/background_pattern2.jpg';
 import { logEvent } from '@firebase/analytics';
 import { googleAnalytics } from '../../services/firebase';
 import { FullLoadingIndicator } from '../../components/FullLoadingIndicator';
+import CloneMeetingButton from '../../components/CloneMeetingButton';
+import useDocumentTitle from '../../hooks/useDocumentTitle';
 
 export default function CompletedMeetingScreen() {
   const [meeting, setMeeting] = useState(blankMeeting);
   const [loading, setLoading] = useState(true);
   const [restrictDescription, setRestrictDescription] = useState(false);
-  const [currentTab, setCurrentTab] = useState('statistics');
-
+  const [currentTab, setCurrentTab] = useState(Tabs.PARTICIPANTS);
   const [validId, setValidId] = useState(false);
 
   const { id } = useParams();
+  useDocumentTitle(meeting.name);
 
   useEffect(() => {
     return server
@@ -63,10 +65,10 @@ export default function CompletedMeetingScreen() {
 
   function Content() {
     switch (currentTab) {
-      case 'statistics': {
+      case Tabs.STATISTICS: {
         return <Statistics meeting={meeting} />;
       }
-      case 'agenda': {
+      case Tabs.AGENDA: {
         return meeting.agendaItems.map((item, idx) => (
           <CompletedAgendaCard agendaItem={item} key={idx} />
         ));
@@ -83,11 +85,7 @@ export default function CompletedMeetingScreen() {
   }
 
   function emailParticipants() {
-    const hosts = meeting.participants
-      .filter((p) => p.role === 2)
-      .map((p) => p.userEmail)
-      .join(',');
-    const bcc = meeting.participants
+    const participants = meeting.participants
       .filter((p) => p.role !== 2)
       .map((p) => p.userEmail)
       .join(',');
@@ -98,7 +96,7 @@ export default function CompletedMeetingScreen() {
       `to our meeting on ${getFormattedDate(meeting.startedAt)}.\n\n` +
       'Thank you.';
     const encodedBody = encodeURI(body);
-    const href = `mailto:${hosts}?subject=${title}&body=${encodedBody}&bcc=${bcc}`;
+    const href = `mailto:${participants}?subject=${title}&body=${encodedBody}`;
     window.open(href);
   }
 
@@ -136,12 +134,13 @@ export default function CompletedMeetingScreen() {
             </p>
             <div className="d-grid gap-2">
               {/* <Button>Get Meeting Recording</Button> */}
-              <Button variant="outline-primary" onClick={emailParticipants}>
+              <Button variant="primary" onClick={emailParticipants}>
                 Email Participants
               </Button>
               <p className="Text__hint">
                 Make sure you have enabled mail links in your browser
               </p>
+              <CloneMeetingButton id={meeting.id} name={meeting.name} />
             </div>
             <div className="Buffer--20px" />
             <div className="Container__row--space-between">
@@ -169,18 +168,18 @@ export default function CompletedMeetingScreen() {
             <div className="Buffer--50px" />
             <Nav
               variant="tabs"
-              defaultActiveKey="statistics"
+              defaultActiveKey={Tabs.PARTICIPANTS}
               onSelect={(selectedKey) => setCurrentTab(selectedKey)}
               style={{ marginLeft: 20, marginRight: 20 }}
             >
               <Nav.Item>
-                <Nav.Link eventKey="statistics">Statistics</Nav.Link>
+                <Nav.Link eventKey={Tabs.PARTICIPANTS}>Participants</Nav.Link>
               </Nav.Item>
               <Nav.Item>
-                <Nav.Link eventKey="participants">Participants</Nav.Link>
+                <Nav.Link eventKey={Tabs.AGENDA}>Agenda</Nav.Link>
               </Nav.Item>
               <Nav.Item>
-                <Nav.Link eventKey="agenda">Agenda</Nav.Link>
+                <Nav.Link eventKey={Tabs.STATISTICS}>Statistics</Nav.Link>
               </Nav.Item>
             </Nav>
             <div className="Buffer--20px" />
@@ -195,3 +194,9 @@ export default function CompletedMeetingScreen() {
     </div>
   );
 }
+
+const Tabs = {
+  AGENDA: 'agenda',
+  PARTICIPANTS: 'participants',
+  STATISTICS: 'statistics',
+};

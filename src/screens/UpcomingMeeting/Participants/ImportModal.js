@@ -3,7 +3,7 @@ import { useRef } from 'react';
 import { toast } from 'react-toastify';
 import downloadFile from '../../../utils/downloadFile';
 
-export default function ImportModal({ show, setShow, parseFile, loading }) {
+export default function ImportModal({ show, setShow, parseFile }) {
   const fileRef = useRef(null);
 
   function handleChange(event) {
@@ -23,16 +23,20 @@ export default function ImportModal({ show, setShow, parseFile, loading }) {
         <Modal.Title>Import Participants</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <p>Please download and fill in the template below:</p>
-        <Button onClick={downloadTemplateCSV}>CSV Template</Button>
-        <div className="Buffer--20px" />
-        <p>Then, upload the file here:</p>
+        <p>Upload your list of participants here:</p>
         <Form.Control
           type="file"
           ref={fileRef}
           onChange={handleChange}
           accept=".csv"
         />
+        <div className="Buffer--20px" />
+        <p>A blank template can be downloaded here:</p>
+        <div className="d-grid gap-2">
+          <Button variant="outline-primary" onClick={downloadTemplateCSV}>
+            CSV Template
+          </Button>
+        </div>
         <div className="Buffer--20px" />
       </Modal.Body>
       <Modal.Footer>

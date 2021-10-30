@@ -1,6 +1,9 @@
 import { useState, useEffect, useContext } from 'react';
 import { Button, Row, Col, Container, Nav, Spinner } from 'react-bootstrap';
-import { getFormattedDateTime } from '../../common/CommonFunctions';
+import {
+  agendaReviver,
+  getFormattedDateTime,
+} from '../../common/CommonFunctions';
 import AgendaItemList from './Agenda/AgendaItemList';
 import ParticipantItemList from './Participants/ParticipantItemList';
 import SuggestionList from './Suggestions/SuggestionList';
@@ -23,8 +26,11 @@ import BackgroundPattern from '../../assets/background_pattern2.jpg';
 import { logEvent } from '@firebase/analytics';
 import { googleAnalytics } from '../../services/firebase';
 import { FullLoadingIndicator } from '../../components/FullLoadingIndicator';
-import { useAddToCalendar } from '../../hooks/useAddToCalendar';
+import { AddToCalendar } from '../../components/AddToCalendar';
 import { useRef } from 'react';
+import CloneMeetingButton from '../../components/CloneMeetingButton';
+import { useSocket } from '../../hooks/useSocket';
+import useDocumentTitle from '../../hooks/useDocumentTitle';
 
 export default function UpcomingMeetingScreen() {
   const [meeting, setMeeting] = useState(blankMeeting);
@@ -40,13 +46,16 @@ export default function UpcomingMeetingScreen() {
 
   const [loading, setLoading] = useState(true);
   const [validId, setValidId] = useState(true);
-  const AddToCalendarComponent = useAddToCalendar(meeting);
 
   const history = useHistory();
   const user = useContext(UserContext);
 
   const { id } = useParams();
+  const { socket, mergeSuggestions, mergeParticipants } = useSocket(id);
   const lock = useRef(false);
+  useDocumentTitle(meeting.name);
+
+  const mounted = useRef(true);
 
   // lock the setmeeting
   useEffect(() => {
@@ -55,20 +64,33 @@ export default function UpcomingMeetingScreen() {
   }, [meeting]);
 
   useEffect(() => {
-    return pullMeeting()
-      .then(() => {
-        logEvent(googleAnalytics, 'visit_upcoming_screen', { meeting: id });
-        setValidId(true);
-      })
-      .catch((_) => setValidId(false))
-      .finally(() => setLoading(false));
+    mounted.current = true;
+    populateMeetingInformation();
+
+    return () => {
+      mounted.current = false;
+    };
   }, []);
+
+  async function populateMeetingInformation() {
+    try {
+      await pullMeeting();
+      logEvent(googleAnalytics, 'visit_upcoming_screen', { meeting: id });
+      setValidId(true);
+    } catch {
+      setValidId(false);
+    } finally {
+      if (mounted.current) setLoading(false);
+    }
+  }
 
   async function getSuggestions(meetingId) {
     try {
       const response = await server.get(`/suggestion/${meetingId}`, {
-        ...defaultHeaders.headers,
-        'X-Participant': sessionStorage.getItem(meetingId) || '',
+        headers: {
+          ...defaultHeaders.headers,
+          'X-Participant': sessionStorage.getItem(id) || '',
+        },
       });
       if (response.status !== 200) return;
       const result = response.data;
@@ -77,6 +99,50 @@ export default function UpcomingMeetingScreen() {
       toast.error(extractError(err));
     }
   }
+
+  useEffect(() => {
+    if (!socket) return;
+
+    socket.on('meetingUpdated', function (data) {
+      const newMeeting = JSON.parse(data, agendaReviver);
+      if (newMeeting.type !== 1) {
+        history.replace('/ongoing/' + id);
+      } else {
+        setMeeting((meeting) => ({ ...meeting, ...newMeeting }));
+      }
+    });
+
+    // re-implement when allow co-host control in edit screen
+    // socket.on('agendaUpdated', function (_) {
+    //   pullMeeting();
+    // });
+
+    socket.on('suggestionUpdated', function (item) {
+      const update = JSON.parse(item);
+      setSuggestions((s) => mergeSuggestions(s, update));
+    });
+
+    socket.on('suggestionDeleted', function (suggestionId) {
+      setSuggestions((s) => s.filter((x) => x.id !== suggestionId));
+    });
+
+    socket.on('participantDeleted', function (participantId) {
+      setMeeting((meeting) => ({
+        ...meeting,
+        participants: meeting.participants.filter(
+          (x) => x.id !== participantId,
+        ),
+      }));
+    });
+
+    socket.on('participantUpdated', (data) => {
+      const update = JSON.parse(data);
+      setMeeting((meeting) => ({
+        ...meeting,
+        participants: mergeParticipants(meeting.participants, update),
+      }));
+    });
+  }, [socket]);
 
   async function pullMeeting() {
     const response = await server.get(`/meeting/${id}`, {
@@ -158,16 +224,14 @@ export default function UpcomingMeetingScreen() {
   if (!loading && !validId)
     return <RedirectionScreen message={MEETING_NOT_FOUND_ERR} />;
 
-  if (meeting.id !== '' && user?.uuid !== meeting.hostId)
+  if (meeting.id !== '' && (user?.uuid !== meeting.hostId))
     return <RedirectionScreen message={BAD_MEETING_PERMS_MSG} />;
 
   if (meeting.type !== undefined && meeting.type !== 1) {
     return <Redirect to={'/ongoing/' + id} />;
   }
 
-  if (loading) {
-    return <FullLoadingIndicator />;
-  }
+  if (loading) return <FullLoadingIndicator />;
 
   return (
     <div
@@ -196,12 +260,14 @@ export default function UpcomingMeetingScreen() {
             </p>
             <div className="d-grid gap-2">
               <Button onClick={startZoom}>Start Zoom Meeting</Button>
-              <AddToCalendarComponent />
+              <AddToCalendar meeting={meeting} />
               <Button
                 variant="outline-primary"
                 onClick={() => {
                   setInviteList(
-                    meeting?.participants?.filter((x) => !x.invited),
+                    meeting?.participants?.filter(
+                      (x) => !x.invited && x.userEmail && x.role !== 2,
+                    ),
                   );
                   setShowInviteModal(true);
                 }}
@@ -218,12 +284,19 @@ export default function UpcomingMeetingScreen() {
                   />
                 )}
               </Button>
-              <Button
-                variant="outline-primary"
-                onClick={() => setShowEditMeeting(true)}
-              >
-                Edit / Delete Meeting
-              </Button>
+              <Row>
+                <Col className="d-grid gap-2" style={{ paddingRight: 5 }}>
+                  <CloneMeetingButton id={meeting.id} name={meeting.name} />
+                </Col>
+                <Col className="d-grid gap-2" style={{ paddingLeft: 5 }}>
+                  <Button
+                    variant="outline-primary"
+                    onClick={() => setShowEditMeeting(true)}
+                  >
+                    Edit / Delete
+                  </Button>
+                </Col>
+              </Row>
             </div>
             <div className="Buffer--20px" />
             <div className="Container__row--space-between">
