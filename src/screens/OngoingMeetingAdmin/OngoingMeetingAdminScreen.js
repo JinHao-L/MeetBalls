@@ -71,7 +71,7 @@ export default function OngoingMeetingAdminScreen() {
   const isHost = useMemo(() => {
     if (loadingJoiner || joiner) return false;
     return meeting?.hostId === user?.uuid;
-  }, [meeting.hostId, user, joiner]);
+  }, [meeting.hostId, user, joiner, loadingJoiner]);
   const privileged = useMemo(() => {
     const isCohost = joiner && joiner?.role === 3;
     return isCohost || isHost;
