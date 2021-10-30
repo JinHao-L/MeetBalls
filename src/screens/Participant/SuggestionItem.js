@@ -1,15 +1,28 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Col, Card, Row, Button } from 'react-bootstrap';
 import EditSuggestionItem from './EditSuggestionItem';
 import { toast } from 'react-toastify';
 import server from '../../services/server';
 import { extractError } from '../../utils/extractError';
 import { defaultHeaders } from '../../utils/axiosConfig';
-import { getFormattedDuration } from '../../common/CommonFunctions';
+import AgendaItemInfoSection from '../../components/AgendaItemComponents';
 
-export default function SuggestionItem({ item, suggestions, setSuggestions }) {
+export default function SuggestionItem({
+  item,
+  participants,
+  suggestions,
+  setSuggestions,
+}) {
   const [editing, setEditing] = useState(false);
   const [isDeleting, setDeleting] = useState(false);
+  const mounted = useRef(true);
+
+  useEffect(() => {
+    mounted.current = true;
+    return () => {
+      mounted.current = false;
+    };
+  }, []);
 
   if (!editing && item.name === '') {
     setEditing(true);
@@ -19,6 +32,7 @@ export default function SuggestionItem({ item, suggestions, setSuggestions }) {
     return (
       <EditSuggestionItem
         item={item}
+        participants={participants}
         suggestions={suggestions}
         setSuggestions={setSuggestions}
         setEditing={setEditing}
@@ -49,40 +63,37 @@ export default function SuggestionItem({ item, suggestions, setSuggestions }) {
     } catch (err) {
       toast.error(extractError(err));
     }
-    setDeleting(false);
+    if (mounted.current) setDeleting(false);
   }
 
   function edit() {
     setEditing(true);
   }
 
+  function Buttons() {
+    if (item?.accepted) return <Card.Footer>Accepted</Card.Footer>;
+
+    return (
+      <Row>
+        <Col style={{ paddingRight: 0 }} onClick={remove}>
+          <div className="d-grid gap-2">
+            <Button variant="card-left-danger">Remove</Button>
+          </div>
+        </Col>
+        <Col style={{ paddingLeft: 0 }}>
+          <div className="d-grid gap-2" onClick={edit}>
+            <Button variant="card-right">Edit</Button>
+          </div>
+        </Col>
+      </Row>
+    );
+  }
+
   return (
     <Col lg={12} md={12} sm={12} className="Container__padding--vertical-small">
       <Card>
-        <Card.Body>
-          <Card.Title>{item?.name}</Card.Title>
-          <Card.Subtitle>
-            {getFormattedDuration(item?.expectedDuration)}
-          </Card.Subtitle>
-          <div className="Buffer--5px" />
-          <Card.Text>{item.description}</Card.Text>
-        </Card.Body>
-        {item?.accepted ? (
-          <Card.Footer>Accepted</Card.Footer>
-        ) : (
-          <Row>
-            <Col style={{ paddingRight: 0 }} onClick={remove}>
-              <div className="d-grid gap-2">
-                <Button variant="card-left-danger">Remove</Button>
-              </div>
-            </Col>
-            <Col style={{ paddingLeft: 0 }}>
-              <div className="d-grid gap-2" onClick={edit}>
-                <Button variant="card-right">Edit</Button>
-              </div>
-            </Col>
-          </Row>
-        )}
+        <AgendaItemInfoSection item={item} showDuration />
+        <Buttons />
       </Card>
     </Col>
   );

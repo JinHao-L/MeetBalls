@@ -15,7 +15,7 @@ export default function ActiveItem({ item, isPassed, isEnded }) {
           <Card.Title>{item.name}</Card.Title>
           <SpeakerSection item={item} />
           <Card.Text>{item.description}</Card.Text>
-          <MaterialsSection item={item} variant={'outline-primary'} />
+          <MaterialsSection item={item} variant="outline-primary" />
         </Card.Body>
         <Card.Footer>
           <Card.Text>

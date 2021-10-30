@@ -103,6 +103,5 @@ export function isValidEmail(email) {
   const isSpace = !email || !email.trim();
   if (isSpace) return false;
 
-  console.log(email);
   return isEmail(email);
 }

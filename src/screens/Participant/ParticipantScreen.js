@@ -168,10 +168,12 @@ export default function ParticipantScreen() {
   function SuggestionItems() {
     const items = [];
     for (let i = 0; i < suggestions.length; i++) {
+      const suggestion = suggestions[i];
       items.push(
         <SuggestionItem
-          item={suggestions[i]}
-          key={i}
+          item={suggestion}
+          key={suggestion.id}
+          participants={meeting.participants}
           suggestions={suggestions}
           setSuggestions={setSuggestions}
         />,
