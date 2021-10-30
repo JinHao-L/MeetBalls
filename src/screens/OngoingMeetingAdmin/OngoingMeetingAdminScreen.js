@@ -43,6 +43,7 @@ import Bell from '../../assets/Bell.mp3';
 import BackgroundPattern from '../../assets/background_pattern2.jpg';
 import server from '../../services/server';
 import { defaultHeaders } from '../../utils/axiosConfig';
+import useDocumentTitle from '../../hooks/useDocumentTitle';
 
 export default function OngoingMeetingAdminScreen() {
   const [position, setPosition] = useState(-1);
@@ -63,11 +64,20 @@ export default function OngoingMeetingAdminScreen() {
   const { socket, mergeParticipants } = useSocket(id);
   const user = useContext(UserContext);
   const [joiner, setJoiner] = useState(null);
-  const isHost = useMemo(() => {
-    return meeting?.hostId === user?.uuid || joiner?.role === 3;
-  }, [meeting.hostId, user, joiner]);
+  const [loadingJoiner, setLoadingJoiner] = useState(true);
   const [play] = useSound(Bell, { volume: 0.1 });
+  useDocumentTitle(meeting.name);
 
+  const isHost = useMemo(() => {
+    if (loadingJoiner || joiner) return false;
+    return meeting?.hostId === user?.uuid;
+  }, [meeting.hostId, user, joiner]);
+  const privileged = useMemo(() => {
+    const isCohost = joiner && joiner?.role === 3;
+    return isCohost || isHost; 
+  }, [joiner, isHost]);
+
+  // Populate meeting info
   useEffect(() => {
     pullMeeting();
     logEvent(googleAnalytics, 'visit_ongoing_screen', { meeting: id });
@@ -76,18 +86,23 @@ export default function OngoingMeetingAdminScreen() {
     }, 1000);
   }, []);
 
+  // Retrieve joiner info
   useEffect(() => {
     const token = sessionStorage.getItem(id);
-    if (token) {
-      server
-        .get(`/meeting/magic-link`, {
-          headers: { ...defaultHeaders.headers, 'X-Participant': token },
-        })
-        .then((response) => {
-          setJoiner(response.data.joiner);
-        })
-        .catch((_err) => console.log(_err));
+    if (!token) {
+      setLoadingJoiner(false);
+      return;
     }
+
+    server
+      .get(`/meeting/magic-link`, {
+        headers: { ...defaultHeaders.headers, 'X-Participant': token },
+      })
+      .then((response) => {
+        setJoiner(response.data.joiner);
+      })
+      .catch((_err) => console.log(_err))
+      .finally(() => setLoadingJoiner(false));
   }, []);
 
   useEffect(() => {
@@ -99,7 +114,7 @@ export default function OngoingMeetingAdminScreen() {
         setJoiner(null);
       }
     }
-  }, [isHost]);
+  }, [privileged]);
 
   useEffect(() => {
     if (validId && meeting?.hostId === user?.uuid && !once) {
@@ -233,7 +248,7 @@ export default function OngoingMeetingAdminScreen() {
   const LaunchZoomButton = useCallback(() => {
     return (
       <Button
-        variant="outline-primary"
+        variant="primary"
         onClick={startZoom}
         disabled={meetingStatus === 3}
       >
@@ -243,7 +258,7 @@ export default function OngoingMeetingAdminScreen() {
   }, [meetingStatus, hasLaunched, meeting]);
 
   const ReturnToEditPageButton = useCallback(() => {
-    if (user?.uuid !== meeting.hostId) return null;
+    if (!isHost) return null;
 
     return (
       <Button variant="outline-primary" href={`/meeting/${id}`}>
@@ -283,8 +298,17 @@ export default function OngoingMeetingAdminScreen() {
             <p className="Text__subheader">
               {getFormattedDateTime(meeting.startedAt)}
             </p>
+            <Card border="primary" bg="secondary">
+              <Card.Body>
+                <Card.Subtitle>Meeting ID</Card.Subtitle>
+                <Card.Text>{meeting?.meetingId}</Card.Text>
+                <Card.Subtitle>Password</Card.Subtitle>
+                <Card.Text>{meeting?.meetingPassword}</Card.Text>
+                <LaunchZoomButton />
+              </Card.Body>
+            </Card>
+            <div className="Buffer--10px" />
             <div className="d-grid gap-2">
-              <LaunchZoomButton />
               {meetingStatus === 1 ? (
                 <>
                   <AddToCalendar meeting={meeting} />
@@ -304,7 +328,7 @@ export default function OngoingMeetingAdminScreen() {
               {getEndTime(time, meeting.agendaItems, position, meeting)}
             </p>
             <div className="d-grid gap-2">
-              {isHost &&
+              {privileged &&
               (!joiner || position !== meeting?.agendaItems?.length) &&
               !showError ? (
                 <ControlToggle
@@ -312,7 +336,7 @@ export default function OngoingMeetingAdminScreen() {
                   agenda={meeting.agendaItems}
                   time={time}
                   id={meeting.id}
-                  isHost={isHost}
+                  isHost={privileged}
                   startMeeting={startMeeting}
                   nextItem={nextItem}
                   loadingNextItem={loadingNextItem}
@@ -364,7 +388,7 @@ export default function OngoingMeetingAdminScreen() {
                   meeting={meeting}
                   setMeeting={setMeeting}
                   position={position}
-                  shouldShowButton={isHost}
+                  shouldShowButton={privileged}
                 />
               )}
             </div>

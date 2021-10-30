@@ -286,6 +286,12 @@ export default function AddMeetingOverlay({
     );
   }
 
+  function ZoomMeetingText() {
+    return (
+      <p>Below are your upcoming Zoom meetings.</p>
+    );
+  }
+
   const title = cloneMeeting
     ? `Cloning "${cloneMeeting.name}"`
     : 'Add New Meeting';
@@ -352,7 +358,6 @@ export default function AddMeetingOverlay({
                 </Row>
               )}
             </div>
-
             {loading ? (
               <>
                 <div className="Buffer--100px" />
@@ -363,6 +368,7 @@ export default function AddMeetingOverlay({
                 {!loading && showZoomList ? (
                   <>
                     <div className="Buffer--20px" />
+                    <ZoomMeetingText />
                     {filteredZoomList.length > 0 ? (
                       <ZoomMeetingList setFieldValue={setFieldValue} />
                     ) : (

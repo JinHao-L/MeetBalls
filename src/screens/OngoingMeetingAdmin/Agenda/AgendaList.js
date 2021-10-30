@@ -51,7 +51,9 @@ export default function AgendaList({ time, agenda, position }) {
   return (
     <>
       {items}
-      <div className="Buffer--100px" />
+      <div className="Buffer--50px" />
+      <p className="Text__hint">- End of Agenda -</p>
+      <div className="Buffer--20px" />
     </>
   );
 }

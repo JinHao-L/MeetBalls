@@ -30,6 +30,7 @@ import { AddToCalendar } from '../../components/AddToCalendar';
 import { useRef } from 'react';
 import CloneMeetingButton from '../../components/CloneMeetingButton';
 import { useSocket } from '../../hooks/useSocket';
+import useDocumentTitle from '../../hooks/useDocumentTitle';
 
 export default function UpcomingMeetingScreen() {
   const [meeting, setMeeting] = useState(blankMeeting);
@@ -52,6 +53,7 @@ export default function UpcomingMeetingScreen() {
   const { id } = useParams();
   const { socket, mergeSuggestions, mergeParticipants } = useSocket(id);
   const lock = useRef(false);
+  useDocumentTitle(meeting.name);
 
   const mounted = useRef(true);
 
