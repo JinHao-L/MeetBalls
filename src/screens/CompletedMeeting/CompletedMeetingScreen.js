@@ -15,6 +15,7 @@ import { logEvent } from '@firebase/analytics';
 import { googleAnalytics } from '../../services/firebase';
 import { FullLoadingIndicator } from '../../components/FullLoadingIndicator';
 import CloneMeetingButton from '../../components/CloneMeetingButton';
+import useDocumentTitle from '../../hooks/useDocumentTitle';
 
 export default function CompletedMeetingScreen() {
   const [meeting, setMeeting] = useState(blankMeeting);
@@ -24,6 +25,7 @@ export default function CompletedMeetingScreen() {
   const [validId, setValidId] = useState(false);
 
   const { id } = useParams();
+  useDocumentTitle(meeting.name);
 
   useEffect(() => {
     return server

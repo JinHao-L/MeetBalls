@@ -43,6 +43,7 @@ import Bell from '../../assets/Bell.mp3';
 import BackgroundPattern from '../../assets/background_pattern2.jpg';
 import server from '../../services/server';
 import { defaultHeaders } from '../../utils/axiosConfig';
+import useDocumentTitle from '../../hooks/useDocumentTitle';
 
 export default function OngoingMeetingAdminScreen() {
   const [position, setPosition] = useState(-1);
@@ -67,6 +68,7 @@ export default function OngoingMeetingAdminScreen() {
     return meeting?.hostId === user?.uuid || joiner?.role === 3;
   }, [meeting.hostId, user, joiner]);
   const [play] = useSound(Bell, { volume: 0.1 });
+  useDocumentTitle(meeting.name);
 
   useEffect(() => {
     pullMeeting();
