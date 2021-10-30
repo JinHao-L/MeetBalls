@@ -15,6 +15,7 @@ import { SmallLoadingIndicator } from '../../../components/SmallLoadingIndicator
 import { extractError } from '../../../utils/extractError';
 import unmount from '../../../utils/unmount';
 import EditParticipantItem from './EditParticipantItem';
+import RoleBadge from '../../../components/RoleBadge';
 
 export default function ParticipantItem({ setMeeting, meeting, position }) {
   const [removing, setRemoving] = useState(false);
@@ -106,23 +107,26 @@ export default function ParticipantItem({ setMeeting, meeting, position }) {
         </Card>
       ) : (
         <Card>
-          <Card.Header className="Container__row--space-between">
-            {participant?.role === 2 ? 'Host' : 'Participant'}
-            {participant?.role !== 2 && participant.invited ? (
-              <OverlayTrigger placement="top" overlay={renderTooltip}>
-                <div>
-                  <FaRegEnvelope size={20} />
-                </div>
-              </OverlayTrigger>
-            ) : null}
-          </Card.Header>
           <Card.Body>
-            <Card.Title>
-              {participant?.userName != null && participant?.userName.length > 0
-                ? participant?.userName
-                : 'Guest'}
-            </Card.Title>
-            <Card.Text>{participant?.userEmail}</Card.Text>
+            <div className="Container__row--space-between">
+              <Card.Title className="Text__elipsized--1-line">
+                {participant?.userName != null &&
+                participant?.userName.length > 0
+                  ? participant?.userName
+                  : 'Guest'}
+              </Card.Title>
+              {participant?.role !== 2 && participant.invited ? (
+                <OverlayTrigger placement="top" overlay={renderTooltip}>
+                  <div>
+                    <FaRegEnvelope size={20} />
+                  </div>
+                </OverlayTrigger>
+              ) : null}
+            </div>
+            <Card.Text className="Text__elipsized--1-line">
+              {participant?.userEmail}
+            </Card.Text>
+            <RoleBadge role={participant?.role} />
           </Card.Body>
           <Buttons />
         </Card>

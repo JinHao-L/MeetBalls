@@ -42,6 +42,12 @@ export default function AgendaItem({
     setEditing(true);
   }
 
+  const renderTooltip = (props) => (
+    <Tooltip id="button-tooltip" {...props}>
+      {item?.speakerMaterials}
+    </Tooltip>
+  );
+
   async function removeAgendaItem() {
     if (isDeleting || lock.current) return;
     lock.current = true;
@@ -210,9 +216,3 @@ async function removeFromDatabase(meetingId, position) {
     },
   });
 }
-
-const renderTooltip = (props) => (
-  <Tooltip id="button-tooltip" {...props}>
-    Link/File Attached
-  </Tooltip>
-);

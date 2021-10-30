@@ -249,8 +249,7 @@ export default function CustomBootstrapStyle() {
     }
 
     .bg-secondary {
-      background-color: #f28f71!important;
-      color: white;
+      background-color: #fffaf5!important;
     }
 
     .bg-success {
