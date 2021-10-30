@@ -36,7 +36,7 @@ export function MaterialsSection({ item, variant = 'primary' }) {
 function DurationSection({ item, showDuration }) {
   if (!showDuration) return null;
 
-  return <Card.Text>{getFormattedDuration(item.expectedDuration)}</Card.Text>;
+  return <Card.Subtitle>{getFormattedDuration(item.expectedDuration)}</Card.Subtitle>;
 }
 
 function BufferedDescriptionSection({ item }) {
