@@ -6,6 +6,7 @@ import { defaultHeaders } from '../../../utils/axiosConfig';
 import { toast } from 'react-toastify';
 import { useState } from 'react';
 import { SmallLoadingIndicator } from '../../../components/SmallLoadingIndicator';
+import AgendaItemInfoSection from '../../../components/AgendaItemComponents';
 
 export default function SuggestionItem({
   item,
@@ -77,15 +78,7 @@ export default function SuggestionItem({
       key={item.id}
     >
       <Card>
-        <Card.Body>
-          <Card.Title>{item.name}</Card.Title>
-          <Card.Subtitle>{speakerSubtitle}</Card.Subtitle>
-          <Card.Subtitle>
-            {getFormattedDuration(item.expectedDuration)}
-          </Card.Subtitle>
-          <div className="Buffer--5px" />
-          <Card.Text>{item.description}</Card.Text>
-        </Card.Body>
+        <AgendaItemInfoSection item={item} showDuration />
         <Row>
           <Col style={{ paddingRight: 0 }}>
             <div className="d-grid gap-2">

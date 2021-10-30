@@ -6,6 +6,7 @@ import server from '../../services/server';
 import { extractError } from '../../utils/extractError';
 import { defaultHeaders } from '../../utils/axiosConfig';
 import { getFormattedDuration } from '../../common/CommonFunctions';
+import AgendaItemInfoSection from '../../components/AgendaItemComponents';
 
 export default function SuggestionItem({
   item,
@@ -89,22 +90,10 @@ export default function SuggestionItem({
     );
   }
 
-  const speakerName = item.speaker?.userName;
-  const speakerSubtitle = speakerName
-    ? `To be presented by ${speakerName}`
-    : '';
   return (
     <Col lg={12} md={12} sm={12} className="Container__padding--vertical-small">
       <Card>
-        <Card.Body>
-          <Card.Title>{item?.name}</Card.Title>
-          <Card.Subtitle>{speakerSubtitle}</Card.Subtitle>
-          <Card.Subtitle>
-            {getFormattedDuration(item?.expectedDuration)}
-          </Card.Subtitle>
-          <div className="Buffer--5px" />
-          <Card.Text>{item.description}</Card.Text>
-        </Card.Body>
+        <AgendaItemInfoSection item={item} showDuration />
         <Buttons />
       </Card>
     </Col>
