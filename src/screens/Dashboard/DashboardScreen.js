@@ -86,19 +86,22 @@ export default function DashboardScreen() {
       });
   }, [activePage]);
 
-  function checkIfExist(id) {
-    for (let i = 0; i < upcoming.length; i++) {
-      if (upcoming[i].zoomUuid === id) {
-        return true;
+  const checkIfExist = useCallback(
+    (id) => {
+      for (let i = 0; i < upcoming.length; i++) {
+        if (upcoming[i].zoomUuid === id) {
+          return true;
+        }
       }
-    }
-    for (let i = 0; i < meetingHistory.length; i++) {
-      if (meetingHistory[i].zoomUuid === id) {
-        return true;
+      for (let i = 0; i < meetingHistory.length; i++) {
+        if (meetingHistory[i].zoomUuid === id) {
+          return true;
+        }
       }
-    }
-    return false;
-  }
+      return false;
+    },
+    [upcoming, meetingHistory],
+  );
 
   const PaginationButtons = useCallback(() => {
     let items = [];

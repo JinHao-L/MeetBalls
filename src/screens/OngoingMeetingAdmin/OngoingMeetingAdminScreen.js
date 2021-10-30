@@ -102,7 +102,7 @@ export default function OngoingMeetingAdminScreen() {
   }, [isHost]);
 
   useEffect(() => {
-    if (validId && isHost && !once) {
+    if (validId && meeting?.hostId === user?.uuid && !once) {
       syncMeetingWithZoom(meeting)
         .then((newZoomUuid) => {
           if (newZoomUuid) {

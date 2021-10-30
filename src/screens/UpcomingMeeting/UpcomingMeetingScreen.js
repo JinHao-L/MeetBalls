@@ -97,9 +97,10 @@ export default function UpcomingMeetingScreen() {
       }
     });
 
-    socket.on('agendaUpdated', function (_) {
-      pullMeeting();
-    });
+    // re-implement when allow co-host control in edit screen
+    // socket.on('agendaUpdated', function (_) {
+    //   pullMeeting();
+    // });
 
     socket.on('suggestionUpdated', function (item) {
       const update = JSON.parse(item);
