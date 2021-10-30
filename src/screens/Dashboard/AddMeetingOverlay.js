@@ -1,10 +1,11 @@
 import DatePicker from 'react-datepicker';
 import { useState, useEffect } from 'react';
-import { Offcanvas, Form, Button, Card } from 'react-bootstrap';
+import { Offcanvas, Form, Button, Card, Col, Row } from 'react-bootstrap';
 import { useHistory } from 'react-router';
 import { defaultHeaders } from '../../utils/axiosConfig';
 import * as yup from 'yup';
 import { Formik } from 'formik';
+import { FaSyncAlt } from 'react-icons/fa';
 
 import 'react-datepicker/dist/react-datepicker.css';
 import server from '../../services/server';
@@ -314,14 +315,35 @@ export default function AddMeetingOverlay({
               <div className="Line--horizontal" />
               <div className="Buffer--10px" />
               {!showZoomList || (
-                <Button
-                  variant="outline-primary"
-                  onClick={() => {
-                    openLinkInNewTab('https://zoom.us/meeting/schedule');
-                  }}
-                >
-                  New Zoom Meeting
-                </Button>
+                <Row>
+                  <Col
+                    className="d-grid gap-2"
+                    xs={9}
+                    style={{ paddingRight: 5 }}
+                  >
+                    <Button
+                      variant="outline-primary"
+                      onClick={() => {
+                        openLinkInNewTab('https://zoom.us/meeting/schedule');
+                      }}
+                    >
+                      New Zoom Meeting
+                    </Button>
+                  </Col>
+                  <Col
+                    className="d-grid gap-2"
+                    xs={3}
+                    style={{ paddingLeft: 5 }}
+                  >
+                    <Button
+                      variant="outline-primary"
+                      onClick={getZoomMeetingList}
+                      disabled={loading}
+                    >
+                      <FaSyncAlt />
+                    </Button>
+                  </Col>
+                </Row>
               )}
             </div>
 
@@ -334,15 +356,6 @@ export default function AddMeetingOverlay({
               <>
                 {!loading && showZoomList ? (
                   <>
-                    <div className="Buffer--10px" />
-                    <div className="d-grid gap-2">
-                      <Button
-                        variant="outline-primary"
-                        onClick={getZoomMeetingList}
-                      >
-                        Refresh
-                      </Button>
-                    </div>
                     <div className="Buffer--20px" />
                     <ZoomMeetingList setFieldValue={setFieldValue} />
                   </>
