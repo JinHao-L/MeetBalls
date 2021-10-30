@@ -28,7 +28,8 @@ export default function AddMeetingOverlay({
 }) {
   const [loading, setLoading] = useState(false);
   const [showZoomList, setShowZoomList] = useState(true);
-  const [zoomMeetingList, setZoomMeetingList] = useState([]);
+  const [fullZoomList, setFullZoomList] = useState([]);
+  const [filteredZoomList, setFilteredZoomList] = useState([]);
   const [isZoomMeeting, setIsZoomMeeting] = useState(false);
   const [searched, setSearched] = useState(false);
   const history = useHistory();
@@ -39,22 +40,26 @@ export default function AddMeetingOverlay({
     }
   }, [show]);
 
+  useEffect(() => {
+    const filteredList = [];
+    fullZoomList.forEach((meeting) => {
+      if (
+        !filteredList.find((added) => added.uuid === meeting.uuid) &&
+        !checkIfExist(meeting.uuid)
+      ) {
+        filteredList.push(meeting);
+      }
+    });
+    setFilteredZoomList(filteredList);
+  }, [fullZoomList, checkIfExist]);
+
   async function getZoomMeetingList() {
     try {
       setLoading(true);
       const response = await server.get(`/zoom/meetings`, defaultHeaders);
-      const result = response.data;
       if (response.status !== 200) return;
-      const filteredList = [];
-      result.forEach((meeting) => {
-        if (
-          !filteredList.find((added) => added.uuid === meeting.uuid) &&
-          !checkIfExist(meeting.uuid)
-        ) {
-          filteredList.push(meeting);
-        }
-      });
-      setZoomMeetingList(filteredList);
+      const result = response.data;
+      setFullZoomList(result);
     } catch (err) {
       toast.error(extractError(err));
     } finally {
@@ -89,6 +94,7 @@ export default function AddMeetingOverlay({
       .post('/meeting', newMeeting, defaultHeaders)
       .then((res) => {
         onUpdate();
+        setSearched(false);
         const id = res.data.id;
         setShow(false);
         logEvent(googleAnalytics, 'created_meeting', { meetingId: id });
@@ -237,7 +243,7 @@ export default function AddMeetingOverlay({
 
   function ZoomMeetingList({ setFieldValue }) {
     const items = [];
-    zoomMeetingList.forEach((meeting, idx) => {
+    filteredZoomList.forEach((meeting, idx) => {
       const startTime = meeting.start_time;
       const dateStr = startTime
         ? getFormattedDateTime(new Date(startTime))
@@ -357,7 +363,11 @@ export default function AddMeetingOverlay({
                 {!loading && showZoomList ? (
                   <>
                     <div className="Buffer--20px" />
-                    <ZoomMeetingList setFieldValue={setFieldValue} />
+                    {filteredZoomList.length > 0 ? (
+                      <ZoomMeetingList setFieldValue={setFieldValue} />
+                    ) : (
+                      <p className="Text__hint">- No upcoming zoom meetings -</p>
+                    )}
                   </>
                 ) : (
                   <ManualInput

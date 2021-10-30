@@ -146,7 +146,12 @@ async function updateDatabase(meetingId, agendaItems) {
         positions: changes,
         meetingId: meetingId,
       },
-      defaultHeaders,
+      {
+        headers: {
+          ...defaultHeaders.headers,
+          'X-Participant': sessionStorage.getItem(meetingId) || '',
+        },
+      },
     );
   }
 }

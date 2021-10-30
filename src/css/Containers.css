@@ -109,6 +109,7 @@
 }
 
 .Container__scrollable-screen {
+  min-height: 150px;
   height: calc(100vh - 56px - 100px - 180px);
   overflow-y: scroll;
   -ms-overflow-style: none;

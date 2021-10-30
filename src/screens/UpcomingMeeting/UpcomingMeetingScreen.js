@@ -72,8 +72,10 @@ export default function UpcomingMeetingScreen() {
   async function getSuggestions(meetingId) {
     try {
       const response = await server.get(`/suggestion/${meetingId}`, {
-        ...defaultHeaders.headers,
-        'X-Participant': sessionStorage.getItem(meetingId) || '',
+        headers: {
+          ...defaultHeaders.headers,
+          'X-Participant': sessionStorage.getItem(id) || '',
+        },
       });
       if (response.status !== 200) return;
       const result = response.data;
@@ -95,9 +97,10 @@ export default function UpcomingMeetingScreen() {
       }
     });
 
-    socket.on('agendaUpdated', function (_) {
-      pullMeeting();
-    });
+    // re-implement when allow co-host control in edit screen
+    // socket.on('agendaUpdated', function (_) {
+    //   pullMeeting();
+    // });
 
     socket.on('suggestionUpdated', function (item) {
       const update = JSON.parse(item);
@@ -206,7 +209,7 @@ export default function UpcomingMeetingScreen() {
   if (!loading && !validId)
     return <RedirectionScreen message={MEETING_NOT_FOUND_ERR} />;
 
-  if (meeting.id !== '' && user?.uuid !== meeting.hostId)
+  if (meeting.id !== '' && (user?.uuid !== meeting.hostId))
     return <RedirectionScreen message={BAD_MEETING_PERMS_MSG} />;
 
   if (meeting.type !== undefined && meeting.type !== 1) {

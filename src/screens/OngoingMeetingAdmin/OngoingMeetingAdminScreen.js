@@ -41,6 +41,8 @@ import FeedbackOverlay from './FeedbackOverlay';
 import useSound from 'use-sound';
 import Bell from '../../assets/Bell.mp3';
 import BackgroundPattern from '../../assets/background_pattern2.jpg';
+import server from '../../services/server';
+import { defaultHeaders } from '../../utils/axiosConfig';
 
 export default function OngoingMeetingAdminScreen() {
   const [position, setPosition] = useState(-1);
@@ -60,9 +62,10 @@ export default function OngoingMeetingAdminScreen() {
   const { id } = useParams();
   const { socket, mergeParticipants } = useSocket(id);
   const user = useContext(UserContext);
+  const [joiner, setJoiner] = useState(null);
   const isHost = useMemo(() => {
-    return meeting?.hostId === user?.uuid;
-  }, [meeting.hostId, user]);
+    return meeting?.hostId === user?.uuid || joiner?.role === 3;
+  }, [meeting.hostId, user, joiner]);
   const [play] = useSound(Bell, { volume: 0.1 });
 
   useEffect(() => {
@@ -74,17 +77,32 @@ export default function OngoingMeetingAdminScreen() {
   }, []);
 
   useEffect(() => {
-    if (isHost) {
+    const token = sessionStorage.getItem(id);
+    if (token) {
+      server
+        .get(`/meeting/magic-link`, {
+          headers: { ...defaultHeaders.headers, 'X-Participant': token },
+        })
+        .then((response) => {
+          setJoiner(response.data.joiner);
+        })
+        .catch((_err) => console.log(_err));
+    }
+  }, []);
+
+  useEffect(() => {
+    if (meeting?.hostId === user?.uuid) {
       const participantToken = sessionStorage.getItem(meeting.id);
       if (participantToken) {
         sessionStorage.removeItem(meeting.id);
         pullMeeting();
+        setJoiner(null);
       }
     }
   }, [isHost]);
 
   useEffect(() => {
-    if (validId && isHost && !once) {
+    if (validId && meeting?.hostId === user?.uuid && !once) {
       syncMeetingWithZoom(meeting)
         .then((newZoomUuid) => {
           if (newZoomUuid) {
@@ -286,7 +304,9 @@ export default function OngoingMeetingAdminScreen() {
               {getEndTime(time, meeting.agendaItems, position, meeting)}
             </p>
             <div className="d-grid gap-2">
-              {isHost && !showError ? (
+              {isHost &&
+              (!joiner || position !== meeting?.agendaItems?.length) &&
+              !showError ? (
                 <ControlToggle
                   position={position}
                   agenda={meeting.agendaItems}
