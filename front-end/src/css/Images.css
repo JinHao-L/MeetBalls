@@ -1,0 +1,37 @@
+
+.Image__login {
+  max-height: calc(100vh * 50%);
+  width: 100%;
+  object-fit: cover;
+}
+
+@media (min-width: 992px) {
+  .Image__login {
+    height: calc(100vh - 56px);
+    min-height: unset;
+    max-height: unset;
+  }
+}
+
+.Image__banner {
+  min-height: 300px;
+  max-height: 300px;
+  width: 100%;
+  object-fit: cover;
+  filter: brightness(70%);
+}
+
+.Image__landing-pattern {
+  position: absolute;
+  top: 200px;
+  left: 0px;
+  z-index: -1;
+  max-width: min(600px, 100%);
+  opacity: 0.3;
+}
+
+.Image__documentation {
+  box-shadow: 0 4px 4px 0 rgba(0, 0, 0, 0.2);
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
