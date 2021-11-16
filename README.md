@@ -27,6 +27,13 @@ Simply login with your Zoom account (currently available for NUS only)
 
 ## Developer Team
 
+|Team members | Number    | Contributions                                                 |
+|---------    |---------- |----------------                                               |
+|Ang Chun Yang| A0180311X | Backend (Participants, Suggestions, Agenda Items)             |
+|Chong Wen Hao| A0217317J | Frontend, UI/UX, Graphics design                              |
+|Lim Jin Hao  | A0205878R | Backend (Authentication, Meeting), Zoom integration, Socket integration |
+|Ong Ying Gao | A0201924N |Frontend, Business logic, Backend Integration                  |
+
 - Ang Chun Yang A0180311X
 - Chong Wen Hao A0217317J
 - Lim Jin Hao A0205878R
